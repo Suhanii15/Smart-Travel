@@ -19,7 +19,7 @@ const containerVariants = {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" },
+      transition: { duration: 1.2, ease: "easeOut" },
     },
   };
   return (
@@ -27,7 +27,7 @@ const containerVariants = {
         <Landnavabr />
     
 
-    <section className="flex flex-col lg:flex-row items-center justify-between min-h-[80vh] px-6 lg:px-20 py-12">
+    <section className="flex flex-col lg:flex-row items-center justify-between min-h-[80vh] px-6 lg:px-20 py-12 ">
   
   <motion.div 
           variants={containerVariants}
@@ -47,11 +47,22 @@ const containerVariants = {
 
   <motion.div variants={containerVariants} initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ duration: 0.9, delay: 0.4 }}
    className="w-full lg:w-1/2 relative mt-12 lg:mt-0">
    <img src={photo} className="w-full h-auto"/>
   </motion.div>
+
+  
 </section>
+<motion.div  variants={containerVariants} initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, delay: 0.4 }}
+className="flex justify-center items-center top-0 bottom-3">
+<button className=" mt-8 bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 cursor-pointer transition-colors duration-300">
+Plan Your Trip Now
+  </button>
+
+  </motion.div>
 
     </>
   )
