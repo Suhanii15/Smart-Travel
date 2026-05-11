@@ -1,17 +1,21 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import React from 'react'
+import { Route, Routes } from 'react-router-dom'
+import Landingpage from './pages/Landingpage'
+import LoginPage from './pages/LoginPage'
 
-
-         
-           function App() {
+const App = () => {
   return (
-    <h1 className="text-3xl font-bold underline text-blue-600">
-      Hoalllaa Amoiggooo
-    </h1>
+    <div className="bg-slate-50 min-h-screen overflow-x-hidden">
+      <Routes>
+    <Route path='/' element= {<Landingpage /> }/>
+    <Route path='/login' element={<LoginPage />} />
+    
+
+</Routes>
+ </div>
   )
 }
 
-
 export default App
+
+
