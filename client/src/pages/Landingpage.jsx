@@ -58,7 +58,7 @@ const containerVariants = {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, delay: 0.4 }}
 className="flex justify-center items-center top-0 bottom-3">
-<button className=" mt-8 bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 cursor-pointer transition-colors duration-300">
+<button className=" mt-8 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-600 cursor-pointer transition-colors duration-300">
 Plan Your Trip Now
   </button>
 

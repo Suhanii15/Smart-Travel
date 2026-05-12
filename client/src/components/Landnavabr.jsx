@@ -21,7 +21,7 @@ const Landnavabr = () => {
 
         <div className="flex gap-6 items-center">
             <button onClick={handleLogin}
-            className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 cursor-pointer ">
+            className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-600 cursor-pointer ">
                 Login
             </button>
 
