@@ -9,10 +9,10 @@ const BudgetTracker = () => {
         {/* leftside*/}
         <div className="flex flex-col gap-3 bg-slate-100 min-h-screen w-72">
         <div className="flex gap-2 my-2 gap-5">
-                    <div className="p-2 h-10 bg-blue-500/10 top-2 rounded-full">
+                    <div className="p-2 ml-2 h-10 bg-blue-500/10 top-2 rounded-full">
                      <Compass className="text-blue-500" strokeWidth={2.5} />
                      </div>
-                     <span className="text-xl font-bold tracking-tight text-gray-600">
+                     <span className="text-xl mt-2 font-bold tracking-tight text-gray-600">
               Smart<span className="text-blue-500">Travel</span>
             </span>
         </div>
