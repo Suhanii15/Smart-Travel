@@ -7,6 +7,7 @@ import MyTrips from './pages/MyTrips'
 import Planner from './pages/Planner'
 import Collaborations from './pages/Collaborations'
 import BudgetTracker from './pages/BudgetTracker'
+import Itinerary from './pages/Itinerary'
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
     <Route path='/planner' element={<Planner />} />
     <Route path='/collaborations' element={<Collaborations />} />
     <Route path='/budgettracker' element={<BudgetTracker />} />
+    <Route path='/itinerary' element={<Itinerary />} />
 
     
 
