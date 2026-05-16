@@ -15,13 +15,11 @@ const goback = () =>{
   navigate('/planner');
 }
 
-
-
-
   const DUMMY_TRIP = {
   destination: "Manali Trip",
   startDate: "10 May",
   endDate: "15 May 2026",
+  members:4,
   totalDays: 5,
   itinerary: {
     1: {
@@ -46,7 +44,7 @@ const goback = () =>{
   }
 };
 const [activeDay, setActiveDay] = useState(1);
-  const [trip,setTrip]=useState(DUMMY_TRIP);
+const [trip,setTrip]=useState(DUMMY_TRIP);
 
 const add_trip = () =>{
   const newday=trip.totalDays+1;
@@ -158,6 +156,7 @@ const [isEditable, setIsEditable] = useState(true);
    <div className="flex flex-col gap-1 mx-3 mt-4 ">
       <h1 className="font-bold text-gray-700 text-2xl ">{trip.destination}</h1>
       <h3 className="text-gray-400 text-sm">{trip.startDate} - {trip.endDate}</h3>
+      <h3 className="text-gray-400 text-sm">{trip.members} Members</h3>
     </div>
     <div className="flex flex-col gap-1">
       {isEditable && (
@@ -171,7 +170,7 @@ const [isEditable, setIsEditable] = useState(true);
           <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
         N
           </div>
-          <p className="text-gray-700 font-medium">Name</p>
+          <p className="text-gray-700 mt-1 font-medium">Name</p>
       </div>
      
 
@@ -211,6 +210,10 @@ className="flex items-center border border-gray-300 cursor-pointer p-2 rounded-[
           <div onClick={()=>navigate('/budgettracker')}
            className="bg-green-300 flex items-center p-2 cursor-pointer rounded-[2rem] cursor-pointer text-white font-semibold  hover:-translate-y-1 shadow-md transition duration-200">
                 Track Budget
+          </div>
+            <div onClick={()=>navigate('/collaborations')}
+           className="bg-yellow-200 flex items-center p-2 cursor-pointer rounded-[2rem] cursor-pointer text-white font-semibold  hover:-translate-y-1 shadow-md transition duration-200">
+                Add Collaborators
           </div>
 </div>
 
@@ -268,10 +271,12 @@ className="flex items-center border border-gray-300 cursor-pointer p-2 rounded-[
            
             
             <div className="bg-white w-full p-6 rounded-[2rem] mr-3 shadow-md shadow-gray-400 ">
+              <div className="flex flex-row gap-2 ">
               <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4">
                 <Compass size={20} />
               </div>
-              <h4 className="font-bold text-gray-900 mb-2">AI Suggestion</h4>
+              <h4 className="font-bold mt-1  text-gray-900 mb-2">AI Suggestions</h4>
+              </div>
               <p className="text-sm text-gray-500 leading-relaxed mb-4">
                 This route looks great! Hadimba Temple is just 20 mins from your hotel.
               </p>
@@ -290,7 +295,7 @@ className="flex items-center border border-gray-300 cursor-pointer p-2 rounded-[
               <button disabled={!isEditable}
               onClick={()=>setIsEditable(false)}
               className={`font-semibold text-sm px-3 py-3 border-2 rounded-[2rem] shadow-md transition duration-300 ${
-                isEditable ? "bg-blue-600 text-white hover:-translate-y-2 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not allowed"
+                isEditable ? "bg-blue-600 text-white hover:-translate-y-2 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"
               }`}
              >
               {isEditable ? "Finalise Trip" : "Trip Locked"}

@@ -1,7 +1,7 @@
 import React from 'react'
 import {Compass} from 'lucide-react'
 import Sidebar from '../components/Sidebar'
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Users } from 'lucide-react';
 import { MapPin } from 'lucide-react';
 import { CalendarFold } from 'lucide-react';
 import DatePicker from "react-datepicker";
@@ -27,6 +27,21 @@ const Planner = () => {
     const [start,end] =dates;
     setStartDate(start);
     setEndDate(end);
+  }
+
+  const [companion,setCompanion]=useState('Friends');
+  const [peopleCount,setPeopleCount]=useState(1);
+
+  const handleCompanion = (e) =>{
+    const value=e.target.value;
+    setCompanion(value);
+
+    if(value == 'Solo'){
+      setPeopleCount(1);
+    }
+    if(value == 'Couple'){
+      setPeopleCount(2);
+    }
   }
 
   return (
@@ -82,16 +97,7 @@ const Planner = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 max-w-2xl">
       
-      {/* Budget Input 
-      <div className="flex flex-col gap-2">
-        <label className="text-slate-700 text-sm font-bold">Budget</label>
-        <input 
-          type="text" 
-          placeholder="₹ 20,000 - ₹ 30,000" 
-          className="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 placeholder:text-slate-400"
-        />
-      </div>
-      */}
+     
 
       {/* Travel Style Select */}
       <div className="flex flex-col gap-2">
@@ -110,7 +116,8 @@ const Planner = () => {
       <div className="flex flex-col gap-2">
         <label className="text-slate-700 text-sm font-bold">Companions</label>
         <div className="relative">
-          <select className="w-full appearance-none border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 bg-white cursor-pointer">
+          <select value={companion} onChange={handleCompanion}
+           className="w-full appearance-none border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 bg-white cursor-pointer">
             <option>Friends</option>
             <option>Family</option>
             <option>Solo</option>
@@ -119,6 +126,25 @@ const Planner = () => {
           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
         </div>
       </div>
+
+<div className="flex flex-col gap-2">
+  <label className="text-slate-700 text-sm font-bold">Number of People</label> 
+   <div className="relative">
+    <input type="number" min="1" value={peopleCount} disabled={companion == 'Solo' || companion == 'Couple'}
+    onChange={(e) => setPeopleCount(e.target.value)}
+            className={`w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 
+              ${(companion === 'Solo' || companion === 'Couple') ? 'bg-slate-50 cursor-not-allowed' : 'bg-white'}`}
+            placeholder="How many people?"
+    />
+   </div>
+{(companion === 'Solo' || companion === 'Couple') && (
+          <p className="text-[10px] text-blue-500 font-medium italic">
+            Count is locked for {companion} selection.
+          </p>
+        )}
+      
+
+</div>
 
       {/* Transport Preferences */}
       <div className="flex flex-col gap-2">
