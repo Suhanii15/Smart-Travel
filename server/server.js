@@ -1,8 +1,8 @@
-import express from 'express';
-import cors from 'cors';
-import "dotenv/config";
-import http from "http"
-import { connectDB } from "./lib/db.js";
+const express=require('express');
+const cors=require('cors');
+require("dotenv/config");
+const http =require('http');
+const connectDB= require('./lib/db.js');
 const app=express();
 const server=http.createServer(app);
 
@@ -10,7 +10,7 @@ const server=http.createServer(app);
 app.use(express.json({limit:"4mb"}));
 app.use(cors());
 
-await connectDB();
+connectDB();
 
 app.use("/api/status", (req,res)=>res.send("server is live"));
 
