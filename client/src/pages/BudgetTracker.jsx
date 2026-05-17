@@ -6,7 +6,6 @@ import { ChevronsLeft } from 'lucide-react'
 import { useNavigate } from "react-router-dom";
 import { Sparkles } from 'lucide-react';
 import {
-  
   Car,
   Hotel,
   UtensilsCrossed,

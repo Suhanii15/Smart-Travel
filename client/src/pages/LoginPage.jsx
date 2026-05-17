@@ -2,16 +2,55 @@ import React from 'react'
 import loginp from '../assets/login.jpeg'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'  
-
+import { AuthContext } from '../context/AuthContext';
+import { useContext } from 'react';
 
 const LoginPage = () => {
     const Navigate=useNavigate();
+    const {loginUser}=useContext(AuthContext);
 
 const[currState, setcurrState]=useState("Sign Up")
   const[name, setName]=useState("");
   const[email,setEmail]=useState("");
   const[password,setPassword]=useState("");
   const[loading, setLoading]=useState(false);
+
+  const handleAuth = async () =>{
+    setLoading(true);
+    const url=currState === "Sign Up" ? "" : "";
+    const body=currState === "Sign Up" ? {name,email,password} : {email,password};
+
+    try{
+ const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+    const data = await res.json();
+
+      if (data.success) {
+        loginUser(data.userData, data.token);
+        Navigate("/dashboard"); // redirect after login/signup
+      } else {
+        alert(data.message);
+}
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSubmitHandler=(event)=>{
+  event.preventDefault();
+  handleAuth();
+
+
+  } 
+
+
+
   return (
     <div className="min-h-screen flex items-center">
         <div className="hidden h-180 lg:flex lg:w-1/2 relative bg-cover bg-center items-center justify-center px-12" 
@@ -31,7 +70,7 @@ const[currState, setcurrState]=useState("Sign Up")
 
 
   <div className="flex-1 flex items-center justify-center px-6 py-12">
-          <form 
+          <form onSubmit={onSubmitHandler}
        className="bg-white lg:w-1/2 rounded-lg shadow-md px-8 py-8 flex flex-col gap-6 hover:shadow-lg cursor-pointer transition">
         <h1 className=" font-md font-bold text-xl text-gray-700">{currState}</h1>
         {

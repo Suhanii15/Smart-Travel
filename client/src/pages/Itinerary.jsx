@@ -268,8 +268,6 @@ className="flex items-center border border-gray-300 cursor-pointer p-2 rounded-[
 
 
 <div className="flex flex-col justify-between mx-4 space-y-4">
-           
-            
             <div className="bg-white w-full p-6 rounded-[2rem] mr-3 shadow-md shadow-gray-400 ">
               <div className="flex flex-row gap-2 ">
               <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4">

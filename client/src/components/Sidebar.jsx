@@ -7,8 +7,17 @@ import { Notebook } from 'lucide-react';
 import { CopyMinus } from 'lucide-react';
 import { HandCoins } from 'lucide-react';
 import { LogOut } from 'lucide-react';
+import login from "../pages/LoginPage"
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const Sidebar = () => {
+  const Navigate=useNavigate();
+const { user, logoutUser } = useContext(AuthContext);
+
+
   return (
     <div className="flex flex-col gap-4 mt-10">
         <ul className="flex flex-col gap-4">
@@ -40,7 +49,17 @@ const Sidebar = () => {
 
         </ul>
 
-
+<div 
+ className="mt-70 bg-gray-700 mx-20 px-2 flex flex-row gap-2 rounded-[2rem] shadow-md shadow-gray-800 items-center hover:-translate-y-1 transition duration-200  shadow-lg shadow-gray-600 cursor-pointer">
+  <LogOut className="text-white"/>
+  <button   onClick={() => {
+                    logoutUser();
+                    Navigate("/");
+                  }}
+   className="bg-gray-700 text-white font-semibold text-md rounded-[2rem] p-2">
+Logout
+  </button>
+</div>
 
     </div>
   )
