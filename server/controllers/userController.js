@@ -103,9 +103,9 @@ const getUser = async(req,res)=>{
     return  res.json({
         success:true,
         user:{
-            id:user.id,
-            name:user.name,
-            email:user.email
+            id:req.user.id,
+            name:req.user.name,
+            email:req.user.email
 
         }
       });

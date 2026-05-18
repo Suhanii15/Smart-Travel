@@ -7,7 +7,8 @@ import { Plus } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-
+import { AuthContext } from '../context/AuthContext';
+import { useContext } from 'react';
 
 
 const Dashboard = () => {
@@ -29,6 +30,7 @@ const Dashboard = () => {
       transition: { duration: 2.6, ease: "easeOut" },
     },
   };
+const {user,logoutuser}=useContext(AuthContext);
 
   const placeholderImg = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80";
   return (
@@ -68,9 +70,9 @@ const Dashboard = () => {
   
   <div className="flex mt-12 mr-4 px-1 gap-2">
           <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-        N
+        {user?.name[0]}
           </div>
-          <p className="text-gray-700 font-medium">Name</p>
+          <p className="text-gray-700 font-medium">{user?.name}</p>
         </div>
   
  </div>
