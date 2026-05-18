@@ -13,6 +13,8 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
+import { AuthContext } from '../context/AuthContext';
+import { useContext } from 'react';
 
 
 const BudgetTracker = () => {
@@ -103,7 +105,7 @@ const expenses = [
   const remaining=totalbudget-totalspending;
 
   const progress=(totalspending/totalbudget) * 100;
-
+  const {user,logoutuser}=useContext(AuthContext);
 
 
   return (
@@ -138,9 +140,9 @@ const expenses = [
       )}
      <div className="flex mt-2 mr-4 px-1 gap-2">
           <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-        N
+        {user?.name[0]}
           </div>
-          <p className="text-gray-700 mt-1 font-medium">Name</p>
+          <p className="text-gray-700 mt-1 font-medium">{user?.name}</p>
       </div>
       </div>
  </div>

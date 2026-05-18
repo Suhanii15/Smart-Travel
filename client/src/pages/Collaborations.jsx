@@ -5,6 +5,8 @@ import {useState }from 'react';
 import { ChevronsLeft } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { X } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
+import { useContext } from 'react';
 
 
 const Collaborations = () => {
@@ -185,6 +187,7 @@ const addMember = (user) => {
   ]);
 };
 
+const {user,logoutuser}=useContext(AuthContext);
   return (
     <div className="flex flex-row min-h-screen">
         {/* leftside*/}
@@ -217,9 +220,9 @@ const addMember = (user) => {
       )}
      <div className="flex mt-2 mr-4 px-1 gap-2">
           <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-        N
+        {user?.name[0]}
           </div>
-          <p className="text-gray-700 mt-1 font-medium">Name</p>
+          <p className="text-gray-700 mt-1 font-medium">{user?.name}</p>
       </div>
      
 
