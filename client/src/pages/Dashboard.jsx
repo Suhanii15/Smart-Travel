@@ -57,7 +57,7 @@ const {user,logoutuser}=useContext(AuthContext);
     variants={containerVariants} 
     className="text-3xl font-bold text-gray-700 mt-7 mx-6"
   >
-    Welcome, Name!
+    Welcome,{user?.name}
     <motion.h3 
       initial="hidden" 
       animate="visible" 
