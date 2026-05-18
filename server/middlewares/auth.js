@@ -1,6 +1,6 @@
 //we here check if the user has access to enter certain pages of site with the help of token
 //we check if the user has a token, verufy it, match with the database and allow access accordingly
-const User=require("../models/userModels")
+const User=require("../models/userModel")
 const jwt=require('jsonwebtoken');
 const protectedroute= async (req,res,next)=>{
     try{
@@ -24,4 +24,4 @@ const protectedroute= async (req,res,next)=>{
 
 module.exports=protectedroute;
 //also at the time of login and sign up we use email for verifu=ication but once the user is logged in we use id present in the tokken 
-//as once the user is logged in can change or update its id later
+//as once the user is logged in can change or update its email later

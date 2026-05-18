@@ -5,4 +5,4 @@ const generateToken = (userId)=>{
     return token;
 }
 
-module.exports=generateToken;
+module.exports={generateToken};

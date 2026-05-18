@@ -1,3 +1,4 @@
+require('dotenv').config(); 
 const express=require('express');
 const cors=require('cors');
 require("dotenv/config");
@@ -12,7 +13,12 @@ app.use(cors());
 
 connectDB();
 
+const userRouter=require("./routes/userRoutes");
+
+
+
 app.use("/api/status", (req,res)=>res.send("server is live"));
+app.use("/api/user", userRouter);
 
 const PORT=process.env.PORT || 5000;
 server.listen(PORT,()=>

@@ -17,14 +17,14 @@ const[currState, setcurrState]=useState("Sign Up")
 
   const handleAuth = async () =>{
     setLoading(true);
-    const url=currState === "Sign Up" ? "" : "";
+    const url=currState === "Sign Up" ? "http://localhost:5000/api/user/signup" : "http://localhost:5000/api/user/login";
     const body=currState === "Sign Up" ? {name,email,password} : {email,password};
 
     try{
  const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({name,email,password}),
     });
     const data = await res.json();
 
