@@ -1,24 +1,41 @@
 const User=require("../models/TripModel");
 const bcrypt=require("bcrypt");
+const {generateItinerary}=require("../services/aiService")
 
 const CreateTrip = async(req,res)=>{
  try{
-  const {destination,startDate,endDate,peopleCount,companions,preference,interests}=req.body;
+  const {destination,startDate,endDate,travelStyle,peopleCount,companions,preferences,interests}=req.body;
+  if (!destination || !startDate || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Destination, Start Date, and End Date are mandatory to generate an itinerary."
+      });
+    }
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const timeDifference = end.getTime() - start.getTime();
+    const totalDays = Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) + 1;
+
+const aiPayload = await generateItinerary({
+      destination,
+      totalDays,
+      travelStyle,
+      peopleCount,
+      companions,
+      preferences,
+      interests
+    });
+
   const newTrip=Trip.create({
     destination,
     startDate,
     endDate,
     peopleCount,
     companions,
-    preference,
+    preferences,
     status:"Draft",
-   itinerary: {
-        "1": {
-          morning: [],
-          afternoon: [],
-          evening: []
-        }
-      },
+   itinerary:aiPayload.itinerary,
+   budgetEstimation: aiPayload.budgetEstimation,
     collaborators: [
         {
           user: req.user._id,
@@ -39,7 +56,7 @@ catch(err){
     return res.json({
         success:false,
         message:"Trip was not created"
-    })
+    })  
 
 }
 };
@@ -106,43 +123,106 @@ return res.json({
     }
 }
 
-const finalizeTrip = async(req,res) =>{
-try{
-const {tripId}=req.params;
-const trip=await Trip.findById(tripId);
-if(!trip){
+//const finalizeTrip = async(req,res) =>{
+//try{
+//const {tripId}=req.params;
+//const trip=await Trip.findById(tripId);
+//if(!trip){
+    //return res.json({
+      //  success:false,
+        //message:"Trip Not Found"
+    //})
+//}
+ //const isMember=trip.collaborators.some(
+           // (member)=>member.user._id.toSting() === req.user._id.toSting()
+      //  );
+//if(!isMember){
+    //return res.json({
+      //  success:false,
+        //message:"Access Denied",
+   // });
+//}
+
+//trip.status="finalized";
+//trip.save();
+
+//return res.json({
+ //   success:true,
+   // trip,
+//})
+
+//}
+//catch(err){
+//console.log(err);
+//return res.json({
+   // success:false,
+  //  message:err.message
+//})
+//}
+//}
+
+
+const checkStatus = async(trip)=>{
+    try{
+   const {tripId}=req.params;
+   const {status}=req.body;
+
+   const trip=Trip.findById(tripId);
+
+   if(!trip){
     return res.json({
         success:false,
-        message:"Trip Not Found"
-    })
-}
- const isMember=trip.collaborators.some(
-            (member)=>member.user._id.toSting() === req.user._id.toSting()
-        );
-if(!isMember){
-    return res.json({
-        success:false,
-        message:"Access Denied",
+        message:"Trip does not exists"
     });
+   }
+
+   const findmember=trip.collaborators.find(
+    (c)=>c.user.toString() === req.user._id.toString()
+   )
+   if(!findmember){
+    return res.json({
+        success:false,
+        message:"Access denied"
+    });
+   }
+
+   if(findmember.role !== "admin"){
+    return res.json({
+        success:false,
+        message:"only admin can change trips status"
+    })
+   }
+
+   if(trip.endDate){
+   const today=new Date();
+   const tripEnd=new Date(trip.endDate);
+
+
+
+   if(today > tripEnd){
+    trip.status === "completed";
+   
+   }
 }
 
-trip.status="finalized";
-trip.save();
+const allowedStatuses = ["draft", "finalized", "completed"];
+    if (status && !allowedStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status value provided." });
+    }
 
-return res.json({
+    trip.status=status;
+
+   await trip.save();
+
+   return res.json({
     success:true,
-    trip,
-})
-
+    message:`${trip.status}`,
+    trip
+   })
 }
 catch(err){
 console.log(err);
-return res.json({
-    success:false,
-    message:err.message
-})
 }
 }
 
-
-module.exports={CreateTrip, getAllTrips, getTrip,finalizeTrip};
+module.exports={CreateTrip, getAllTrips, getTrip,checkStatus};

@@ -17,7 +17,7 @@ const searchUsers = async(req,res)=>{
         name:{$regex: username, $options: "i"},  //find that user whose name matches the input avoiding case sensitivity
         _id: { $ne: req.user._id }               //exclude the logged-in user from the search bar
     })
-    .select("name email")
+    .select("name")
     .limit(10);
 
     return res.status(200).json({ success: true, users });
@@ -43,7 +43,7 @@ const addCollaboartor=async(req,res)=>{
       return res.status(404).json({ success: false, message: "Trip not found" });
     }
     const alreadyadded = trip.collaborators.some(
-        (c)=> c.user.toString() === userToInvite.toString()
+        (c)=> c.user.toString() === userToInvite.toString()      //.some() is used to check if atleast one of that value exist in that array
     );
 
     if(alreadyadded){
@@ -89,7 +89,7 @@ const removeCollaborator=async(req,res)=>{
     trip.collaborators.pull({ user: userIdToRemove });
     await trip.save();
 
-    // Re-populate the remaining collaborators so the frontend layout renders flawlessly
+  
     const updatedTrip = await Trip.findById(tripId).populate("collaborators.user", "name email");
 
     return res.status(200).json({
@@ -107,3 +107,5 @@ const removeCollaborator=async(req,res)=>{
 
     }
 }
+
+module.exports={searchUsers,addCollaboartor,removeCollaborator};

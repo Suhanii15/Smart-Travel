@@ -1,7 +1,7 @@
 const mongoose=require('mongoose');
 const activitySchema=new mongoose.Schema({
     time:{
-        String
+        type:String
     },
     task:{
         type:String
@@ -25,9 +25,9 @@ const collaboratorSchema=new mongoose.Schema({
     role : {
         type:String,
         enum:["admin","user"],
-        default:members
+        default:"user"
     }
-})
+});
 const TripSchema=new mongoose.Schema(
     {
         destination:{
@@ -40,7 +40,7 @@ const TripSchema=new mongoose.Schema(
         status:{
             type:String,
             enum:["draft","fianlized","completed"],
-            default:"darft",
+            default:"draft",
         },
         preferences:[String],
 
@@ -55,31 +55,17 @@ const TripSchema=new mongoose.Schema(
 
             })
         },
-        estimatedBudget:{
-            hotel:{
-                type:Number,
-                default:0
-            },
-            food:{
-                type:Number,
-                default:0
-            },
-            transport:{
-                type:Number,
-                default:0
-            },
-            toatl:{
-                type:Number,
-                default:0
-            },
-            shopping:{
-                type:Number,
-                default:0
-            },
-        },
 
-
-      members :[
+    estimatedBudget:{
+    accommodationTotal: { type: Number, default: 0 },
+    transportationTotal: { type: Number, default: 0 },
+    foodAndDiningTotal: { type: Number, default: 0 },
+    activitiesTotal: { type: Number, default: 0 },
+    miscellaneousTotal: { type: Number, default: 0 },
+    grandTotal: { type: Number, default: 0 },
+    currency: { type: String, default: "INR" }
+  },
+ members :[
         {
     user : {
       type: mongoose.Schema.Types.ObjectId,
@@ -89,7 +75,7 @@ const TripSchema=new mongoose.Schema(
     role : {
         type:String,
         enum:["admin","user"],
-        default:members
+        default:"user"
     }
     }]
 
