@@ -42,6 +42,20 @@ const addCollaboartor=async(req,res)=>{
     if (!trip) {
       return res.status(404).json({ success: false, message: "Trip not found" });
     }
+    const requester = trip.collaborators.find(
+      (c) => c.user.toString() === req.user._id.toString()
+    );
+    if (!requester) {
+      return res.status(403).json({ success: false, message: "You are not a member of this trip" });
+    }
+    if (requester.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Only trip admins can add collaborators" });
+    }
+
+    const userExists = await User.findById(userToInvite);
+    if (!userExists) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
     const alreadyadded = trip.collaborators.some(
         (c)=> c.user.toString() === userToInvite.toString()      //.some() is used to check if atleast one of that value exist in that array
     );
@@ -59,7 +73,10 @@ const addCollaboartor=async(req,res)=>{
         role:"user"
 
     })
+
 await trip.save();
+const saved = await Trip.findById(tripId);
+console.log("Collaborators after save:", saved.collaborators);
 const updatedTrip = await Trip.findById(tripId).populate("collaborators.user", "name email");
 return res.status(200).json({ success: true, message: "Collaborator added successfully", trip: updatedTrip })
     
@@ -78,7 +95,7 @@ catch(err){
 
 const removeCollaborator=async(req,res)=>{
     try{
-         const {tripId, idToRemove}=req.params;
+         const {tripId, IdToRemove}=req.params;
           const trip = await Trip.findById(tripId);
     if (!trip) {
       return res.status(404).json({ success: false, message: "Trip not found" });

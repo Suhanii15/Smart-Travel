@@ -84,8 +84,23 @@ useEffect(()=>{
         });
 
         if (response.data?.success) {
-          setTrip(response.data.trip);
-        } else {
+  const fetchedTrip = response.data.trip;
+  if (!fetchedTrip) {
+    setError("Trip not found");
+    return;
+  }
+  setTrip(fetchedTrip);
+
+  // Guard — actualSpent may not exist on older trips
+  const spent = fetchedTrip.actualSpent || {};
+  setActualSpent({
+    Accomodation:  spent.Accomodation  || 0,
+    Transport:     spent.Transport      || 0,
+    Food:          spent.Food           || 0,
+    Activities:    spent.Activities     || 0,
+    Miscellaneous: spent.Miscellaneous  || 0,
+  });
+} else {
           setError("Failed to fetch matching budget details.");
         }
       } catch (err) {
@@ -148,22 +163,35 @@ return [
 
 });
 
-const handleUpdate = (category)=>{
-  const currentLimit=expenses.find(e=>e.category === category)?.limit || 0;
-  const userInput = window.prompt(`Enter actual amount spent on ${category} so far:`, actualSpent[category] || "");
+const handleUpdate = async (category) => {
+  const userInput = window.prompt(
+    `Enter actual amount spent on ${category}:`,
+    actualSpent[category] || ""
+  );
+  if (userInput === null) return;
 
-  if(userInput === null) return;
-  const parsedamount=Number(userInput);
-
-  if(isNaN(parsedamount) || parsedamount < 0){
-    alert("please enter a positive number");
+  const parsedAmount = Number(userInput);
+  if (isNaN(parsedAmount) || parsedAmount < 0) {
+    alert("Please enter a positive number");
     return;
   }
-  setActualSpent(prev => ({
-      ...prev,
-      [category]: parsedamount
-    }));
-  };
+
+  // Update local state immediately for responsive UI
+  setActualSpent(prev => ({ ...prev, [category]: parsedAmount }));
+
+  // Persist to DB
+  try {
+    const token = localStorage.getItem("token");
+    await axios.patch(
+      `http://localhost:5000/api/trips/${id}/actualspent`,
+      { category, amount: parsedAmount },
+      { headers: { token } }
+    );
+  } catch (err) {
+    console.error("Failed to save spent amount:", err);
+    alert("Could not save to database. Your change may be lost on refresh.");
+  }
+};
 
 
 const totalbudget = useMemo(() => {

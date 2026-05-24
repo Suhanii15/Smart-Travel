@@ -2,6 +2,8 @@ const User=require("../models/UserModel");
 const bcrypt=require("bcrypt");
 const {generateItinerary}=require("../services/aiService")
 const Trip=require("../models/TripModel")
+const mongoose=require("mongoose");
+
 const CreateTrip = async(req,res)=>{
  try{
   const {destination,startDate,endDate,travelStyle,peopleCount,companions,preferences,interests}=req.body;
@@ -85,10 +87,12 @@ catch(err){
 
 const getAllTrips = async(req,res)=>{
     try{
-    const trips= await Trip.find({
-      "collaborators.user":req.user._id,   //jo user klogged in hai na usko humne collaborator schema ke andar by default admin bnaa rkha hai 
+         console.log("Request from user:", req.user._id, req.user.name);
+    const trips = await Trip.find({
+      "collaborators.user": new mongoose.Types.ObjectId(req.user._id)}).sort({ createdAt: -1 }); //jo user klogged in hai na usko humne collaborator schema ke andar by default admin bnaa rkha hai 
                                            //so there is no problem searching id in the collaboarote section
-    }).sort({createdAt : -1});
+    console.log("Trips found for", req.user.name, ":", trips.length);
+
 const today=new Date();
     for(let trip of trips){
         if(trip.endDate && trip.status !== "completed"){
@@ -218,7 +222,6 @@ const checkStatus = async (req, res) => {
       return res.status(403).json({ success: false, message: "Only admin can change trip status" });
     }
 
-    // Auto-complete if trip end date has passed
     if (trip.endDate) {
       const today = new Date();
       const tripEnd = new Date(trip.endDate);
@@ -241,4 +244,28 @@ const checkStatus = async (req, res) => {
   }
 };
 
-module.exports={CreateTrip,getAllTrips,getTrip,checkStatus}
+const updateActualSpent = async (req, res) => {
+  try {
+    const { tripId } = req.params;
+    const { category, amount } = req.body;
+
+    const validCategories = ["Accomodation", "Transport", "Food", "Activities", "Miscellaneous"];
+    if (!validCategories.includes(category)) {
+      return res.status(400).json({ success: false, message: "Invalid category" });
+    }
+
+    const trip = await Trip.findById(tripId);
+    if (!trip) return res.status(404).json({ success: false, message: "Trip not found" });
+
+    trip.actualSpent[category] = amount;
+    trip.markModified('actualSpent');
+    await trip.save();
+
+    return res.status(200).json({ success: true, trip });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports = { CreateTrip, getAllTrips, getTrip, checkStatus, updateActualSpent };

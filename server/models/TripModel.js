@@ -65,22 +65,14 @@ const TripSchema=new mongoose.Schema(
     grandTotal: { type: Number, default: 0 },
     currency: { type: String, default: "INR" }
   },
- members :[
-        {
-    user : {
-      type: mongoose.Schema.Types.ObjectId,
-      ref : "User",
-      required: true,
-    },
-    role : {
-        type:String,
-        enum:["admin","user"],
-        default:"user"
-    }
-    }]
-
-    },
-
+actualSpent: {
+  Accomodation:  { type: Number, default: 0 },
+  Transport:     { type: Number, default: 0 },
+  Food:          { type: Number, default: 0 },
+  Activities:    { type: Number, default: 0 },
+  Miscellaneous: { type: Number, default: 0 }
+}
+},
 
     {
         timestamps:true

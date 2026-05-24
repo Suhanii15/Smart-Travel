@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 
 
 const MyTrips = () => {
-  const [activeTab, setActiveTab]=useState("upcoming");
+  const [activeTab, setActiveTab]=useState("UpcomingTrip");
   /*const trips ={
     UpcomingTrip: [
       { id: 1, title: "Manali Getaway", days: 5, price: "25,000", date: "10 May - 15 May", image: "..." },
@@ -36,6 +36,7 @@ const MyTrips = () => {
     const fetchTrips= async()=>{
       try{
         const token=localStorage.getItem("token");
+        console.log("Token being sent:", token);
       const response=await axios.get("http://localhost:5000/api/trips/alltrips", {
         headers:{
   token: token
@@ -140,13 +141,24 @@ const getDynamicDestinationImage = (destinationName) => {
        type="text" placeholder="Search Trips..." className="px-4 py-2 rounded-lg focus:outline-none " />
      </div>
 {/* filter section */}
-     <div className="flex items-center lg:w-fit gap-2 border border-gray-300 rounded-lg px-2 py-1">
-    {['UpcomingTrip','Drafts','Completed'].map((tab)=>(
-      <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-10 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab == tab ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:bg-gray-100 cursor-pointer'}`}>
-        {tab}
-        </button>
-    ))}
-     </div>
+    {[
+  { label: "Upcoming", value: "UpcomingTrip" },
+  { label: "Drafts",   value: "Drafts" },
+  { label: "Completed",value: "Completed" }
+].map(({ label, value }) => (
+  <button
+    key={value}
+    onClick={() => setActiveTab(value)}
+    className={`px-10 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+      activeTab === value
+        ? 'bg-white text-blue-600 shadow-sm'
+        : 'text-gray-500 hover:bg-gray-100 cursor-pointer'
+    }`}
+  >
+    {label}
+  </button>
+))}
+     
 
     </div>
 
@@ -154,18 +166,18 @@ const getDynamicDestinationImage = (destinationName) => {
 
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
     {
-      activeTab == 'UpcomingTrip' && segregatedTrips.UpcomingTrip.map(trip => (
+      activeTab === 'UpcomingTrip' && segregatedTrips.UpcomingTrip.map(trip => (
         <TripCard key={trip._id} id={trip._id} image={getDynamicDestinationImage(trip.destination)} title={trip.destination}  location={trip.destination}  date={formatTripDate(trip.startDate,trip.endDate)}
          travelers={trip.peopleCount} price={trip.estimatedBudget?.grandTotal?.toLocaleString('en-IN') || "0"} days={trip.totalDays || 1} />
       ))
     }
 
-    {activeTab == 'Drafts' && segregatedTrips.Drafts.map(trip =>(
+    {activeTab === 'Drafts' && segregatedTrips.Drafts.map(trip =>(
       <DraftCard key={trip._id} id={trip._id} image={getDynamicDestinationImage(trip.destination)} title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} progress={trip.progress} />
     ))}
 
     {
-      activeTab == 'Completed' && segregatedTrips.Completed.map(trip=>(
+      activeTab === 'Completed' && segregatedTrips.Completed.map(trip=>(
         <CompletedCard key={trip._id} id={trip._id} image={getDynamicDestinationImage(trip.destination)} title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} travelers={trip.peopleCount} />
       )
       )

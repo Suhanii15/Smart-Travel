@@ -13,6 +13,8 @@ const Collaborations = () => {
     
     const navigate=useNavigate();
     const { id } = useParams();
+    const {user, logoutuser}=useContext(AuthContext);
+
     
     const goback = () =>{
       navigate(`/itinerary/${id}`);
@@ -51,7 +53,15 @@ const Collaborations = () => {
     const [trip,setTrip]=useState(null);
     const [loading,setLoading]=useState(true);
     const [error,setError]=useState("")
-    
+
+    const isAdmin = trip?.collaborators?.some(
+  (c) => {
+    const collaboratorId = c.user?._id?.toString();
+    const currentUserId = (user?._id || user?.id)?.toString();
+    return collaboratorId === currentUserId && c.role === "admin";
+  }
+);
+
     useEffect(()=>{
     const fetchTripData= async()=>{
       if(!id){
@@ -71,6 +81,8 @@ const Collaborations = () => {
     const response = await axios.get(`http://localhost:5000/api/trips/single/${id}`,config);
     const fetchedTrip = response.data.trip;
               setTrip(fetchedTrip);
+              // Add this after trip is fetched — derives role from collaborators array
+
               
     if (fetchedTrip.status === "finalized" || fetchedTrip.status === "completed") {
        setIsEditable(false);
@@ -180,7 +192,6 @@ const Collaborations = () => {
     };
     
     const [isEditable, setIsEditable] = useState(true);
-    const {user, logoutuser}=useContext(AuthContext);
     
     const saveDraft = async() =>{
       try{
@@ -280,7 +291,7 @@ useEffect(() => {
   token: token
 }};
         
-        const response = await axios.get(`http://localhost:5000/api/users/search?username=${search}`, config);
+        const response = await axios.get(`http://localhost:5000/api/trips/search?username=${search}`, config);
         if (response.data?.success) {
           setSearchResults(response.data.users);
         }
@@ -293,6 +304,7 @@ useEffect(() => {
   }, [search]);
   
 const addMember = async (targetUser) => {
+   console.log("Adding user:", targetUser);
     try {
       const token = localStorage.getItem("token");
       const config = { headers:{
@@ -454,7 +466,7 @@ if(error || !trip){
       onClick={() => navigate(`/collaborations/${id}`)}
       className="bg-yellow-400 flex items-center px-3 py-2 cursor-pointer rounded-[2rem] text-white font-semibold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
     >
-      Add Collaborators
+      Collaborators
     </div>
   </div>
 
@@ -518,7 +530,7 @@ if(error || !trip){
               <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4">
                 <Users size={20} />
               </div>
-              <h4 className="font-bold mt-1  text-gray-900 mb-2">Add Collaborators</h4>
+              <h4 className="font-bold mt-1  text-gray-900 mb-2">Collaborators</h4>
               </div>
              <div className="border border-gray-200 rounded-[2rem] p-2 flex flex-col">
              {(trip?.collaborators || []).map((member) => (
@@ -539,19 +551,19 @@ if(error || !trip){
         </div>
       </div>
 
-      {member.role !== "Admin" && (
-        <X
-          size={16}
-          onClick={() => removeMember(member.user._id)}
-          className="text-gray-400 hover:text-red-500 cursor-pointer"
-        />
-      )}
+      {isAdmin && member.role !== "admin" && (
+                    <X
+                      size={16}
+                      onClick={() => removeMember(member.user._id)}
+                      className="text-gray-400 hover:text-red-500 cursor-pointer"
+                    />
+                  )}
              </div>
              ))}
       
            
            {/* Add Member Button */}
-
+{isAdmin && (
 <div className="mt-4">
 
   <button
@@ -565,10 +577,11 @@ if(error || !trip){
   </button>
 
 </div>
+)}
 
 {/* Search Modal */}
 
-{showSearch && (
+{isAdmin && showSearch && (
   <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
 
     <div className="bg-white w-[400px] rounded-[2rem] p-6 shadow-2xl border border-gray-200">
@@ -635,6 +648,7 @@ if(error || !trip){
 )}
       </div>
             </div>
+            {isAdmin && (
             <div className="flex flex-row w-full mr-3 justify-between">
               {isEditable && (
               <button 
@@ -655,6 +669,7 @@ if(error || !trip){
               </button>
               
             </div>
+            )}
           </div>
         </div>
     </div>
