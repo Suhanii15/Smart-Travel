@@ -6,13 +6,13 @@ import { Funnel } from 'lucide-react';
 import { SlidersHorizontal } from 'lucide-react';
 import { TripCard, DraftCard, CompletedCard } from "../components/CardComponent";
 import {useState } from 'react';
-
-
+import axios from 'axios'
+import { useEffect } from 'react';
 
 
 const MyTrips = () => {
   const [activeTab, setActiveTab]=useState("upcoming");
-  const trips ={
+  /*const trips ={
     UpcomingTrip: [
       { id: 1, title: "Manali Getaway", days: 5, price: "25,000", date: "10 May - 15 May", image: "..." },
       { id: 2, title: "Udaipur Escape", days: 15, price: "40,000", date: "01 Jun - 15 Jun", image: "..." },
@@ -25,8 +25,91 @@ const MyTrips = () => {
     ]
     
   }
-  const placeholderImg = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80";
+    */
+   const [allTrips,setAllTrips]=useState([]);
+   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
+
+  useEffect(()=>{
+    const fetchTrips= async()=>{
+      try{
+        const token=localStorage.getItem("token");
+      const response=await axios.get("http://localhost:5000/api/trips/alltrips", {
+        headers:{
+  token: token
+}
+          
+      
+      });
+
+      if(response.data?.success){
+        setAllTrips(response.data.trips || response.data || []);
+      }else{
+        setError("couldnot sync");
+      }
+    
+    }
+    catch(err){
+      setError("An error occurred while fetching trips.");
+      console.log(err);
+    }
+    finally{
+      setLoading(false);
+    }
+
+    };
+    fetchTrips();
+  
+  },[]);
+
+  const filteredTrips = allTrips.filter(trip => 
+    trip.destination?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+const segregatedTrips = React.useMemo(() => {
+    const UpcomingTrip = [];
+    const Drafts = [];
+    const Completed = [];
+
+    filteredTrips.forEach(trip => {
+      
+      const status = trip.status?.toLowerCase();
+
+      if (status === "draft") {
+        Drafts.push(trip);
+      } else if (status === "completed") {
+        Completed.push(trip);
+      } else {
+       
+        UpcomingTrip.push(trip);
+      }
+    });
+    return {
+      UpcomingTrip,
+      Drafts,
+      Completed
+    };
+  }, [filteredTrips]);
+
+  const formatTripDate = (start, end) => {
+    if (!start) return "Flexible Dates";
+    const sOpt = { day: 'numeric', month: 'short' };
+    const eOpt = { day: 'numeric', month: 'short', year: 'numeric' };
+    return `${new Date(start).toLocaleDateString('en-IN', sOpt)} - ${new Date(end).toLocaleDateString('en-IN', eOpt)}`;
+  };
+
+const getDynamicDestinationImage = (destinationName) => {
+    return `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80&sig=${encodeURIComponent(destinationName || "travel")}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
   return (
      <div className="flex flex-row min-h-screen">
         {/* leftside*/}
@@ -53,7 +136,8 @@ const MyTrips = () => {
       {/* Search Bar */}
       <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-2 py-1">
        <Search className="text-gray-500 " strokeWidth={3.5} />
-      <input type="text" placeholder="Search Trips..." className="px-4 py-2 rounded-lg focus:outline-none " />
+      <input value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)}
+       type="text" placeholder="Search Trips..." className="px-4 py-2 rounded-lg focus:outline-none " />
      </div>
 {/* filter section */}
      <div className="flex items-center lg:w-fit gap-2 border border-gray-300 rounded-lg px-2 py-1">
@@ -70,18 +154,19 @@ const MyTrips = () => {
 
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
     {
-      activeTab == 'UpcomingTrip' && trips.UpcomingTrip.map(trip => (
-        <TripCard key={trip.id} image={placeholderImg} title={trip.title} location={trip.location} date={trip.date} travelers={trip.travelers} price={trip.price} days={trip.days} />
+      activeTab == 'UpcomingTrip' && segregatedTrips.UpcomingTrip.map(trip => (
+        <TripCard key={trip._id} id={trip._id} image={getDynamicDestinationImage(trip.destination)} title={trip.destination}  location={trip.destination}  date={formatTripDate(trip.startDate,trip.endDate)}
+         travelers={trip.peopleCount} price={trip.estimatedBudget?.grandTotal?.toLocaleString('en-IN') || "0"} days={trip.totalDays || 1} />
       ))
     }
 
-    {activeTab == 'Drafts' && trips.Drafts.map(trip =>(
-      <DraftCard key={trip.id} image={placeholderImg} title={trip.title} date={trip.date} progress={trip.progress} />
+    {activeTab == 'Drafts' && segregatedTrips.Drafts.map(trip =>(
+      <DraftCard key={trip._id} id={trip._id} image={getDynamicDestinationImage(trip.destination)} title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} progress={trip.progress} />
     ))}
 
     {
-      activeTab == 'Completed' && trips.Completed.map(trip=>(
-        <CompletedCard key={trip.id} image={placeholderImg} title={trip.title} date={trip.date} travelers={trip.travelers} />
+      activeTab == 'Completed' && segregatedTrips.Completed.map(trip=>(
+        <CompletedCard key={trip._id} id={trip._id} image={getDynamicDestinationImage(trip.destination)} title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} travelers={trip.peopleCount} />
       )
       )
 

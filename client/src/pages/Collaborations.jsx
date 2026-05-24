@@ -3,21 +3,22 @@ import { Plus, Share2, MoreHorizontal, Users, Compass,MapPin, Clock } from 'luci
 import Sidebar from '../components/Sidebar'
 import {useState }from 'react';
 import { ChevronsLeft } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { X } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
-
-
+import { useEffect } from 'react';
+import axios from "axios"
 const Collaborations = () => {
     
     const navigate=useNavigate();
+    const { id } = useParams();
     
     const goback = () =>{
-      navigate('/itinerary');
+      navigate(`/itinerary/${id}`);
     }
     
-      const DUMMY_TRIP = {
+   /*   const DUMMY_TRIP = {
       destination: "Manali Trip",
       startDate: "10 May",
       endDate: "15 May 2026",
@@ -45,99 +46,192 @@ const Collaborations = () => {
         }
       }
     };
+    */
     const [activeDay, setActiveDay] = useState(1);
-    const [trip,setTrip]=useState(DUMMY_TRIP);
+    const [trip,setTrip]=useState(null);
+    const [loading,setLoading]=useState(true);
+    const [error,setError]=useState("")
     
-    const add_trip = () =>{
-      const newday=trip.totalDays+1;
-      setTrip((prevTrip) =>({
-        ...prevTrip,
+    useEffect(()=>{
+    const fetchTripData= async()=>{
+      if(!id){
+        setError("No valid trip id exixts");
+        setLoading(false);
+        return;
+      }
     
-        totalDays : newday,
+      try{
+      const token=localStorage.getItem("token");
+          const config={
+           headers:{
+  token: token
+}
     
-        itinerary :{
-          ...prevTrip.itinerary,
-          [newday] : {
-            morning : [],
-            afternoon: [],
-            evening : []
+    }
+    const response = await axios.get(`http://localhost:5000/api/trips/single/${id}`,config);
+    const fetchedTrip = response.data.trip;
+              setTrip(fetchedTrip);
+              
+    if (fetchedTrip.status === "finalized" || fetchedTrip.status === "completed") {
+       setIsEditable(false);
+     }
+    }
+    catch(err){
+      console.log(err);
+      setError(err.response?.data?.message || "Could not synchronize itinerary data with server.");
+    
+    }
+    finally{
+      setLoading(false);
+    }
+      };
+      fetchTripData();
+    },[id]);
+    
+    const add_trip = async() =>{
+      const { id } = useParams();
+      try{
+    const token = localStorage.getItem("token");
+          const config = { headers: { Authorization: `Bearer ${token}` } };
+          
+          // router.post("/:tripId/day")
+          const response = await axios.post(`http://localhost:5000/api/trips/${id}/day`, {}, config);
+          const nextDay = Object.keys(trip.itinerary).length + 1
+    
+          if (response.data?.success) {
+            setTrip(response.data.trip); // Backend returns the freshly updated trip document
+            setActiveDay(nextDay);
           }
-        }
-      }));
-      setActiveDay(newday);
+      }
+      catch(err){
+        console.log(err);
+        alert(err.response?.data?.message || "Could not save new day layer to database.");
+      }
     };
     
-    const addActivity = (day,period) =>{
+    const addActivity = async(day,period) =>{
       const newTask=window.prompt("What do you wanna do?");
       const newTime=window.prompt("And at what time?");
     
       if(!newTime || !newTask) return;
+      try {
+          const token = localStorage.getItem("token");
+          const config = { headers: { token :token } };
+          
+          const payload = {
+            dayNumber: day,
+            period: period, // "morning", "afternoon", "evening"
+            task: newTask,
+            time: newTime,
+            location: "Local Sightseeing"
+          };
     
-      const newActivity={
-        time:newTime,
-        task:newTask,
-        location:"new location!"
+          // router.post("/:tripId/activity")
+          const response = await axios.post(`http://localhost:5000/api/trips/${id}/activity`, payload, config);
     
-      };
-    
-      setTrip((prevTrip) => ({
-        ...prevTrip,
-    
-        itinerary: {
-          ...prevTrip.itinerary,
-    
-          [day]: {
-            ...prevTrip.itinerary[day],
-    
-            [period]: [
-              ...prevTrip.itinerary[day][period],
-              newActivity
-            ]
+          if (response.data?.success) {
+            setTrip(response.data.trip); // Update UI with DB document containing new activity + unique _id
           }
+        } catch (err) {
+          console.error("Error adding activity:", err);
+          alert(err.response?.data?.message || "Could not bind activity node.");
         }
-      }));
     
     };
     
-    const deleteActivity = (period,index) =>{
-      setTrip((prev)=>(
-        {
-          ...prev,
+    const deleteActivity = async(period,index) =>{
+      try {
+          const token = localStorage.getItem("token");
+          const config = { headers: { token:token } };
+          
+          // router.delete("/:tripId/day/:dayNumber/dayNumber/:period/period/activity/:activityId")
+          const response = await axios.delete(
+            `http://localhost:5000/api/trips/${id}/day/${activeDay}/dayNumber/${period}/period/activity/${activityId}`,
+            config
+          );
     
-        itinerary: {
-          ...prev.itinerary,
-    
-          [activeDay]: {
-            ...prev.itinerary[activeDay],
-    
-            [period]: prev.itinerary[activeDay][period].filter(
-              (_, i) => i !== index
-            )
+          if (response.data?.success) {
+            setTrip(response.data.trip);
           }
-    
+        } catch (err) {
+          console.error("Error deleting activity:", err);
+          alert(err.response?.data?.message || "Could not purge server node.");
         }
-      }
-      ))
     }
     
-    const deleteday =(daytodelete)=>{
-      if(trip.totalDays <= 1) return;
+    const deleteday = async(daytodelete)=>{
+      if (Object.keys(trip.itinerary).length <= 1) return;
+    try {
+          const token = localStorage.getItem("token");
+          const config = { headers: { token:token } };
     
-      const newitinerary = {...trip.itinerary}
-      delete newitinerary[daytodelete];
+          // router.delete("/:tripId/day/:dayNumber")
+          const response = await axios.delete(`http://localhost:5000/api/trips/${id}/day/${daytodelete}`, config);
     
-      setTrip(prev => ({
-        ...prev,
-        totalDays: prev.totalDays - 1,
-        itinerary: newitinerary
-      }));
-    
+          if (response.data?.success) {
+            setTrip(response.data.trip);
+            if (activeDay === daytodelete) setActiveDay(1);
+          }
+        } catch (err) {
+          console.error("Error deleting day layer:", err);
+          alert(err.response?.data?.message || "Could not remove day track.");
+        }
       
-      if (activeDay === daytodelete) setActiveDay(1);
     };
     
     const [isEditable, setIsEditable] = useState(true);
-    const [members, setMembers] = useState([
+    const {user, logoutuser}=useContext(AuthContext);
+    
+    const saveDraft = async() =>{
+      try{
+        const token=localStorage.getItem("token");
+        await axios.put(`http://localhost:5000/api/trips/single/${id}`, {trip} ,{
+          headers:{token :token}
+        });
+    
+        alert("Draft synced");
+        navigate('/mytrips');
+    
+    
+      } catch(err){
+    console.log(err);
+      }
+    }
+    
+    const handleFinaliseTrip = async () => {
+        const confirmation = window.confirm("Are you sure you want to finalize this trip? This will lock current planning structures and activate dynamic budget tools.");
+        if (!confirmation) return;
+    
+        try {
+          const token = localStorage.getItem("token");
+          
+          
+          // Dispatch status patch mapping target update
+          const response = await axios.patch(
+            `http://localhost:5000/api/trips/${id}/status`,
+            { status: "finalized" },
+            {headers:{
+  token: token
+} }
+          );
+    
+          if (response.data.success) {
+            setIsEditable(false);
+            alert("Trip structural tracking finalized successfully! Shifting to Upcoming timeline. ✈️");
+            navigate('/mytrips');
+          }
+        } catch (err) {
+          console.error("Finalization Pipeline Crash:", err);
+          alert(err.response?.data?.message || "Error running trip lock finalization sequence.");
+        }
+      };
+    
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const [search, setSearch] = useState("");
+    
+    
+  /*  const [members, setMembers] = useState([
   {
     id: 1,
     name: "Suhani",
@@ -167,27 +261,105 @@ const Collaborations = () => {
 const removeMember = (id) =>{
     setMembers((prev)=>prev.filter((member)=>member.id !== id))
 };
-const [showSearch, setShowSearch] = useState(false);
-const [search, setSearch] = useState("");
+
 const USERS = [
   { id: 5, name: "Rohan" },
   { id: 6, name: "Manoj" },
   { id: 7, name: "Pooja" },
   { id: 8, name: "Harsh" },
-];
+]; */
+useEffect(() => {
+    const delaySearchDebounce = setTimeout(async () => {
+      if (!search.trim()) {
+        setSearchResults([]);
+        return;
+      }
+      try {
+        const token = localStorage.getItem("token");
+        const config = { headers:{
+  token: token
+}};
+        
+        const response = await axios.get(`http://localhost:5000/api/users/search?username=${search}`, config);
+        if (response.data?.success) {
+          setSearchResults(response.data.users);
+        }
+      } catch (err) {
+        console.error("User Search network error:", err);
+      }
+    }, 400); 
 
-const addMember = (user) => {
-  setMembers((prev) => [
-    ...prev,
-    {
-      ...user,
-      role: "Member",
-      isOwner: false,
-    },
-  ]);
-};
+    return () => clearTimeout(delaySearchDebounce);
+  }, [search]);
+  
+const addMember = async (targetUser) => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = { headers:{
+  token: token
+} };
 
-const {user,logoutuser}=useContext(AuthContext);
+      const response = await axios.post(
+        `http://localhost:5000/api/trips/${trip._id}/collaborators`,
+        { userToInvite: targetUser._id },
+        config
+      );
+
+      if (response.data?.success) {
+        setTrip(response.data.trip); // Update with newly populated backend response
+        setShowSearch(false);
+        setSearch("");
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Could not assign member to itinerary.");
+    }
+  };
+
+  const removeMember = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = { headers:{
+  token: token
+} };
+
+      const response = await axios.delete(
+        `http://localhost:5000/api/trips/${trip._id}/collaborators/${userId}`,
+        config
+      );
+
+      if (response.data?.success) {
+        setTrip(response.data.trip);
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to execute deletion procedure.");
+    }
+  };
+ if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-600 font-medium">Assembling your custom travel parameters... </p>
+        </div>
+      </div>
+    );
+  }
+
+
+
+if(error || !trip){
+  return(
+    <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="bg-white p-8 rounded-2xl shadow-md border text-center max-w-md">
+          <p className="text-red-500 font-bold mb-4"> Initialization Error</p>
+          <p className="text-gray-600 text-sm mb-6">{error || "The itinerary payload could not be decoded safely."}</p>
+          <button onClick={() => navigate('/planner')} className="px-5 py-2 bg-blue-600 text-white font-semibold rounded-xl text-sm">
+            Return to Planner
+          </button>
+        </div>
+      </div>
+  );
+}
   return (
     <div className="flex flex-row min-h-screen">
         {/* leftside*/}
@@ -230,43 +402,62 @@ const {user,logoutuser}=useContext(AuthContext);
   
  </div>
 
-<div className="flex  items-center gap-2 mb-10 border border-gray-300 mt-2 rounded-[2rem] shadow-md shadow-[2rem] pb-3">
-  {Array.from({length: trip.totalDays}, (_,i) => i+1).map((day)=>(
-    <button 
-    key={day} onClick={()=>setActiveDay(day)} className={`relative cursor-pointer px-8 py-3 transition-all ${
-      activeDay === day ? 'text-blue-600 ' : 'text-gray-400'
-    }`} >
-    <span className="text-xs uppercase block text-center">Day</span>
-    <span className="text-2xl font-bold block leading-none">{day}</span> 
-    {isEditable && (
-    <button onClick={(e) =>{
-      e.stopPropagation();
-      deleteday(day);
-    }}
-    className="p-2 absolute -top-1 -right-1 hover:cursor-pointer">
-      <X  className="h-5 w-3 "/>
-    </button>
-    )}
-
-  {activeDay === day && (
-                <div className="absolute bottom-[-17px] left-0 w-full h-1 bg-blue-600 rounded-full" />
-              )}
-            </button>
-          ))}
+<div className="flex items-center gap-2 mb-10 border border-gray-300 mt-2 rounded-[2rem] shadow-md px-4 py-2">
+  
+  {/* Scrollable tabs — takes remaining space */}
+  <div className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0 scrollbar-hide pb-1">
+    {Object.keys(trip.itinerary || {}).sort((a, b) => Number(a) - Number(b)).map((dayKey) => {
+      const day = Number(dayKey);
+      return (
+        <button
+          key={day}
+          onClick={() => setActiveDay(day)}
+          className={`relative cursor-pointer px-5 py-2 flex-shrink-0 transition-all ${
+            activeDay === day ? 'text-blue-600' : 'text-gray-400'
+          }`}
+        >
+          <span className="text-xs uppercase block text-center">Day</span>
+          <span className="text-xl font-bold block leading-none">{day}</span>
           {isEditable && (
-<button onClick={add_trip}
-className="flex items-center border border-gray-300 cursor-pointer p-2 rounded-[2rem] gap-2 text-blue-600 font-bold ml-4 hover:-translate-y-1 shadow-md transition duration-200">
-            <Plus size={20} /> Add Day
-          </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); deleteday(day); }}
+              className="absolute -top-1 -right-1 p-1 hover:cursor-pointer"
+            >
+              <X className="h-3 w-3" />
+            </button>
           )}
-          <div onClick={()=>navigate('/budgettracker')}
-           className="bg-green-300 flex items-center p-2 cursor-pointer rounded-[2rem] cursor-pointer text-white font-semibold  hover:-translate-y-1 shadow-md transition duration-200">
-                Track Budget
-          </div>
-            <div onClick={()=>navigate('/collaborations')}
-           className="bg-yellow-200 flex items-center p-2 cursor-pointer rounded-[2rem] cursor-pointer text-white font-semibold  hover:-translate-y-1 shadow-md transition duration-200">
-                Add Collaborators
-          </div>
+          {activeDay === day && (
+            <div className="absolute bottom-[-8px] left-0 w-full h-0.5 bg-blue-600 rounded-full" />
+          )}
+        </button>
+      );
+    })}
+  </div>
+
+  {/* Action buttons — never shrink, always visible */}
+  <div className="flex items-center gap-2 flex-shrink-0 border-l border-gray-200 pl-3">
+    {isEditable && (
+      <button
+        onClick={add_trip}
+        className="flex items-center border border-gray-300 cursor-pointer px-3 py-2 rounded-[2rem] gap-1 text-blue-600 font-bold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
+      >
+        <Plus size={16} /> Add Day
+      </button>
+    )}
+    <div
+      onClick={() => navigate(`/budgettracker/${id}`)}
+      className="bg-green-400 flex items-center px-3 py-2 cursor-pointer rounded-[2rem] text-white font-semibold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
+    >
+      Track Budget
+    </div>
+    <div
+      onClick={() => navigate(`/collaborations/${id}`)}
+      className="bg-yellow-400 flex items-center px-3 py-2 cursor-pointer rounded-[2rem] text-white font-semibold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
+    >
+      Add Collaborators
+    </div>
+  </div>
+
 </div>
 
 
@@ -330,16 +521,16 @@ className="flex items-center border border-gray-300 cursor-pointer p-2 rounded-[
               <h4 className="font-bold mt-1  text-gray-900 mb-2">Add Collaborators</h4>
               </div>
              <div className="border border-gray-200 rounded-[2rem] p-2 flex flex-col">
-             {members.map((member)=>(
+             {(trip?.collaborators || []).map((member) => (
                 <div key={member.id} className="flex items-center justify-between  rounded-2xl px-4 py-3">
                     <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
-          {member.name[0]}
+          {member.user.name[0]}
         </div>
 
         <div>
           <p className="font-medium text-gray-800">
-            {member.name}
+            {member.user.name}
           </p>
 
           <p className="text-xs text-gray-400">
@@ -351,7 +542,7 @@ className="flex items-center border border-gray-300 cursor-pointer p-2 rounded-[
       {member.role !== "Admin" && (
         <X
           size={16}
-          onClick={() => removeMember(member.id)}
+          onClick={() => removeMember(member.user._id)}
           className="text-gray-400 hover:text-red-500 cursor-pointer"
         />
       )}
@@ -412,49 +603,29 @@ className="flex items-center border border-gray-300 cursor-pointer p-2 rounded-[
 
       <div className="mt-5 flex flex-col gap-3 max-h-[300px] overflow-y-auto">
 
-        {USERS.filter((user) =>
-          user.name.toLowerCase().includes(search.toLowerCase())
-        )
-          .filter(
-            (user) =>
-              !members.some(
-                (member) => member.id === user.id
-              )
-          )
-          .map((user) => (
-
-            <div
-              key={user.id}
-              className="flex items-center justify-between border border-gray-100 rounded-2xl px-4 py-3"
-            >
-
-              <div className="flex items-center gap-3">
-
-                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-                  {user.name[0]}
-                </div>
-
-                <div>
-                  <p className="font-medium text-gray-700">
-                    {user.name}
-                  </p>
-
-                  <p className="text-xs text-gray-400">
-                    SmartTravel User
-                  </p>
-                </div>
-
-              </div>
-
-              <button
-                onClick={() => addMember(user)}
-                className="bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition"
-              >
-                Add
-              </button>
-
-            </div>
-          ))}
+       {searchResults
+  .filter((user) =>
+    !(trip?.collaborators || []).some((m) => m.user._id === user._id)
+  )
+  .map((user) => (
+    <div key={user._id} className="flex items-center justify-between border border-gray-100 rounded-2xl px-4 py-3">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+          {user.name[0]}
+        </div>
+        <div>
+          <p className="font-medium text-gray-700">{user.name}</p>
+          <p className="text-xs text-gray-400">SmartTravel User</p>
+        </div>
+      </div>
+      <button
+        onClick={() => addMember(user)}
+        className="bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition"
+      >
+        Add
+      </button>
+    </div>
+  ))}
 
       </div>
 
@@ -466,13 +637,15 @@ className="flex items-center border border-gray-300 cursor-pointer p-2 rounded-[
             </div>
             <div className="flex flex-row w-full mr-3 justify-between">
               {isEditable && (
-              <button onClick={()=>navigate('/mytrips')}
+              <button 
+              onClick={saveDraft}
                className="border border-blue-600 text-gray-700 font-semibold text-sm px-3 border-2 py-3 rounded-[2rem] bg-white shadow-md shadow-gray-400 hover:-translate-y-1 transition duration-300 cursor-pointer">
                 Save as Draft
               </button>
               )}
               
               <button disabled={!isEditable}
+               onClick={handleFinaliseTrip}
               onClick={()=>setIsEditable(false)}
               className={`font-semibold text-sm px-3 py-3 border-2 rounded-[2rem] shadow-md transition duration-300 ${
                 isEditable ? "bg-blue-600 text-white hover:-translate-y-2 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"

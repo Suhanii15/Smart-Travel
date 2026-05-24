@@ -11,9 +11,10 @@ import login from "../pages/LoginPage"
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
+import { useParams } from 'react-router-dom';
 
 const Sidebar = () => {
+  const {id}=useParams();
   const Navigate=useNavigate();
 const { user, logoutUser } = useContext(AuthContext);
 
@@ -37,11 +38,7 @@ const { user, logoutUser } = useContext(AuthContext);
             <Notebook className="text-gray-500" strokeWidth={2.5} />
             Planner </NavLink>
 
-            <NavLink to="/collaborations" className={ ({isActive})=>` block px-2 py-2 mx-3 shodow-sm flex gap-2 cursor-pointer ${isActive ? 
-          "bg-blue-600 border border-gray-100 rounded-md text-white font-semibold " : " rounded-md shadow-md"}`}  >
-            <CopyMinus className="text-gray-500" strokeWidth={2.5} />
-            Collaborations </NavLink>
-
+            
             <NavLink to="/budgettracker" className={ ({isActive})=>` block px-2 py-2 mx-3 shodow-sm flex gap-2 cursor-pointer ${isActive ? 
           "bg-blue-600 border border-gray-100 rounded-md text-white font-semibold " : " rounded-md shadow-md"}`}  >
             <HandCoins className="text-gray-500" strokeWidth={2.5} />

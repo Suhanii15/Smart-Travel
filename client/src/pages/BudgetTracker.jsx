@@ -3,7 +3,7 @@ import {Compass, FileVideo} from 'lucide-react'
 import Sidebar from '../components/Sidebar'
 import {useState} from 'react'
 import { ChevronsLeft } from 'lucide-react'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Sparkles } from 'lucide-react';
 import {
   Car,
@@ -12,13 +12,19 @@ import {
   Ticket,
   ShoppingBag,
 } from "lucide-react";
-
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
+import { useEffect } from 'react'
+import axios from "axios"
 
 
 const BudgetTracker = () => {
-   const DUMMY_TRIP = {
+  const navigate=useNavigate();
+  const goback = () =>{
+  navigate(`/itinerary/${id}`);
+}
+
+ /*  const DUMMY_TRIP = {
   destination: "Manali Trip",
   startDate: "10 May",
   endDate: "15 May 2026",
@@ -46,57 +52,123 @@ const BudgetTracker = () => {
       evening: [{ time: "7:00 PM", task: "Dinner at Drifters' Inn", location: "Old Manali" }]
     }
   }
-};
-const [trip, setTrip]=useState(DUMMY_TRIP);
-const navigate=useNavigate();
-const [isEditable, setIsEditable] = useState(true);
-const goback = () =>{
-  navigate('/itinerary');
-}
+};*/
 
-const expenses = [
+const {id}=useParams();
+const {user,logoutuser}=useContext(AuthContext);
+const [trip,setTrip]=useState(null);
+const [isEditable, setIsEditable] = useState(true);
+const [loading,setLoading]=useState(true);
+const [error,setError]=useState("");
+
+const [actualSpent, setActualSpent]=useState({
+  Accomodation:0,
+  Transport:0,
+  Food:0,
+  Activities:0,
+  Miscellaneous:0
+
+})
+
+useEffect(()=>{
+  const fetchDetails = async ()=>{
+    if(!id){
+      setError("No valid trip ID reference found in the URL path.");
+        setLoading(false);
+        return;
+    }
+    try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`http://localhost:5000/api/trips/single/${id}`, {
+          headers: { token:token }
+        });
+
+        if (response.data?.success) {
+          setTrip(response.data.trip);
+        } else {
+          setError("Failed to fetch matching budget details.");
+        }
+      } catch (err) {
+        console.error("Budget Retrieval Error:", err);
+        setError(err.response?.data?.message || "Error syncing budget metadata.");
+      } finally {
+        setLoading(false);
+      }
+    
+  };
+  fetchDetails();
+}, [id]);
+
+  
+ 
+const expenses = useMemo(()=>{
+if (!trip || !trip.estimatedBudget) return [];
+
+  const budget = trip.estimatedBudget;
+
+return [
     {
       category: "Transport",
-      spent: 3200,
-      limit: 4000,
+      spent:actualSpent.Transport,
+      limit:budget.transportationTotal || 0,
       icon: Car,
       color: "bg-purple-500",
     },
     {
-      category: "Accommodation",
-      spent: 5000,
-      limit: 7000,
+      category: "Accomodation",
+      spent:actualSpent.Accomodation,
+      limit:budget.accommodationTotal || 0,
       icon: Hotel,
       color: "bg-orange-400",
     },
     {
       category: "Food",
-      spent: 2250,
-      limit: 3000,
+      spent:actualSpent.Food,
+      limit:budget.foodAndDiningTotal || 0,
       icon: UtensilsCrossed,
       color: "bg-emerald-500",
     },
     {
       category: "Activities",
-      spent: 1500,
-      limit: 3000,
+       spent:actualSpent.Activities,
+      limit:budget.activitiesTotal || 0,
       icon: Ticket,
       color: "bg-yellow-400",
     },
       
     {
-      category: "Shopping",
-      spent: 500,
-      limit: 2000,
+      category: "Miscellaneous",
+       spent:actualSpent.Miscellaneous,
+      limit:budget.miscellaneousTotal || 0,
       icon: ShoppingBag,
       color: "bg-violet-500",
     },
 
   ];
 
-  const totalbudget = useMemo(()=>{
-    return expenses.reduce((acc,item)=> acc + item.limit,0);
-  },[expenses]);
+});
+
+const handleUpdate = (category)=>{
+  const currentLimit=expenses.find(e=>e.category === category)?.limit || 0;
+  const userInput = window.prompt(`Enter actual amount spent on ${category} so far:`, actualSpent[category] || "");
+
+  if(userInput === null) return;
+  const parsedamount=Number(userInput);
+
+  if(isNaN(parsedamount) || parsedamount < 0){
+    alert("please enter a positive number");
+    return;
+  }
+  setActualSpent(prev => ({
+      ...prev,
+      [category]: parsedamount
+    }));
+  };
+
+
+const totalbudget = useMemo(() => {
+  return expenses.reduce((acc, item) => acc + Number(item.limit || 0), 0);
+}, [expenses]);
 
   const totalspending = useMemo(()=>{
     return expenses.reduce((acc,item)=>acc + item.spent,0);
@@ -105,8 +177,31 @@ const expenses = [
   const remaining=totalbudget-totalspending;
 
   const progress=(totalspending/totalbudget) * 100;
-  const {user,logoutuser}=useContext(AuthContext);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-600 font-medium">Fetching real-time AI budget calculations... </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !trip) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="bg-white p-6 rounded-2xl shadow-md border text-center max-w-md">
+          <p className="text-red-500 font-bold mb-2">Synchronization Error</p>
+          <p className="text-gray-600 text-xs mb-4">{error}</p>
+          <button onClick={() => navigate('/planner')} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs">
+            Return to Planner
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-row min-h-screen">
@@ -127,8 +222,8 @@ const expenses = [
   <div className="flex flex-row items-center border border-gray-200 shadow-md rounded-lg justify-between w-full p-6">
    <div className="flex flex-col gap-1 mx-3 mt-4 ">
       <h1 className="font-bold text-gray-700 text-2xl ">{trip.destination}</h1>
-      <h3 className="text-gray-400 text-sm">{trip.startDate} - {trip.endDate}</h3>
-     <h3 className="text-gray-400 text-sm">{trip?.members} Members</h3>
+      <h3 className="text-gray-400 text-sm">{new Date(trip.startDate).toLocaleDateString('en-IN',{day:'numeric', month:'short',year:'numeric'})}-{new Date(trip.endDate).toLocaleDateString('en-IN',{day:'numeric', month:'short', year:'numeric'})}</h3>
+     <h3 className="text-gray-400 text-sm">{trip.peopleCount} Members</h3>
     </div>
     <div className="flex flex-col gap-1">
       {isEditable && (
@@ -166,15 +261,12 @@ const expenses = [
           />
         </div>
 
-        <div className="flex gap-200 mx-4 mt-3 text-sm font-medium">
-          <p className="text-gray-500">
-            Spent: ₹{totalspending.toLocaleString()}
-          </p>
-
-          <p className="text-gray-500 ">
-            Remaining: ₹{remaining.toLocaleString()}
-          </p>
-        </div>
+        <div className="flex justify-between lg:w-3/4 mt-2 text-sm font-medium px-1">
+            <p className="text-gray-600">Spent: ₹{totalspending.toLocaleString()}</p>
+            <p className={remaining >= 0 ? "text-gray-600" : "text-red-500 font-bold"}>
+              {remaining >= 0 ? `Remaining: ₹${remaining.toLocaleString()}` : `Overdraft: ₹${Math.abs(remaining).toLocaleString()}`}
+            </p>
+          </div>
 <div>
 </div>
  
@@ -183,10 +275,11 @@ const expenses = [
     {
       expenses.map((item,index)=>{
         const Icon=item.icon;
-        const percentage= (item.spent / item.limit) * 100;
+        const percentage = item.limit > 0 ? Math.min((item.spent / item.limit) * 100, 100) : 0;
 
         return(
-          <div key={index} className="flex mx-4 justify-between items-center gap-4">
+          <div key={index} onClick={() => handleUpdate(item.category)}
+           className="flex mx-4 justify-between items-center gap-4">
             {/* Icon */}
             <div className={`w-11 h-11 rounded-xl ${item.color} flex items-center
             justify-center text-white`}>
@@ -199,8 +292,7 @@ const expenses = [
                     {item.category}
                   </h3>
                   <p className="text-sm text-gray-500 font-medium">
-                      Rs{item.spent.toLocaleString()} - Rs
-                      {item.limit.toLocaleString()}
+                     ₹{(item.spent || 0).toLocaleString('en-IN')} / ₹{(item.limit || 0).toLocaleString('en-IN')}
                     </p>
  <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
                     <div

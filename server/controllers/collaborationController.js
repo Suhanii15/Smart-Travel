@@ -17,7 +17,7 @@ const searchUsers = async(req,res)=>{
         name:{$regex: username, $options: "i"},  //find that user whose name matches the input avoiding case sensitivity
         _id: { $ne: req.user._id }               //exclude the logged-in user from the search bar
     })
-    .select("name")
+    .select("name email")
     .limit(10);
 
     return res.status(200).json({ success: true, users });
@@ -59,8 +59,10 @@ const addCollaboartor=async(req,res)=>{
         role:"user"
 
     })
-
-    await trip.save();
+await trip.save();
+const updatedTrip = await Trip.findById(tripId).populate("collaborators.user", "name email");
+return res.status(200).json({ success: true, message: "Collaborator added successfully", trip: updatedTrip })
+    
 
 }
 catch(err){
@@ -86,7 +88,7 @@ const removeCollaborator=async(req,res)=>{
       return res.status(403).json({ success: false, message: "Only trip admins can remove collaborators." });
     }
 
-    trip.collaborators.pull({ user: userIdToRemove });
+    trip.collaborators.pull({ user: IdToRemove });
     await trip.save();
 
   

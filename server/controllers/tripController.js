@@ -1,7 +1,7 @@
-const User=require("../models/TripModel");
+const User=require("../models/UserModel");
 const bcrypt=require("bcrypt");
 const {generateItinerary}=require("../services/aiService")
-
+const Trip=require("../models/TripModel")
 const CreateTrip = async(req,res)=>{
  try{
   const {destination,startDate,endDate,travelStyle,peopleCount,companions,preferences,interests}=req.body;
@@ -11,6 +11,12 @@ const CreateTrip = async(req,res)=>{
         message: "Destination, Start Date, and End Date are mandatory to generate an itinerary."
       });
     }
+   /* let itineraryData = {};
+    try {
+      
+      itineraryData = await generateItinerary(destination, startDate, endDate);
+    } catch (aiError) {
+      console.error(" Gemini API is down/busy. Creating fallback empty itinerary instead.");}*/
     const start = new Date(startDate);
     const end = new Date(endDate);
     const timeDifference = end.getTime() - start.getTime();
@@ -25,17 +31,30 @@ const aiPayload = await generateItinerary({
       preferences,
       interests
     });
+    console.log("AI PAYLOAD:");
+console.log(JSON.stringify(aiPayload, null, 2));
 
-  const newTrip=Trip.create({
+const itinerary = aiPayload.itinerary || {};
+    const estimatedBudget = aiPayload.estimatedBudget || {};
+
+const formattedItinerary = {};
+  for (const dayKey in itinerary) {
+    formattedItinerary[String(dayKey)] = {
+      morning: itinerary[dayKey].morning || [],
+      afternoon: itinerary[dayKey].afternoon || [],
+      evening: itinerary[dayKey].evening || []
+    };
+  }
+  const newTrip=await Trip.create({
     destination,
     startDate,
     endDate,
     peopleCount,
     companions,
     preferences,
-    status:"Draft",
-   itinerary:aiPayload.itinerary,
-   budgetEstimation: aiPayload.budgetEstimation,
+    status:"draft",
+   itinerary:formattedItinerary,
+   estimatedBudget: aiPayload.estimatedBudget,
     collaborators: [
         {
           user: req.user._id,
@@ -44,7 +63,10 @@ const aiPayload = await generateItinerary({
       ],
 
   });
-
+console.log(
+  "ITINERARY KEYS:",
+  Object.keys(aiPayload.itinerary || {})
+);
  return res.json({
     success:true,
     trip:newTrip,
@@ -63,10 +85,20 @@ catch(err){
 
 const getAllTrips = async(req,res)=>{
     try{
-    const trips=await Trip.find({
+    const trips= await Trip.find({
       "collaborators.user":req.user._id,   //jo user klogged in hai na usko humne collaborator schema ke andar by default admin bnaa rkha hai 
                                            //so there is no problem searching id in the collaboarote section
     }).sort({createdAt : -1});
+const today=new Date();
+    for(let trip of trips){
+        if(trip.endDate && trip.status !== "completed"){
+            const tripEnd=new Date(trip.endDate);
+            if(today > tripEnd){
+                trip.status="completed";
+                await trip.save();
+            }
+        }
+    }
 
    return res.json({
         success:true,
@@ -84,9 +116,8 @@ catch(err){
 
 const getTrip = async(req,res)=>{
     try{
-        const id=req.params.id;
-        
-        const trip=await Trip.findById(id)
+const { tripId } = req.params;        
+        const trip= await Trip.findById(tripId)
         .populate("collaborators.user","name email");//.populate() is used to replace reference id in a docuement with actual data from another collection
         if(!trip){                                    //jaisa yaha jab hum find by id use karenge toh collaborators ki id milegi jo trip model mai haiab collaborato rbhi toh user hi hai so , 
                                                   // uska name , email, password populate se milega by using collaborator id as a reference and because populate  sara data deta hai including hashed password so we specify the details we want
@@ -97,7 +128,7 @@ const getTrip = async(req,res)=>{
         }                                              
       
         const isMember=trip.collaborators.some(
-            (member)=>member.user._id.toSting() === req.user._id.toSting()
+            (member)=>member.user._id.toString() === req.user._id.toString()
         );
 
         if(!isMember){
@@ -162,67 +193,52 @@ return res.json({
 //}
 
 
-const checkStatus = async(trip)=>{
-    try{
-   const {tripId}=req.params;
-   const {status}=req.body;
+const checkStatus = async (req, res) => {
+  try {
+    const { tripId } = req.params;
+    const { status } = req.body;
 
-   const trip=Trip.findById(tripId);
-
-   if(!trip){
-    return res.json({
-        success:false,
-        message:"Trip does not exists"
-    });
-   }
-
-   const findmember=trip.collaborators.find(
-    (c)=>c.user.toString() === req.user._id.toString()
-   )
-   if(!findmember){
-    return res.json({
-        success:false,
-        message:"Access denied"
-    });
-   }
-
-   if(findmember.role !== "admin"){
-    return res.json({
-        success:false,
-        message:"only admin can change trips status"
-    })
-   }
-
-   if(trip.endDate){
-   const today=new Date();
-   const tripEnd=new Date(trip.endDate);
-
-
-
-   if(today > tripEnd){
-    trip.status === "completed";
-   
-   }
-}
-
-const allowedStatuses = ["draft", "finalized", "completed"];
+    const allowedStatuses = ["draft", "finalized", "completed"];
     if (status && !allowedStatuses.includes(status)) {
-      return res.status(400).json({ success: false, message: "Invalid status value provided." });
+      return res.status(400).json({ success: false, message: "Invalid status value." });
     }
 
-    trip.status=status;
+    const trip = await Trip.findById(tripId);
+    if (!trip) {
+      return res.status(404).json({ success: false, message: "Trip does not exist" });
+    }
 
-   await trip.save();
+    const findMember = trip.collaborators.find(
+      (c) => c.user.toString() === req.user._id.toString()
+    );
+    if (!findMember) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+    if (findMember.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Only admin can change trip status" });
+    }
 
-   return res.json({
-    success:true,
-    message:`${trip.status}`,
-    trip
-   })
-}
-catch(err){
-console.log(err);
-}
-}
+    // Auto-complete if trip end date has passed
+    if (trip.endDate) {
+      const today = new Date();
+      const tripEnd = new Date(trip.endDate);
+      if (today > tripEnd) {
+        trip.status = "completed"; // = not ===
+      } else if (status) {
+        trip.status = status;
+      }
+    } else if (status) {
+      trip.status = status;
+    }
 
-module.exports={CreateTrip, getAllTrips, getTrip,checkStatus};
+    await trip.save();
+
+    return res.json({ success: true, message: trip.status, trip });
+
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports={CreateTrip,getAllTrips,getTrip,checkStatus}

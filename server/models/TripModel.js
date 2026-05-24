@@ -14,7 +14,7 @@ const activitySchema=new mongoose.Schema({
         default:0
     }
 
-});
+},{ _id: false });
 
 const collaboratorSchema=new mongoose.Schema({
      user : {
@@ -39,7 +39,7 @@ const TripSchema=new mongoose.Schema(
         peopleCount:Number,
         status:{
             type:String,
-            enum:["draft","fianlized","completed"],
+            enum:["draft","finalized","completed"],
             default:"draft",
         },
         preferences:[String],
@@ -47,7 +47,7 @@ const TripSchema=new mongoose.Schema(
         collaborators:[collaboratorSchema],
 
         itinerary:{
-            type:Map,
+            type:  mongoose.Schema.Types.Mixed,
             of:new mongoose.Schema({
                 morning:[activitySchema],
                 afternoon:[activitySchema],

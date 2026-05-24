@@ -11,14 +11,13 @@ import { ChevronDown } from 'lucide-react';
 import plans from '../assets/plannersss.png';
 import {useNavigate} from 'react-router-dom';
 import {X} from 'lucide-react'
+import axios from 'axios'
 
 const Planner = () => {
 
-  const naviagte=useNavigate();
+  const navigate = useNavigate();
 
-  const handleClick = () => {
-    naviagte('/itinerary');
-  }
+ 
 
   const [startDate, setStartDate] =useState(null);
   const [endDate,setEndDate]=useState(null);
@@ -42,6 +41,67 @@ const Planner = () => {
     if(value == 'Couple'){
       setPeopleCount(2);
     }
+  }
+
+  const [loading,setLoading]=useState(false);
+  const [error,setError]=useState("");
+
+  const [destination,setDestination]=useState("");
+  const [travelStyle,setTravelStyle]=useState("Adventure");
+  const [preferences,setPreferences]=useState("Cheapest");
+  const [interests,setInterests]=useState("Night Life");
+
+  const handleClick=  async() =>{
+    if(!destination || !startDate || !endDate){
+      setError("Please fill out destination and date range");
+      return;
+    }
+    const token= localStorage.getItem("token");
+
+    setLoading(true);
+    setError("");
+
+    try{
+      
+      const config={
+        headers:{
+          "Content-type":"application/json",
+         token:token
+        }
+
+      };
+
+      const payload={
+        destination,
+        startDate:startDate.toISOString(),
+        endDate:endDate.toISOString(),
+        peopleCount:Number(peopleCount),
+        preferences,
+        travelStyle,
+        interests,
+        companions:companion
+       
+
+      }
+      const response=await axios.post(
+        "http://localhost:5000/api/trips/create",
+        payload,
+        config
+      );
+     
+      if(response.data.success){
+        console.log("Trip ID:", response.data.trip._id);
+        navigate(`/itinerary/${response.data.trip._id}`);
+      }
+    }
+    catch(err){
+console.log(err);
+setError(err.response?.data?.message || "Something went wrong while AI was compiling your itinerary.");
+    }
+    finally{
+      setLoading(false);
+    }
+
   }
 
   return (
@@ -73,6 +133,11 @@ const Planner = () => {
   </div>
 {/* left part of right */}
   <div className="flex flex-col  gap-4 p-6 max-w-2xl">
+    {error && (
+            <div className="bg-red-50 text-red-600 border border-red-200 p-3 mx-4 rounded-xl text-sm font-medium">
+               {error}
+            </div>
+          )}
     {/* Destination */}
 
      <div className="flex flex-col gap-3 p-4 lg:w-full">
@@ -80,7 +145,12 @@ const Planner = () => {
         Destination
       </label>
       <div className="flex items-center justify-between w-full border border-gray-300 rounded-lg px-3 py-2  ">
-        <input placeholder="Manali" className="text-gray-700  outline-none" />
+        <input
+          placeholder="Manali"
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+          className="text-gray-700 w-full outline-none"
+        />
         <MapPin className="text-gray-700 bg-white" strokeWidth={1.5} />
       </div>
       </div>
@@ -103,7 +173,8 @@ const Planner = () => {
       <div className="flex flex-col gap-2">
         <label className="text-slate-700 text-sm font-bold">Travel Style</label>
         <div className="relative">
-          <select className="w-full appearance-none border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 bg-white cursor-pointer">
+          <select value={travelStyle} onChange={(e)=>setTravelStyle(e.target.value)}
+          className="w-full appearance-none border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 bg-white cursor-pointer">
             <option>Adventure</option>
             <option>Luxury</option>
             <option>Relaxation</option>
@@ -150,7 +221,8 @@ const Planner = () => {
       <div className="flex flex-col gap-2">
         <label className="text-slate-700 text-sm font-bold">Travel Preferences</label>
         <div className="relative">
-          <select className="w-full appearance-none border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 bg-white cursor-pointer">
+          <select value={preferences} onChange={(e) => setPreferences(e.target.value)}
+           className="w-full appearance-none border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 bg-white cursor-pointer">
             <option>Cheapest</option>
             <option>Fastest</option>
             <option>Comfortable</option>
@@ -165,7 +237,9 @@ const Planner = () => {
       <div className="flex flex-col gap-2">
         <label className="text-slate-700 text-sm font-bold">Interests</label>
         <div className="relative">
-          <select className="w-full appearance-none border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 bg-white cursor-pointer">
+          <select value={interests}
+                  onChange={(e) => setInterests(e.target.value)}
+          className="w-full appearance-none border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-slate-600 bg-white cursor-pointer">
             <option>Night Life</option>
             <option>Spiritual</option>
             <option>History</option>
@@ -185,16 +259,14 @@ const Planner = () => {
 
     </div>
 
-<button onClick={handleClick} className="bg-blue-600 lg:w-1/2 text-white font-semibold px-6 ml-30 rounded-[2rem] py-2 shadow-md shadow-gray-500 hover:-translate-y-2  transition duration-300 shadow-lg cursor-pointer "  >
-  Generate Itinerary
-</button>
-
-
-
-
-
-
-
+<button 
+            onClick={handleClick} 
+            disabled={loading}
+            className={`bg-blue-600 lg:w-1/2 text-white font-semibold px-6 ml-6 rounded-[2rem] py-2 shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed`}
+          >
+            {loading ? "AI is generating your plan... ✨" : "Generate Itinerary"}
+          </button>
+        
 
 
 

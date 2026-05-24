@@ -1,10 +1,13 @@
 
 import React from 'react';
 import { Calendar, Users, MapPin, MoreVertical, Heart, CheckCircle2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-
-export const TripCard = ({ image, title, location, date, travelers, price, days }) => (
-  <div className="bg-white rounded-[2rem] p-3 shadow-sm border border-slate-100 hover:-translate-y-1 shadow-md transition-all duration-300 group overflow-hidden cursor-pointer">
+export const TripCard = ({id, image, title, location, date, travelers, price, days }) => {
+  const navigate = useNavigate();
+  return(
+  <div onClick={() => navigate(`/itinerary/${id}`)}
+   className="bg-white rounded-[2rem] p-3 shadow-sm border border-slate-100 hover:-translate-y-1 shadow-md transition-all duration-300 group overflow-hidden cursor-pointer">
     <div className="relative overflow-hidden rounded-[1.5rem] aspect-video">
       <img src={image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={title} />
       <div className="absolute top-3 left-3 bg-black/20 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-lg">{days} Days</div>
@@ -26,9 +29,13 @@ export const TripCard = ({ image, title, location, date, travelers, price, days 
     </div>
   </div>
 );
+}
 
- export const DraftCard = ({ image, title, date, progress }) => (
-  <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 flex flex-col gap-3 hover:-translate-y-1 shadow-md transition-all duration-300 group overflow-hidden cursor-pointer">
+ export const DraftCard = ({ id, image, title, date, progress }) => {
+  const navigate=useNavigate();
+  return(
+  <div onClick={() => navigate(`/itinerary/${id}`)}
+   className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 flex flex-col gap-3 hover:-translate-y-1 shadow-md transition-all duration-300 group overflow-hidden cursor-pointer">
     <div className="relative  rounded-[1.5rem] overflow-hidden aspect-video">
       <img src={image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={title} />
       <div className="absolute top-2 left-2 bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-md">Draft</div>
@@ -50,9 +57,13 @@ export const TripCard = ({ image, title, location, date, travelers, price, days 
     </div>
   </div>
 );
+ }
+export const CompletedCard = ({id, image, title, date, travelers }) => {
+  const navigate=useNavigate();
 
-export const CompletedCard = ({ image, title, date, travelers }) => (
-  <div className="bg-white rounded-[2rem] p-3 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all shadow-md cursor-pointer duration-300 group overflow-hidden">
+  return(
+  <div onClick={() => navigate(`/itinerary/${id}`)}
+   className="bg-white rounded-[2rem] p-3 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all shadow-md cursor-pointer duration-300 group overflow-hidden">
     
    
     <div className="relative overflow-hidden rounded-[1.5rem] aspect-video">
@@ -98,3 +109,4 @@ export const CompletedCard = ({ image, title, date, travelers }) => (
     </div>
   </div>
 )
+}

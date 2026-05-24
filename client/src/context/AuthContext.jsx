@@ -28,7 +28,9 @@ const AuthProvider=({children})=>{
     const fetchMe = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/user/getuser", {
-          headers: { token }
+         headers:{
+  token: token
+}
         });
         const data = await res.json();
         if (data.success) {
