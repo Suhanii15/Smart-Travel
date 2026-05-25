@@ -88,8 +88,7 @@ catch(err){
 const getAllTrips = async(req,res)=>{
     try{
          console.log("Request from user:", req.user._id, req.user.name);
-    const trips = await Trip.find({
-      "collaborators.user": new mongoose.Types.ObjectId(req.user._id)}).sort({ createdAt: -1 }); //jo user klogged in hai na usko humne collaborator schema ke andar by default admin bnaa rkha hai 
+    const trips = await Trip.find({"collaborators.user": new mongoose.Types.ObjectId(req.user._id)}).sort({ createdAt: -1 }); //jo user klogged in hai na usko humne collaborator schema ke andar by default admin bnaa rkha hai 
                                            //so there is no problem searching id in the collaboarote section
     console.log("Trips found for", req.user.name, ":", trips.length);
 

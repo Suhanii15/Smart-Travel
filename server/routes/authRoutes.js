@@ -1,26 +1,22 @@
-const express  = require("express");
-const router   = express.Router();
+const express = require("express");
 const passport = require("../config/passport");
-const jwt= require("jsonwebtoken");
+const { generateToken } = require("../lib/utils");
+const router = express.Router();
 
-router.get("/google",
+router.get(
+  "/google",
   passport.authenticate("google", { scope: ["profile", "email"], session: false })
 );
 
-router.get("/google/callback",
-  passport.authenticate("google", { 
-    session: false, 
-    failureRedirect: "http://localhost:5173/login" 
-  }),
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false }),
   (req, res) => {
-    const token = jwt.sign(
-      { id: req.user._id.toString() },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.redirect(
-      `http://localhost:5173/auth/google/success?token=${token}&name=${encodeURIComponent(req.user.name)}&id=${req.user._id}`
+    const token = generateToken(req.user._id);
+    return res.redirect(
+      `http://localhost:5173/auth/google/success?token=${token}&name=${encodeURIComponent(
+        req.user.name
+      )}&id=${req.user._id}`
     );
   }
 );

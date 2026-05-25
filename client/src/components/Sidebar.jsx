@@ -13,6 +13,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
+
 const Sidebar = () => {
   const {id}=useParams();
   const Navigate=useNavigate();
@@ -20,6 +21,7 @@ const { user, logoutUser } = useContext(AuthContext);
 
 
   return (
+    
     <div className="flex flex-col gap-4 mt-10">
         <ul className="flex flex-col gap-4">
              <NavLink to="/dashboard" className={ ({isActive})=>` block px-2  py-2 mx-3 shodow-sm flex gap-2 cursor-pointer ${isActive ? 

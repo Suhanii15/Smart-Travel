@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { getDestinationImage } from '../utils/getDestinationImage';
 import axios from "axios"
+import NotificationBell from '../components/NotificationBell'
 
 
 const Dashboard = () => {
@@ -135,6 +136,7 @@ useEffect(() => {
   </motion.h1>
   
   <div className="flex mt-12 mr-4 px-1 gap-2">
+    <NotificationBell />
           <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
         {user?.name[0]}
           </div>

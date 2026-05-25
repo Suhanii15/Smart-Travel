@@ -37,6 +37,8 @@ const addCollaboartor=async(req,res)=>{
     try{
     const {tripId}=req.params;
     const {userToInvite}=req.body;
+    console.log("userToInvite ID:", userToInvite);
+
 
     const trip = await Trip.findById(tripId);
     if (!trip) {
@@ -56,6 +58,8 @@ const addCollaboartor=async(req,res)=>{
     if (!userExists) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
+      console.log("Found user in DB:", userExists?._id, userExists?.name);
+
     const alreadyadded = trip.collaborators.some(
         (c)=> c.user.toString() === userToInvite.toString()      //.some() is used to check if atleast one of that value exist in that array
     );
@@ -75,6 +79,20 @@ const addCollaboartor=async(req,res)=>{
     })
 
 await trip.save();
+// After saving collaborator, notify the added user:
+await User.findByIdAndUpdate(userExists._id, {
+  $push: {
+    notifications: {
+      message: `You were added as a collaborator on trip to ${trip.destination}`,
+      type:   "collaborator_added",
+      tripId:  trip._id,
+      read:false
+    }
+
+  }
+});
+ console.log("Notification pushed to:", userExists.name);
+ 
 const saved = await Trip.findById(tripId);
 console.log("Collaborators after save:", saved.collaborators);
 const updatedTrip = await Trip.findById(tripId).populate("collaborators.user", "name email");

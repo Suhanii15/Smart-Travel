@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
-
+const notificationSchema = new mongoose.Schema({
+  message:   { type: String, required: true },
+  type:      { type: String, default: "collaborator_added" },
+  tripId:    { type: mongoose.Schema.Types.ObjectId, ref: "Trip" },
+  read:      { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
 const UserSchema=new mongoose.Schema({
     
         name:{
@@ -24,12 +30,9 @@ const UserSchema=new mongoose.Schema({
     
     default: null 
 },
-          trips:[
-      {
-         type:mongoose.Schema.Types.ObjectId,
-         ref:"Trip"
-      }
-   ]
+  notifications: [notificationSchema],
+
+       
     
 },
 {timestamps:true});
