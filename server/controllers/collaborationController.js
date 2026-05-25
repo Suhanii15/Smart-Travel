@@ -92,7 +92,7 @@ await User.findByIdAndUpdate(userExists._id, {
   }
 });
  console.log("Notification pushed to:", userExists.name);
- 
+
 const saved = await Trip.findById(tripId);
 console.log("Collaborators after save:", saved.collaborators);
 const updatedTrip = await Trip.findById(tripId).populate("collaborators.user", "name email");
@@ -145,6 +145,17 @@ const removeCollaborator = async (req, res) => {
       (c) => c.user.toString() !== userIdToRemove.toString()
     );
     await trip.save();
+
+    await User.findByIdAndUpdate(userIdToRemove, {
+  $push: {
+    notifications: {
+      message: `You were removed from the trip to ${trip.destination}`,
+      type:    "collaborator_removed",
+      tripId:  trip._id,
+      read:    false,
+    }
+  }
+});
 
     const updatedTrip = await Trip.findById(tripId)
       .populate("collaborators.user", "name email");

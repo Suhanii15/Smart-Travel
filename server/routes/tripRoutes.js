@@ -22,7 +22,7 @@ router.get("/single/:tripId",protectedRoute,getTrip);
 router.post("/:tripId/day",protectedRoute,addDay);
 router.delete("/:tripId/day/:dayNumber",protectedRoute,deleteDay);
 router.post("/:tripId/activity",protectedRoute,addActivity);
-router.delete("/:tripId/activity/:activityId", deleteActivity);
+router.delete("/:tripId/activity/:activityId", protectedRoute, deleteActivity);
 
 //collaborattions
 router.post("/:tripId/collaborators",protectedRoute,addCollaboartor);

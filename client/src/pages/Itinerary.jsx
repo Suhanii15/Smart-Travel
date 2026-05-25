@@ -134,7 +134,7 @@ finally{
 const add_trip = async() =>{
   try{
 const token = localStorage.getItem("token");
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = { headers: { token: token } };
       
       // router.post("/:tripId/day")
       const response = await axios.post(`http://localhost:5000/api/trips/${id}/day`, {}, config);
@@ -183,13 +183,13 @@ const addActivity = async(day,period) =>{
 
 };
 
-const deleteActivity = async(period,activityId) =>{
+const deleteActivity = async(activityId,period,activityIndex) =>{
   try {
       const token = localStorage.getItem("token");
       const config = { headers:{
   token: token
 },
-  data: { dayNumber: String(activeDay), period }
+  data: { dayNumber: String(activeDay), period, activityIndex }
  };
       
       // router.delete("/:tripId/day/:dayNumber/dayNumber/:period/period/activity/:activityId")
@@ -484,7 +484,7 @@ if(error || !trip){
                   <div key={idx} className=" relative bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group hover:cursor-pointer">
                     {isEditable && (
                     <button
-    onClick={() => deleteActivity(period.toLowerCase(), item._id)}
+    onClick={() => deleteActivity(item._id || idx, period.toLowerCase(), idx)}
     className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all hover:text-red-500 cursor-pointer"
   >
     <X className="w-4 h-4" />

@@ -13,8 +13,7 @@ const activitySchema=new mongoose.Schema({
         type:Number,
         default:0
     }
-
-},{ _id: false });
+});
 
 const collaboratorSchema=new mongoose.Schema({
      user : {

@@ -225,15 +225,35 @@ const checkStatus = async (req, res) => {
       const today = new Date();
       const tripEnd = new Date(trip.endDate);
       if (today > tripEnd) {
-        trip.status = "completed"; // = not ===
+        trip.status = "completed"; 
       } else if (status) {
         trip.status = status;
       }
     } else if (status) {
       trip.status = status;
     }
+await trip.save();
 
-    await trip.save();
+if (status === "finalized") {
+  const collaboratorIds = trip.collaborators
+    .filter(c => c.user.toString() !== req.user._id.toString()) // exclude admin
+    .map(c => c.user);
+
+  await User.updateMany(
+    { _id: { $in: collaboratorIds } },
+    {
+      $push: {
+        notifications: {
+          message: `Trip to ${trip.destination} has been finalized`,
+          type:    "trip_finalized",
+          tripId:  trip._id,
+          read:    false,
+        }
+      }
+    }
+  );
+}
+    
 
     return res.json({ success: true, message: trip.status, trip });
 
