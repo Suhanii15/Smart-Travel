@@ -11,6 +11,10 @@ import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { getDestinationImage } from '../utils/getDestinationImage';
+import axios from "axios"
+
+
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -18,6 +22,9 @@ const Dashboard = () => {
   const [allTrips, setAllTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [tripImages, setTripImages] = useState({});
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -56,16 +63,16 @@ const Dashboard = () => {
     };
     fetchTrips();
   }, []);
-const upcomingTrips = allTrips.filter(t => t.status === "finalized");
 
-  // Apply search filter
-  const filteredUpcoming = upcomingTrips.filter(t =>
-    t.destination?.toLowerCase().includes(searchQuery.toLowerCase())
-  ).slice(0,3);
+  const upcomingTrips = allTrips.filter(t => 
+  t.status !== "draft" && t.status !== "completed"
+);
 
-  const getDynamicImage = (destination) =>
-    `https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80&sig=${encodeURIComponent(destination || "travel")}`;
+const filteredUpcoming = upcomingTrips
+  .filter(t => t.destination?.toLowerCase().includes(searchQuery.toLowerCase()))
+  .slice(0, 3);
 
+ 
   const formatDate = (start, end) => {
     if (!start) return "Flexible Dates";
     const sOpt = { day: 'numeric', month: 'short' };
@@ -78,6 +85,20 @@ const upcomingTrips = allTrips.filter(t => t.status === "finalized");
     return Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
   };
 
+useEffect(() => {
+  const fetchImages = async () => {
+    const imageMap = {};
+    await Promise.all(
+      allTrips.map(async (trip) => {
+        const url = await getDestinationImage(trip.destination);
+        imageMap[trip._id] = url;
+      })
+    );
+    setTripImages(imageMap);
+  };
+
+  if (allTrips.length > 0) fetchImages();
+}, [allTrips]);
   return (
     <div className="flex flex-row min-h-screen ">
         {/* leftside*/}
@@ -171,7 +192,7 @@ type="text" placeholder="Search for trips.." className="px-4 py-2 w-160 rounded-
               {filteredUpcoming.map(trip => (
                 <UpcomingCard
                   key={trip._id}
-                  image={getDynamicImage(trip.destination)}
+                  image={tripImages[trip._id]} 
                   title={trip.destination}
                   date={formatDate(trip.startDate, trip.endDate)}
                   days={calcDays(trip.startDate, trip.endDate)}

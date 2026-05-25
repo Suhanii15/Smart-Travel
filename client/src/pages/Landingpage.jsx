@@ -2,7 +2,8 @@ import React from 'react'
 import Landnavabr from '../components/Landnavabr'
 import photo from '../assets/landingpage.png'
 import { motion } from 'framer-motion';
-
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 const Landingpage = () => {
   const Navigate=useNavigate();
     

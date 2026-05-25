@@ -8,6 +8,7 @@ import { TripCard, DraftCard, CompletedCard } from "../components/CardComponent"
 import {useState } from 'react';
 import axios from 'axios'
 import { useEffect } from 'react';
+import { getDestinationImage } from '../utils/getDestinationImage';
 
 
 const MyTrips = () => {
@@ -100,9 +101,22 @@ const segregatedTrips = React.useMemo(() => {
     return `${new Date(start).toLocaleDateString('en-IN', sOpt)} - ${new Date(end).toLocaleDateString('en-IN', eOpt)}`;
   };
 
-const getDynamicDestinationImage = (destinationName) => {
-    return `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80&sig=${encodeURIComponent(destinationName || "travel")}`;
+const [tripImages, setTripImages] = useState({});
+useEffect(() => {
+  const fetchImages = async () => {
+    const imageMap = {};
+    await Promise.all(
+      allTrips.map(async (trip) => {
+        const url = await getDestinationImage(trip.destination);
+        imageMap[trip._id] = url;
+      })
+    );
+    setTripImages(imageMap);
   };
+
+  if (allTrips.length > 0) fetchImages();
+}, [allTrips]);
+
 
   if (loading) {
     return (
@@ -167,18 +181,21 @@ const getDynamicDestinationImage = (destinationName) => {
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
     {
       activeTab === 'UpcomingTrip' && segregatedTrips.UpcomingTrip.map(trip => (
-        <TripCard key={trip._id} id={trip._id} image={getDynamicDestinationImage(trip.destination)} title={trip.destination}  location={trip.destination}  date={formatTripDate(trip.startDate,trip.endDate)}
+        <TripCard key={trip._id} id={trip._id}   image={tripImages[trip._id]}
+ title={trip.destination}  location={trip.destination}  date={formatTripDate(trip.startDate,trip.endDate)}
          travelers={trip.peopleCount} price={trip.estimatedBudget?.grandTotal?.toLocaleString('en-IN') || "0"} days={trip.totalDays || 1} />
       ))
     }
 
     {activeTab === 'Drafts' && segregatedTrips.Drafts.map(trip =>(
-      <DraftCard key={trip._id} id={trip._id} image={getDynamicDestinationImage(trip.destination)} title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} progress={trip.progress} />
+      <DraftCard key={trip._id} id={trip._id}   image={tripImages[trip._id]}
+ title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)}  />
     ))}
 
     {
       activeTab === 'Completed' && segregatedTrips.Completed.map(trip=>(
-        <CompletedCard key={trip._id} id={trip._id} image={getDynamicDestinationImage(trip.destination)} title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} travelers={trip.peopleCount} />
+        <CompletedCard key={trip._id} id={trip._id}   image={tripImages[trip._id] }
+ title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} travelers={trip.peopleCount} />
       )
       )
 

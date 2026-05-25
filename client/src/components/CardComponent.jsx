@@ -9,8 +9,14 @@ export const TripCard = ({id, image, title, location, date, travelers, price, da
   <div onClick={() => navigate(`/itinerary/${id}`)}
    className="bg-white rounded-[2rem] p-3 shadow-sm border border-slate-100 hover:-translate-y-1 shadow-md transition-all duration-300 group overflow-hidden cursor-pointer">
     <div className="relative overflow-hidden rounded-[1.5rem] aspect-video">
-      <img src={image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={title} />
-      <div className="absolute top-3 left-3 bg-black/20 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-lg">{days} Days</div>
+<img
+  src={image}
+  alt={title}
+  className="w-full h-48 object-cover rounded-t-2xl"
+  onError={(e) => {
+    e.target.src = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80";
+  }}
+/>      <div className="absolute top-3 left-3 bg-black/20 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-lg">{days} Days</div>
       
     </div>
     <div className="p-4">
@@ -31,14 +37,20 @@ export const TripCard = ({id, image, title, location, date, travelers, price, da
 );
 }
 
- export const DraftCard = ({ id, image, title, date, progress }) => {
+ export const DraftCard = ({ id, image, title, date, }) => {
   const navigate=useNavigate();
   return(
   <div onClick={() => navigate(`/itinerary/${id}`)}
    className="bg-white rounded-3xl p-3 shadow-sm border border-slate-100 flex flex-col gap-3 hover:-translate-y-1 shadow-md transition-all duration-300 group overflow-hidden cursor-pointer">
     <div className="relative  rounded-[1.5rem] overflow-hidden aspect-video">
-      <img src={image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={title} />
-      <div className="absolute top-2 left-2 bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-md">Draft</div>
+<img
+  src={image}
+  alt={title}
+  className="w-full h-48 object-cover rounded-t-2xl"
+  onError={(e) => {
+    e.target.src = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80";
+  }}
+/>      <div className="absolute top-2 left-2 bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-md">Draft</div>
     </div>
     <div className="px-2 pb-2">
       <div className="flex justify-between items-center mb-1">
@@ -47,13 +59,12 @@ export const TripCard = ({id, image, title, location, date, travelers, price, da
         <div className="relative w-8 h-8 flex items-center justify-center">
           <svg className="w-full h-full transform -rotate-90">
             <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-slate-100" />
-            <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="3" fill="transparent" strokeDasharray={88} strokeDashoffset={88 - (88 * progress) / 100} className="text-orange-500" />
           </svg>
-          <span className="absolute text-[12px] font-bold">{progress}%</span>
+        
         </div>
       </div>
       <p className="text-slate-400 text-[10px] mb-3">Last edited {date}</p>
-      <button className="w-full py-2 text-md font-bold text-orange-600 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors">Continue →</button>
+      <button className="w-full py-2 text-md font-bold text-orange-600 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors cursor-pointer">Continue →</button>
     </div>
   </div>
 );
@@ -67,11 +78,14 @@ export const CompletedCard = ({id, image, title, date, travelers }) => {
     
    
     <div className="relative overflow-hidden rounded-[1.5rem] aspect-video">
-      <img
-        src={image}
-        alt={title}
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-      />
+     <img
+  src={image}
+  alt={title}
+  className="w-full h-48 object-cover rounded-t-2xl"
+  onError={(e) => {
+    e.target.src = "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80";
+  }}
+/>
 
     
       <div className="absolute top-3 left-3 flex items-center gap-1 bg-emerald-500/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full">
