@@ -8,6 +8,7 @@ import Planner from './pages/Planner'
 import Collaborations from './pages/Collaborations'
 import BudgetTracker from './pages/BudgetTracker'
 import Itinerary from './pages/Itinerary'
+import GoogleAuthSuccess from './pages/GoogleAuthSuccess'
 
 const App = () => {
   return (
@@ -21,7 +22,7 @@ const App = () => {
     <Route path='/collaborations/:id' element={<Collaborations />} />
     <Route path='/budgettracker/:id' element={<BudgetTracker />} />
     <Route path='/itinerary/:id' element={<Itinerary />} />
-
+    <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
     
 
 </Routes>

@@ -13,6 +13,13 @@ const SignUp = async(req,res) =>{
      }
      const existingUser= await User.findOne({email});
      if(existingUser){
+
+        if (existingUser.googleId && !existingUser.password) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "This email is linked to a Google account. Please login with Google." 
+        });
+    }
       return  res.status(409).json({
             success:false,
             message:"User already exists"
@@ -60,6 +67,12 @@ const login=async(req,res) => {
             message:"User does not exists"
         });
       }
+  if (!user.password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "This account uses Google sign-in. Please login with Google." 
+      });
+    }
 
       const isMatch=await bcrypt.compare(password,user.password);
       if(!isMatch){

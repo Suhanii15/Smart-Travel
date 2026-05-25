@@ -13,12 +13,17 @@ const UserSchema=new mongoose.Schema({
             trim:true
 
         },
-        password:{
-            type:String,
-            required:true,
-            trim:true
+        password: 
+        { type: String, 
+            
+            default: null
+         },
 
-        },
+  googleId:
+   { type: String, 
+    
+    default: null 
+},
           trips:[
       {
          type:mongoose.Schema.Types.ObjectId,

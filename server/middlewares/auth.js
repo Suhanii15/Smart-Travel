@@ -9,10 +9,10 @@ const protectedroute= async (req,res,next)=>{
         const user=await User.findById(decoded.userId).select("-password");//decode hone ke baad token ke pass ek id hai uss se hum data base mai user ko dhundhenge
 
         if(!user){
-            res.json({success:false, message:"user not found"});
+            return res.json({success:false, message:"user not found"});
         }
         req.user=user;//storing user data in req object
-       return next(); //if everything is fine we allow access to the user
+       next(); //if everything is fine we allow access to the user
 
     }
     catch(error){

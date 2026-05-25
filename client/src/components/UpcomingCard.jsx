@@ -53,7 +53,8 @@ const UpcomingCard = ({image, date,days,title}) => {
         </div>
 
           
-          <button className="text-sm font-semibold text-blue-600 hover:text-blue-700">
+          <button  
+          className="text-sm font-semibold text-blue-600 hover:text-blue-700">
             View Trip
           </button>
         </motion.div>

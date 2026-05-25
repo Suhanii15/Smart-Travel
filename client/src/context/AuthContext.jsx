@@ -34,11 +34,12 @@ const AuthProvider=({children})=>{
         });
         const data = await res.json();
         if (data.success) {
+           console.log("Setting user from fetchMe:", data.user);
           setUser(data.user);
           localStorage.setItem("user", JSON.stringify(data.user));
         } else {
           // Token invalid/expired — clear local auth
-          logoutUser();
+         // logoutUser();
         }
       } catch (err) {
         console.error("Failed to fetch current user:", err);
@@ -47,6 +48,7 @@ const AuthProvider=({children})=>{
     fetchMe();
   }, [token]);
 const loginUser = (userData, token) => {
+
     setUser(userData);
     setToken(token);
 

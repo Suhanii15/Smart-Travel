@@ -83,7 +83,25 @@ const[currState, setcurrState]=useState("Sign Up")
       
         <input onChange={(e)=>setEmail(e.target.value)} type="email" placeholder='Email' value={email}  className="w-full mb-4 px-3 py-2 border border-gray-200 ronded-md hover:cursor-pointer transition"/>
         <input onChange={(e)=>setPassword(e.target.value)} type="password" placeholder='Password' value={password}  className="w-full mb-4 px-3 py-2 border border-gray-200 ronded-md hover:cursor-pointer transition"/>
-        
+    <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-sm text-gray-400">or</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => window.location.href = "http://localhost:5000/api/auth/google"}
+            className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-md py-2.5 font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer transition"
+          >
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              className="w-5 h-5"
+              alt="Google"
+            />
+            {currState === "Sign Up" ? "Sign up with Google" : "Login with Google"}
+          </button>
+    
       
 <button type="submit" className="mt-8 rounded-md  bg-blue-600 text-white px-8 py-3 hover:bg-blue-500 cursor-pointer transition">
   { loading ? "processing.." : currState==="Sign Up" ? "Create Account" : "Login"}

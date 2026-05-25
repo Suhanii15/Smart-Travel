@@ -15,12 +15,18 @@ connectDB();
 
 const userRouter=require("./routes/userRoutes");
 const tripRouter=require("./routes/tripRoutes.js");
+const passport = require("./config/passport");
 
+app.use(passport.initialize());
+const authRouter=require("./routes/authRoutes.js")
 
+app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.json({}));
 
 app.use("/api/status", (req,res)=>res.send("server is live"));
 app.use("/api/user", userRouter);
 app.use("/api/trips",tripRouter);
+app.use("/api/auth",   authRouter);
+
 
 const PORT=process.env.PORT || 5000;
 server.listen(PORT,()=>
