@@ -123,7 +123,7 @@ useEffect(() => {
     variants={containerVariants} 
     className="text-3xl font-bold text-gray-700 mt-7 mx-6"
   >
-    Welcome,{user?.name}
+    Welcome, {user?.name}
     <motion.h3 
       initial="hidden" 
       animate="visible" 

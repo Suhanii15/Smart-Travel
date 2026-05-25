@@ -31,7 +31,13 @@ const MyTrips = () => {
    const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
+const calcDays = (start, end) => {
+  if (!start || !end) return 1;
+  return Math.ceil(
+    (new Date(end) - new Date(start)) /
+    (1000 * 60 * 60 * 24)
+  ) + 1;
+};
 
   useEffect(()=>{
     const fetchTrips= async()=>{
@@ -183,19 +189,19 @@ useEffect(() => {
       activeTab === 'UpcomingTrip' && segregatedTrips.UpcomingTrip.map(trip => (
         <TripCard key={trip._id} id={trip._id}   image={tripImages[trip._id]}
  title={trip.destination}  location={trip.destination}  date={formatTripDate(trip.startDate,trip.endDate)}
-         travelers={trip.peopleCount} price={trip.estimatedBudget?.grandTotal?.toLocaleString('en-IN') || "0"} days={trip.totalDays || 1} />
+         travelers={trip.peopleCount} price={trip.estimatedBudget?.grandTotal?.toLocaleString('en-IN') || "0"} days={trip.totalDays || 1}  days={calcDays(trip.startDate, trip.endDate)}/>
       ))
     }
 
     {activeTab === 'Drafts' && segregatedTrips.Drafts.map(trip =>(
       <DraftCard key={trip._id} id={trip._id}   image={tripImages[trip._id]}
- title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)}  />
+ title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)}  days={calcDays(trip.startDate, trip.endDate)} />
     ))}
 
     {
       activeTab === 'Completed' && segregatedTrips.Completed.map(trip=>(
         <CompletedCard key={trip._id} id={trip._id}   image={tripImages[trip._id] }
- title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} travelers={trip.peopleCount} />
+ title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} travelers={trip.peopleCount}  days={calcDays(trip.startDate, trip.endDate)}/>
       )
       )
 

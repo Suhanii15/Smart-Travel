@@ -11,6 +11,17 @@ import axios from 'axios'
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl:       'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl:     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+
 const Itinerary= () => {
 const navigate=useNavigate();
 
@@ -26,7 +37,11 @@ const goback = () =>{
 const [activeDay, setActiveDay] = useState(1);
 const [trip,setTrip]=useState(null);
 const [loading,setLoading]=useState(true);
-const [error,setError]=useState("")
+const [error,setError]=useState("");
+
+const [showMap, setShowMap] = useState(false);
+  const [mapMarkers, setMapMarkers] = useState([]);
+  const [mapLoading, setMapLoading] = useState(false);
 
 useEffect(()=>{
 const fetchTripData= async()=>{
@@ -64,6 +79,57 @@ finally{
   };
   fetchTripData();
 },[id]);
+
+
+ const handleViewMap = async () => {
+    setShowMap(true);
+    setMapLoading(true);
+    setMapMarkers([]);
+
+    const dayData = trip.itinerary[activeDay];
+    if (!dayData) { setMapLoading(false); return; }
+
+    const activities = [
+      ...(dayData.morning   || []),
+      ...(dayData.afternoon || []),
+      ...(dayData.evening   || []),
+    ].filter(a => a.location && a.location !== "Local Sightseeing");
+
+    // Add destination itself as first marker
+    const allToGeocode = [
+      { task: trip.destination, location: trip.destination, time: "" },
+      ...activities
+    ];
+
+    const results = [];
+    for (const activity of allToGeocode) {
+      try {
+        const query = `${activity.location}, ${trip.destination}`;
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        const data = await res.json();
+        if (data[0]) { results.push({
+            task:     activity.task,
+            time:     activity.time,
+            location: activity.location,
+            lat:      parseFloat(data[0].lat),
+            lng:      parseFloat(data[0].lon),
+          });
+        }
+        // Small delay to respect Nominatim rate limit
+        await new Promise(r => setTimeout(r, 300));
+      } catch (err) {
+        console.error("Geocode failed for:", activity.location);
+      }
+    }
+
+    setMapMarkers(results);
+    setMapLoading(false);
+  };
+
+
 
 const add_trip = async() =>{
   try{
@@ -239,8 +305,74 @@ if(error || !trip){
       </div>
   );
 }
+ const mapCenter = mapMarkers.length > 0
+    ? [mapMarkers[0].lat, mapMarkers[0].lng]
+    : [20.5937, 78.9629]; 
+
   return (
    <div className="flex flex-row min-h-screen">
+{showMap && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-[2rem] overflow-hidden w-full max-w-4xl h-[80vh] flex flex-col">
+            
+            {/* Modal header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+              <div>
+                <h2 className="font-bold text-gray-800 text-lg">
+                  Day {activeDay} — {trip.destination}
+                </h2>
+                <p className="text-gray-400 text-sm">
+                  {mapLoading ? "Finding locations..." : `${mapMarkers.length} locations found`}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowMap(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition cursor-pointer"
+              >
+                <X size={20} className="text-gray-600" />
+              </button>
+            </div>
+ <div className="flex-1 relative">
+              {mapLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center space-y-3">
+                    <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p className="text-gray-500 text-sm">Locating activity spots...</p>
+                  </div>
+                </div>
+              ) : mapMarkers.length === 0 ? (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-gray-400">No locations found for this day</p>
+                </div>
+              ) : (
+                <MapContainer
+                  center={mapCenter}
+                  zoom={13}
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+                  />
+ {mapMarkers.map((marker, i) => (
+                    <Marker key={i} position={[marker.lat, marker.lng]}>
+                      <Popup>
+                        <div className="text-sm">
+                          <p className="font-bold text-gray-800">{marker.task}</p>
+                          {marker.time && <p className="text-blue-500">🕐 {marker.time}</p>}
+                          <p className="text-gray-500">📍 {marker.location}</p>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+                </MapContainer>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+
         {/* leftside*/}
         <div className="flex flex-col gap-3 bg-slate-100 min-h-screen w-72">
         <div className="flex gap-2 my-2 gap-5">
@@ -395,12 +527,13 @@ if(error || !trip){
               <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4">
                 <Compass size={20} />
               </div>
-              <h4 className="font-bold mt-1  text-gray-900 mb-2">AI Suggestions</h4>
+              <h4 className="font-bold mt-1  text-gray-900 mb-2">Day {activeDay} Map</h4>
               </div>
               <p className="text-sm text-gray-500 leading-relaxed mb-4">
-                This route looks great! Hadimba Temple is just 20 mins from your hotel.
+                View all your Day {activeDay} activity locations on an interactive map.
               </p>
-              <button className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:cursor-pointer">
+              <button onClick={handleViewMap}
+               className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:cursor-pointer">
                 View on Map
               </button>
             </div>

@@ -3,6 +3,8 @@ import React from 'react';
 import { Calendar, Users, MapPin, MoreVertical, Heart, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+
+
 export const TripCard = ({id, image, title, location, date, travelers, price, days }) => {
   const navigate = useNavigate();
   return(
@@ -37,7 +39,7 @@ export const TripCard = ({id, image, title, location, date, travelers, price, da
 );
 }
 
- export const DraftCard = ({ id, image, title, date, }) => {
+ export const DraftCard = ({ id, image, title, date,days }) => {
   const navigate=useNavigate();
   return(
   <div onClick={() => navigate(`/itinerary/${id}`)}
@@ -69,7 +71,7 @@ export const TripCard = ({id, image, title, location, date, travelers, price, da
   </div>
 );
  }
-export const CompletedCard = ({id, image, title, date, travelers }) => {
+export const CompletedCard = ({id, image, title, date, travelers ,days}) => {
   const navigate=useNavigate();
 
   return(

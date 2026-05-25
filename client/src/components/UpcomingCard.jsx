@@ -1,8 +1,7 @@
 import React from 'react'
 import {motion} from 'framer-motion';
-
-
-const UpcomingCard = ({image, date,days,title}) => {
+import { useNavigate} from 'react-router-dom';
+const UpcomingCard = ({id,image, date,days,title}) => {
    const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -20,6 +19,8 @@ const UpcomingCard = ({image, date,days,title}) => {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 },
   };
+
+  const navigate=useNavigate();       
 
   return (
    <motion.div
@@ -53,7 +54,7 @@ const UpcomingCard = ({image, date,days,title}) => {
         </div>
 
           
-          <button  
+          <button  onClick={() => navigate(`/itinerary/${id}`)}
           className="text-sm font-semibold text-blue-600 hover:text-blue-700">
             View Trip
           </button>
