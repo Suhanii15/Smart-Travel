@@ -372,9 +372,9 @@ npm run dev
 
 ### Suhani Kabra
 
-LinkedIn: [Add LinkedIn Link]
+LinkedIn: [https://www.linkedin.com/in/suhani-kabra-aab411315/]
 
-GitHub: https://github.com/yourusername
+GitHub: https://github.com/Suhanii15
 
 ---
 
