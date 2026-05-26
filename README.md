@@ -260,7 +260,7 @@ Trips are automatically categorized as:
 ## Clone Repository
 
 ```bash
-git clone https://github.com/Suhanii15/SmartTravel.git
+git clone https://github.com/Suhanii15/Smart_Travel.git
 ```
 
 ```bash
