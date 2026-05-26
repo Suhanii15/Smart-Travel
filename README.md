@@ -18,9 +18,6 @@ Demo Video:[https://drive.google.com/file/d/1nVt32vSMrLjKgxR-L_cg1NVwft59moiG/vi
 ### Dashboard
 <img width="1600" height="900" alt="Dashboard" src="https://github.com/user-attachments/assets/bbaa33a4-b780-4ec8-9e4d-2d63dc7a754f" />
 
-### Landing Page
-<img width="1236" height="848" alt="landingpage" src="https://github.com/user-attachments/assets/02e9d563-6e94-4896-9b69-b66a5d6470ab" />
-
 
 ### Generated Itinerary
 <img width="1600" height="900" alt="Itinerary" src="https://github.com/user-attachments/assets/87759daf-be56-4a7b-9493-3279215bf6d2" />
