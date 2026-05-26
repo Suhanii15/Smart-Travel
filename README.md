@@ -220,7 +220,7 @@ Users can:
 - Remove days
 - Add activities
 - Delete activities
-
+-Look places for activities with the help of integrated map.
 ---
 
 ## 5️⃣ Invite Collaborators
@@ -297,7 +297,7 @@ GOOGLE_CALLBACK_URL=
 Start backend:
 
 ```bash
-npm run dev
+npm run server
 ```
 
 ---
