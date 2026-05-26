@@ -264,7 +264,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
             disabled={loading}
             className={`bg-blue-600 lg:w-1/2 text-white font-semibold px-6 ml-6 rounded-[2rem] py-2 shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed`}
           >
-            {loading ? "AI is generating your plan... ✨" : "Generate Itinerary"}
+            {loading ? "Generating your plan... " : "Generate Itinerary"}
           </button>
         
 

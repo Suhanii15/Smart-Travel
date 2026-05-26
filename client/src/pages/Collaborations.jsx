@@ -659,7 +659,6 @@ if(error || !trip){
               
               <button disabled={!isEditable}
                onClick={handleFinaliseTrip}
-              onClick={()=>setIsEditable(false)}
               className={`font-semibold text-sm px-3 py-3 border-2 rounded-[2rem] shadow-md transition duration-300 ${
                 isEditable ? "bg-blue-600 text-white hover:-translate-y-2 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"
               }`}
