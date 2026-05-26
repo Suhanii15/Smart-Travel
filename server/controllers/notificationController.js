@@ -3,9 +3,12 @@ const User=require("../models/UserModel");
 const getNotifications = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("notifications");
+    const unreadNotifications = user.notifications
+      .filter(n => !n.read)
+      .sort((a, b) => b.createdAt - a.createdAt);
     return res.json({ 
       success: true, 
-      notifications: user.notifications.sort((a, b) => b.createdAt - a.createdAt)
+      notifications: unreadNotifications
     });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });

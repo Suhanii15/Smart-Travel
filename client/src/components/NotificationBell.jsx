@@ -29,12 +29,13 @@ const NotificationBell = () => {
     await axios.patch("http://localhost:5000/api/notification/read-all", {}, {
       headers: { token }
     });
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setNotifications([]);
+    setOpen(false);
   };
 
   return (
     <div className="relative">
-      <button onClick={() => { setOpen(!open); if (!open) markAllRead(); }}
+      <button onClick={() => setOpen(!open)}
         className="relative p-2 rounded-full hover:bg-gray-100 transition">
         <Bell size={22} className="text-gray-600" />
         {unreadCount > 0 && (
