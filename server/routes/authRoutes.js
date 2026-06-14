@@ -14,7 +14,7 @@ router.get(
   (req, res) => {
     const token = generateToken(req.user._id);
     return res.redirect(
-      `http://localhost:5173/auth/google/success?token=${token}&name=${encodeURIComponent(
+      `https://smart-travel-alpha.vercel.app/auth/google/success?token=${token}&name=${encodeURIComponent(
         req.user.name
       )}&id=${req.user._id}`
     );

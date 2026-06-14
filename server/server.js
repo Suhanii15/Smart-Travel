@@ -10,7 +10,15 @@ const cron = require("node-cron");
 
 
 app.use(express.json({limit:"4mb"}));
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://smart-travel-alpha.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 
 connectDB();
 
