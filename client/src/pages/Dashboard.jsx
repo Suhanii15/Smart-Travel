@@ -50,7 +50,7 @@ const Dashboard = () => {
     const fetchTrips = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/trips/alltrips", {
+        const response = await axios.get("https://smart-travel-hvla.onrender.com/api/trips/alltrips", {
           headers: { token }
         });
         if (response.data?.success) {

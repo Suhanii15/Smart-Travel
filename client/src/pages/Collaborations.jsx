@@ -78,7 +78,7 @@ const Collaborations = () => {
 }
     
     }
-    const response = await axios.get(`http://localhost:5000/api/trips/single/${id}`,config);
+    const response = await axios.get(`https://smart-travel-hvla.onrender.com/api/trips/single/${id}`,config);
     const fetchedTrip = response.data.trip;
               setTrip(fetchedTrip);
               // Add this after trip is fetched — derives role from collaborators array
@@ -107,7 +107,7 @@ const Collaborations = () => {
         const config = { headers: { token: token } };
           
           // router.post("/:tripId/day")
-          const response = await axios.post(`http://localhost:5000/api/trips/${id}/day`, {}, config);
+          const response = await axios.post(`https://smart-travel-hvla.onrender.com/api/trips/${id}/day`, {}, config);
           const nextDay = Object.keys(trip.itinerary).length + 1
     
           if (response.data?.success) {
@@ -139,7 +139,7 @@ const Collaborations = () => {
           };
     
           // router.post("/:tripId/activity")
-          const response = await axios.post(`http://localhost:5000/api/trips/${id}/activity`, payload, config);
+          const response = await axios.post(`https://smart-travel-hvla.onrender.com/api/trips/${id}/activity`, payload, config);
     
           if (response.data?.success) {
             setTrip(response.data.trip); // Update UI with DB document containing new activity + unique _id
@@ -157,7 +157,7 @@ const Collaborations = () => {
           const config = { headers: { token:token }, data: { dayNumber: String(activeDay), period, activityIndex } };
           
           const response = await axios.delete(
-            `http://localhost:5000/api/trips/${id}/activity/${activityId}`,
+            `https://smart-travel-hvla.onrender.com/api/trips/${id}/activity/${activityId}`,
             config
           );
     
@@ -177,7 +177,7 @@ const Collaborations = () => {
           const config = { headers: { token:token } };
     
           // router.delete("/:tripId/day/:dayNumber")
-          const response = await axios.delete(`http://localhost:5000/api/trips/${id}/day/${daytodelete}`, config);
+          const response = await axios.delete(`https://smart-travel-hvla.onrender.com/api/trips/${id}/day/${daytodelete}`, config);
     
           if (response.data?.success) {
             setTrip(response.data.trip);
@@ -195,7 +195,7 @@ const Collaborations = () => {
     const saveDraft = async() =>{
       try{
         const token=localStorage.getItem("token");
-        await axios.put(`http://localhost:5000/api/trips/single/${id}`, {trip} ,{
+        await axios.put(`https://smart-travel-hvla.onrender.com/api/trips/single/${id}`, {trip} ,{
           headers:{token :token}
         });
     
@@ -218,7 +218,7 @@ const Collaborations = () => {
           
           // Dispatch status patch mapping target update
           const response = await axios.patch(
-            `http://localhost:5000/api/trips/${id}/status`,
+            `https://smart-travel-hvla.onrender.com/api/trips/${id}/status`,
             { status: "finalized" },
             {headers:{
   token: token
@@ -290,7 +290,7 @@ useEffect(() => {
   token: token
 }};
         
-        const response = await axios.get(`http://localhost:5000/api/trips/search?username=${search}`, config);
+        const response = await axios.get(`https://smart-travel-hvla.onrender.com/api/trips/search?username=${search}`, config);
         if (response.data?.success) {
           setSearchResults(response.data.users);
         }
@@ -311,7 +311,7 @@ const addMember = async (targetUser) => {
 } };
 
       const response = await axios.post(
-        `http://localhost:5000/api/trips/${trip._id}/collaborators`,
+        `https://smart-travel-hvla.onrender.com/api/trips/${trip._id}/collaborators`,
         { userToInvite: targetUser._id },
         config
       );
@@ -334,7 +334,7 @@ const addMember = async (targetUser) => {
 } };
 
       const response = await axios.delete(
-        `http://localhost:5000/api/trips/${trip._id}/collaborators/${userId}`,
+        `https://smart-travel-hvla.onrender.com/api/trips/${trip._id}/collaborators/${userId}`,
         config
       );
 

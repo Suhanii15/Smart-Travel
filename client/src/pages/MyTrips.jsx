@@ -44,7 +44,7 @@ const calcDays = (start, end) => {
       try{
         const token=localStorage.getItem("token");
         console.log("Token being sent:", token);
-      const response=await axios.get("http://localhost:5000/api/trips/alltrips", {
+      const response=await axios.get("https://smart-travel-hvla.onrender.com/api/trips/alltrips", {
         headers:{
   token: token
 }

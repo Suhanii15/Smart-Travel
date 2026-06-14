@@ -84,7 +84,7 @@ const Planner = () => {
 
       }
       const response=await axios.post(
-        "http://localhost:5000/api/trips/create",
+        "https://smart-travel-hvla.onrender.com/api/trips/create",
         payload,
         config
       );

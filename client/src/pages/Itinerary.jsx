@@ -59,7 +59,7 @@ const fetchTripData= async()=>{
 }
 
 }
-const response = await axios.get(`http://localhost:5000/api/trips/single/${id}`,config);
+const response = await axios.get(`https://smart-travel-hvla.onrender.com/api/trips/single/${id}`,config);
 const fetchedTrip = response.data.trip;
 console.log(fetchedTrip);
           setTrip(fetchedTrip);
@@ -137,7 +137,7 @@ const token = localStorage.getItem("token");
       const config = { headers: { token: token } };
       
       // router.post("/:tripId/day")
-      const response = await axios.post(`http://localhost:5000/api/trips/${id}/day`, {}, config);
+      const response = await axios.post(`https://smart-travel-hvla.onrender.com/api/trips/${id}/day`, {}, config);
       const nextDay = Object.keys(trip.itinerary).length + 1
 
       if (response.data?.success) {
@@ -171,7 +171,7 @@ const addActivity = async(day,period) =>{
       };
 
       // router.post("/:tripId/activity")
-      const response = await axios.post(`http://localhost:5000/api/trips/${id}/activity`, payload, config);
+      const response = await axios.post(`https://smart-travel-hvla.onrender.com/api/trips/${id}/activity`, payload, config);
 
       if (response.data?.success) {
         setTrip(response.data.trip); // Update UI with DB document containing new activity + unique _id
@@ -194,7 +194,7 @@ const deleteActivity = async(activityId,period,activityIndex) =>{
       
       // router.delete("/:tripId/day/:dayNumber/dayNumber/:period/period/activity/:activityId")
       const response = await axios.delete(
-        `http://localhost:5000/api/trips/${id}/activity/${activityId}`,
+        `https://smart-travel-hvla.onrender.com/api/trips/${id}/activity/${activityId}`,
         config
       );
 
@@ -216,7 +216,7 @@ try {
 } };
 
       // router.delete("/:tripId/day/:dayNumber")
-      const response = await axios.delete(`http://localhost:5000/api/trips/${id}/day/${daytodelete}`, config);
+      const response = await axios.delete(`https://smart-travel-hvla.onrender.com/api/trips/${id}/day/${daytodelete}`, config);
 
       if (response.data?.success) {
         setTrip(response.data.trip);
@@ -235,7 +235,7 @@ const {user, logoutuser}=useContext(AuthContext);
 const saveDraft = async() =>{
   try{
     const token=localStorage.getItem("token");
-    await axios.put(`http://localhost:5000/api/trips/single/${id}`, {trip} ,{
+    await axios.put(`https://smart-travel-hvla.onrender.com/api/trips/single/${id}`, {trip} ,{
       headers:{
   token: token
 }
@@ -261,7 +261,7 @@ const handleFinaliseTrip = async () => {
 
       // Dispatch status patch mapping target update
       const response = await axios.patch(
-        `http://localhost:5000/api/trips/${id}/status`,
+        `https://smart-travel-hvla.onrender.com/api/trips/${id}/status`,
         { status: "finalized" },
         { headers:{
   token: token
