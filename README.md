@@ -9,7 +9,7 @@ Built using the MERN stack with Gemini AI integration, Google OAuth authenticati
 ## 🚀 Live Demo
 Demo Video:[https://drive.google.com/file/d/1nVt32vSMrLjKgxR-L_cg1NVwft59moiG/view?usp=sharing]
 
-
+Live:[https://smart-travel-alpha.vercel.app/]
 
 ---
 
