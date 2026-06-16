@@ -28,7 +28,7 @@ const UpcomingCard = ({id,image, date,days,title}) => {
     animate="visible"
     viewport={{ once: true }}
     variants={containerVariants}
-    className="group relative overflow-hiden rounded-[2rem] shadow-lg bg-white flex flex-col gap-3 p-3 h-60 w-70 shadow-gray-300 hover:shadow-md transition-all-group duration-500 cursor-pointer z-3">
+    className="group relative overflow-hiden rounded-[2rem] shadow-lg bg-white dark:bg-slate-800 flex flex-col gap-3 p-3 h-60 w-70 shadow-gray-300 dark:shadow-slate-800 hover:shadow-md transition-all-group duration-500 cursor-pointer z-3">
     <div className="relative h-56 overflow-hidden rounded-[1.5rem] aspect-video">
         <motion.img src={image} 
         alt={title}
@@ -49,13 +49,13 @@ const UpcomingCard = ({id,image, date,days,title}) => {
 
       <motion.div className="p-5 flex flex-row gap-3 justify-between">
 
-        <div className="flex  items-center gap-2 text-gray-500 text-sm">
+        <div className="flex  items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
           <span>{date}</span>
         </div>
 
           
           <button  onClick={() => navigate(`/itinerary/${id}`)}
-          className="text-sm font-semibold text-blue-600 hover:text-blue-700">
+          className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
             View Trip
           </button>
         </motion.div>

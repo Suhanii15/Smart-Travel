@@ -281,10 +281,10 @@ const handleFinaliseTrip = async () => {
 
   if (loading || !trip || !trip.itinerary || Object.keys(trip.itinerary).length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 font-medium">Assembling your custom travel parameters...</p>
+          <div className="w-12 h-12 border-4 border-blue-600 dark:border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Assembling your custom travel parameters...</p>
         </div>
       </div>
     );
@@ -294,11 +294,11 @@ const handleFinaliseTrip = async () => {
 
 if(error || !trip){
   return(
-    <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <div className="bg-white p-8 rounded-2xl shadow-md border text-center max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-md border text-center max-w-md">
           <p className="text-red-500 font-bold mb-4"> Initialization Error</p>
-          <p className="text-gray-600 text-sm mb-6">{error || "The itinerary payload could not be decoded safely."}</p>
-          <button onClick={() => navigate('/planner')} className="px-5 py-2 bg-blue-600 text-white font-semibold rounded-xl text-sm">
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">{error || "The itinerary payload could not be decoded safely."}</p>
+          <button onClick={() => navigate('/planner')} className="px-5 py-2 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded-xl text-sm">
             Return to Planner
           </button>
         </div>
@@ -313,36 +313,36 @@ if(error || !trip){
    <div className="flex flex-row min-h-screen">
 {showMap && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-[2rem] overflow-hidden w-full max-w-4xl h-[80vh] flex flex-col">
+          <div className="bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden w-full max-w-4xl h-[80vh] flex flex-col">
             
             {/* Modal header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+            <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
               <div>
-                <h2 className="font-bold text-gray-800 text-lg">
+                <h2 className="font-bold text-gray-800 dark:text-gray-100 text-lg">
                   Day {activeDay} — {trip.destination}
                 </h2>
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-400 dark:text-gray-500 text-sm">
                   {mapLoading ? "Finding locations..." : `${mapMarkers.length} locations found`}
                 </p>
               </div>
               <button
                 onClick={() => setShowMap(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition cursor-pointer"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full transition cursor-pointer"
               >
-                <X size={20} className="text-gray-600" />
+                <X size={20} className="text-gray-600 dark:text-gray-400" />
               </button>
             </div>
  <div className="flex-1 relative">
               {mapLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center space-y-3">
-                    <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-gray-500 text-sm">Locating activity spots...</p>
+                    <div className="w-10 h-10 border-4 border-blue-600 dark:border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Locating activity spots...</p>
                   </div>
                 </div>
               ) : mapMarkers.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
-                  <p className="text-gray-400">No locations found for this day</p>
+                  <p className="text-gray-400 dark:text-gray-500">No locations found for this day</p>
                 </div>
               ) : (
                 <MapContainer
@@ -358,9 +358,9 @@ if(error || !trip){
                     <Marker key={i} position={[marker.lat, marker.lng]}>
                       <Popup>
                         <div className="text-sm">
-                          <p className="font-bold text-gray-800">{marker.task}</p>
-                          {marker.time && <p className="text-blue-500">🕐 {marker.time}</p>}
-                          <p className="text-gray-500">📍 {marker.location}</p>
+                           <p className="font-bold text-gray-800 dark:text-gray-100">{marker.task}</p>
+                          {marker.time && <p className="text-blue-500 dark:text-blue-400">🕐 {marker.time}</p>}
+                           <p className="text-gray-500 dark:text-gray-400">📍 {marker.location}</p>
                         </div>
                       </Popup>
                     </Marker>
@@ -374,38 +374,38 @@ if(error || !trip){
 
 
         {/* leftside*/}
-        <div className="flex flex-col gap-3 bg-slate-100 min-h-screen w-72">
-        <div className="flex gap-2 my-2 gap-5">
-                    <div className="p-2 ml-2 h-10 bg-blue-500/10 top-2 rounded-full">
-                     <Compass className="text-blue-500" strokeWidth={2.5} />
+        <div className="flex flex-col gap-3 bg-slate-100 dark:bg-slate-800 min-h-screen w-72">
+        <div className="flex gap-5 my-2">
+                    <div className="p-2 ml-2 h-10 bg-blue-500/10 dark:bg-blue-400/20 top-2 rounded-full">
+                     <Compass className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />
                      </div>
-                     <span className="text-xl mt-2 font-bold tracking-tight text-gray-600">
-              Smart<span className="text-blue-500">Travel</span>
+                     <span className="text-xl mt-2 font-bold tracking-tight text-gray-600 dark:text-gray-300">
+              Smart<span className="text-blue-500 dark:text-blue-400">Travel</span>
             </span>
         </div>
 <Sidebar />
 </div>
 {/* rightside*/}
-<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50">
-  <div className="flex flex-row items-center border border-gray-200 shadow-md rounded-lg justify-between w-full p-6">
-   <div className="flex flex-col gap-1 mx-3 mt-4 ">
-      <h1 className="font-bold text-gray-700 text-2xl ">{trip.destination}</h1>
-      <h3 className="text-gray-400 text-sm">{new Date(trip.startDate).toLocaleDateString('en-IN',{day:'numeric', month:'short',year:'numeric'})}-{new Date(trip.endDate).toLocaleDateString('en-IN',{day:'numeric', month:'short', year:'numeric'})}</h3>
-      <h3 className="text-gray-400 text-sm">{trip.peopleCount || trip.members || 1} Members</h3>
+<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800">
+  <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 shadow-md rounded-lg justify-between w-full p-6 dark:bg-slate-800">
+   <div className="flex flex-col gap-1">
+      <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl ">{trip.destination}</h1>
+      <h3 className="text-gray-400 dark:text-gray-500 text-sm">{new Date(trip.startDate).toLocaleDateString('en-IN',{day:'numeric', month:'short',year:'numeric'})}-{new Date(trip.endDate).toLocaleDateString('en-IN',{day:'numeric', month:'short', year:'numeric'})}</h3>
+      <h3 className="text-gray-400 dark:text-gray-500 text-sm">{trip.peopleCount || trip.members || 1} Members</h3>
     </div>
     <div className="flex flex-col gap-1">
       {isEditable && (
       <div onClick={goback}
        className="flex flex-row gap-1 p-2 hover:cursor-pointer">
-        <ChevronsLeft className="text-gray-700" />
-        <h3 className="text-gray-700 ">Back</h3>
+        <ChevronsLeft className="text-gray-700 dark:text-gray-300" />
+        <h3 className="text-gray-700 dark:text-gray-300 ">Back</h3>
       </div>
       )}
      <div className="flex mt-2 mr-4 px-1 gap-2">
-          <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-full bg-blue-600 dark:bg-blue-500 text-white flex items-center justify-center font-bold">
         {user?.name[0]}
           </div>
-          <p className="text-gray-700 mt-1 font-medium">{user?.name}</p>
+          <p className="text-gray-700 dark:text-gray-200 mt-1 font-medium">{user?.name}</p>
       </div>
      
 
@@ -413,7 +413,7 @@ if(error || !trip){
   
  </div>
 
-<div className="flex items-center gap-2 mb-10 border border-gray-300 mt-2 rounded-[2rem] shadow-md px-4 py-2">
+<div className="flex items-center gap-2 mb-6 border border-gray-300 dark:border-gray-600 mt-4 rounded-[2rem] shadow-md px-4 py-2 dark:bg-slate-800">
   
   {/* Scrollable tabs — takes remaining space */}
   <div className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0 scrollbar-hide pb-1">
@@ -424,7 +424,7 @@ if(error || !trip){
           key={day}
           onClick={() => setActiveDay(day)}
           className={`relative cursor-pointer px-5 py-2 flex-shrink-0 transition-all ${
-            activeDay === day ? 'text-blue-600' : 'text-gray-400'
+            activeDay === day ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
           }`}
         >
           <span className="text-xs uppercase block text-center">Day</span>
@@ -438,7 +438,7 @@ if(error || !trip){
             </button>
           )}
           {activeDay === day && (
-            <div className="absolute bottom-[-8px] left-0 w-full h-0.5 bg-blue-600 rounded-full" />
+            <div className="absolute bottom-[-8px] left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-500 rounded-full" />
           )}
         </button>
       );
@@ -446,11 +446,11 @@ if(error || !trip){
   </div>
 
   {/* Action buttons — never shrink, always visible */}
-  <div className="flex items-center gap-2 flex-shrink-0 border-l border-gray-200 pl-3">
+  <div className="flex items-center gap-2 flex-shrink-0 border-l border-gray-200 dark:border-gray-700 pl-3">
     {isEditable && (
       <button
         onClick={add_trip}
-        className="flex items-center border border-gray-300 cursor-pointer px-3 py-2 rounded-[2rem] gap-1 text-blue-600 font-bold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
+        className="flex items-center border border-gray-300 dark:border-gray-600 cursor-pointer px-3 py-2 rounded-[2rem] gap-1 text-blue-600 dark:text-blue-400 font-bold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
       >
         <Plus size={16} /> Add Day
       </button>
@@ -472,16 +472,16 @@ if(error || !trip){
 </div>
 
 
-<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mx-4">
           {/* Timeline Columns (Morning, Afternoon, Evening) */}
           <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
             {['Morning', 'Afternoon', 'Evening'].map((period) => (
               <div key={period} className="space-y-4">
-                <h3 className="text-gray-400 font-bold flex items-center gap-2 text-sm uppercase tracking-widest">
-                  <span className="text-blue-500 text-xl">✦</span> {period}
+                <h3 className="text-gray-400 dark:text-gray-500 font-bold flex items-center gap-2 text-sm uppercase tracking-widest">
+                  <span className="text-blue-500 dark:text-blue-400 text-xl">✦</span> {period}
                 </h3>
                 {trip.itinerary[activeDay]?.[period.toLowerCase()]?.map((item, idx) => (
-                  <div key={idx} className=" relative bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all group hover:cursor-pointer">
+                  <div key={idx} className=" relative bg-white dark:bg-slate-800 p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group hover:cursor-pointer">
                     {isEditable && (
                     <button
     onClick={() => deleteActivity(item._id || idx, period.toLowerCase(), idx)}
@@ -499,8 +499,8 @@ if(error || !trip){
                         <MapPin size={18} />
                       </div>
                       <div>
-                        <h4 className="font-bold text-gray-800 leading-tight">{item.task}</h4>
-                        <div className="flex items-center gap-1 text-blue-500 font-bold text-sm mt-1">
+                        <h4 className="font-bold text-gray-800 dark:text-gray-100 leading-tight">{item.task}</h4>
+                        <div className="flex items-center gap-1 text-blue-500 dark:text-blue-400 font-bold text-sm mt-1">
                           <Clock size={14} /> {item.time}
                         </div>
                       </div>
@@ -510,8 +510,8 @@ if(error || !trip){
                 ))}
 {isEditable && (
                 <button onClick={() => addActivity(activeDay, period.toLowerCase())}
-                 className="w-full py-4 border-2 border-dashed border-slate-200 rounded-[2rem] text-blue-600 font-bold flex items-center justify-center
-                 gap-2 hover:bg-blue-50 transition-colors hover:-translate-y-1 cursor-pointer ">
+                 className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-slate-600 rounded-[2rem] text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center
+                 gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors hover:-translate-y-1 cursor-pointer ">
                   <Plus size={18} /> Add Activity
                 </button>
 )}
@@ -522,18 +522,18 @@ if(error || !trip){
 
 
 <div className="flex flex-col justify-between mx-4 space-y-4">
-            <div className="bg-white w-full p-6 rounded-[2rem] mr-3 shadow-md shadow-gray-400 ">
+            <div className="bg-white dark:bg-slate-800 w-full p-6 rounded-[2rem] mr-3 shadow-md shadow-gray-400 dark:shadow-slate-700 ">
               <div className="flex flex-row gap-2 ">
               <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4">
                 <Compass size={20} />
               </div>
-              <h4 className="font-bold mt-1  text-gray-900 mb-2">Day {activeDay} Map</h4>
+              <h4 className="font-bold mt-1  text-gray-900 dark:text-gray-100 mb-2">Day {activeDay} Map</h4>
               </div>
-              <p className="text-sm text-gray-500 leading-relaxed mb-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
                 View all your Day {activeDay} activity locations on an interactive map.
               </p>
               <button onClick={handleViewMap}
-               className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:cursor-pointer">
+               className="w-full py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-xl font-bold shadow-lg shadow-blue-200 dark:shadow-blue-900/30 hover:cursor-pointer">
                 View on Map
               </button>
             </div>
@@ -542,7 +542,7 @@ if(error || !trip){
                 
               <button 
               onClick={saveDraft}
-               className="border border-blue-600 text-gray-700 font-semibold text-sm px-3 border-2 py-3 rounded-[2rem] bg-white shadow-md shadow-gray-400 hover:-translate-y-1 transition duration-300 cursor-pointer">
+               className="border border-blue-600 dark:border-blue-500 text-gray-700 dark:text-gray-200 font-semibold text-sm px-3 border-2 py-3 rounded-[2rem] bg-white dark:bg-slate-800 shadow-md shadow-gray-400 dark:shadow-slate-700 hover:-translate-y-1 transition duration-300 cursor-pointer">
                 Save as Draft
               </button>
               )}
@@ -550,7 +550,7 @@ if(error || !trip){
               <button disabled={!isEditable}
               onClick={handleFinaliseTrip}
               className={`font-semibold text-sm px-3 py-3 border-2 rounded-[2rem] shadow-md transition duration-300 ${
-                isEditable ? "bg-blue-600 text-white hover:-translate-y-2 cursor-pointer" : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                isEditable ? "bg-blue-600 dark:bg-blue-500 text-white hover:-translate-y-2 cursor-pointer" : "bg-gray-200 dark:bg-slate-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
               }`}
              >
               {isEditable ? "Finalise Trip" : "Trip Locked"}
@@ -560,17 +560,6 @@ if(error || !trip){
           </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
 
 </div>
 

@@ -52,7 +52,7 @@ const[currState, setcurrState]=useState("Sign Up")
 
 
   return (
-    <div className="min-h-screen flex items-center">
+    <div className="min-h-screen flex items-center dark:bg-slate-900">
         <div className="hidden h-180 lg:flex lg:w-1/2 relative bg-cover bg-center items-center justify-center px-12" 
        style={{ backgroundImage: `url('${loginp}')` }}>
     
@@ -71,28 +71,28 @@ const[currState, setcurrState]=useState("Sign Up")
 
   <div className="flex-1 flex items-center justify-center px-6 py-12">
           <form onSubmit={onSubmitHandler}
-       className="bg-white lg:w-1/2 rounded-lg shadow-md px-8 py-8 flex flex-col gap-6 hover:shadow-lg cursor-pointer transition">
-        <h1 className=" font-md font-bold text-xl text-gray-700">{currState}</h1>
+       className="bg-white lg:w-1/2 rounded-lg shadow-md px-8 py-8 flex flex-col gap-6 hover:shadow-lg cursor-pointer transition dark:bg-slate-800 dark:border dark:border-gray-700">
+        <h1 className=" font-md font-bold text-xl text-gray-700 dark:text-gray-100">{currState}</h1>
         {
           currState === 'Sign Up' && (
-            <input onChange={(e)=>setName(e.target.value)} type="text" placeholder='Full Name' value={name}  className="w-full mb-4 px-3 py-2 border border-gray-200 ronded-md hover:cursor-pointer transition"/>
+            <input onChange={(e)=>setName(e.target.value)} type="text" placeholder='Full Name' value={name}  className="w-full mb-4 px-3 py-2 border border-gray-200 ronded-md hover:cursor-pointer transition dark:bg-slate-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"/>
 
           )
         }
         
       
-        <input onChange={(e)=>setEmail(e.target.value)} type="email" placeholder='Email' value={email}  className="w-full mb-4 px-3 py-2 border border-gray-200 ronded-md hover:cursor-pointer transition"/>
-        <input onChange={(e)=>setPassword(e.target.value)} type="password" placeholder='Password' value={password}  className="w-full mb-4 px-3 py-2 border border-gray-200 ronded-md hover:cursor-pointer transition"/>
+        <input onChange={(e)=>setEmail(e.target.value)} type="email" placeholder='Email' value={email}  className="w-full mb-4 px-3 py-2 border border-gray-200 ronded-md hover:cursor-pointer transition dark:bg-slate-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"/>
+        <input onChange={(e)=>setPassword(e.target.value)} type="password" placeholder='Password' value={password}  className="w-full mb-4 px-3 py-2 border border-gray-200 ronded-md hover:cursor-pointer transition dark:bg-slate-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"/>
     <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
             <span className="text-sm text-gray-400">or</span>
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
           </div>
 
           <button
             type="button"
             onClick={() => window.location.href = "https://smart-travel-hvla.onrender.com/api/auth/google"}
-            className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-md py-2.5 font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer transition"
+            className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-md py-2.5 font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer transition dark:border-gray-600 dark:text-gray-200 dark:hover:bg-slate-700"
           >
             <img
               src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
@@ -103,19 +103,19 @@ const[currState, setcurrState]=useState("Sign Up")
           </button>
     
       
-<button type="submit" className="mt-8 rounded-md  bg-blue-600 text-white px-8 py-3 hover:bg-blue-500 cursor-pointer transition">
+<button type="submit" className="mt-8 rounded-md  bg-blue-600 dark:bg-blue-500 text-white px-8 py-3 hover:bg-blue-500 dark:hover:bg-blue-400 cursor-pointer transition">
   { loading ? "processing.." : currState==="Sign Up" ? "Create Account" : "Login"}
 </button>
 <div className="flex flex-col gap-2">
   {
-    currState === "Sign Up" ? (
-      <p className="text-sm text-gray-700">Already Have an Account? <span
+      currState === "Sign Up" ? (
+      <p className="text-sm text-gray-700 dark:text-gray-300">Already Have an Account? <span
       onClick={()=>{setcurrState("Login")}}
-      className="font-medium text-blue-500 cursor-pointer">Login Here</span></p>
+      className="font-medium text-blue-500 dark:text-blue-400 cursor-pointer">Login Here</span></p>
     ) : (
-      <p className="text-sm text-gray-700">Create an account.<span
+      <p className="text-sm text-gray-700 dark:text-gray-300">Create an account.<span
       onClick={()=>setcurrState("Sign Up")}
-      className="font-medium text-blue-500 cursor-pointer">Click Here</span></p>
+      className="font-medium text-blue-500 dark:text-blue-400 cursor-pointer">Click Here</span></p>
     )
   } 
 </div>

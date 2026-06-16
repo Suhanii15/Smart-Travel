@@ -208,10 +208,10 @@ const totalbudget = useMemo(() => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-600 font-medium">Fetching real-time AI budget calculations... </p>
+          <div className="w-12 h-12 border-4 border-blue-600 dark:border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Fetching real-time AI budget calculations... </p>
         </div>
       </div>
     );
@@ -219,11 +219,11 @@ const totalbudget = useMemo(() => {
 
   if (error || !trip) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <div className="bg-white p-6 rounded-2xl shadow-md border text-center max-w-md">
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-md border text-center max-w-md">
           <p className="text-red-500 font-bold mb-2">Synchronization Error</p>
-          <p className="text-gray-600 text-xs mb-4">{error}</p>
-          <button onClick={() => navigate('/planner')} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs">
+          <p className="text-gray-600 dark:text-gray-400 text-xs mb-4">{error}</p>
+          <button onClick={() => navigate('/planner')} className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-xl text-xs">
             Return to Planner
           </button>
         </div>
@@ -234,38 +234,38 @@ const totalbudget = useMemo(() => {
   return (
     <div className="flex flex-row min-h-screen">
         {/* leftside*/}
-        <div className="flex flex-col gap-3 bg-slate-100 min-h-screen w-72">
+        <div className="flex flex-col gap-3 bg-slate-100 dark:bg-slate-800 min-h-screen w-72">
         <div className="flex gap-2 my-2 gap-5">
-                    <div className="p-2 ml-2 h-10 bg-blue-500/10 top-2 rounded-full">
-                     <Compass className="text-blue-500" strokeWidth={2.5} />
+                    <div className="p-2 ml-2 h-10 bg-blue-500/10 dark:bg-blue-400/20 top-2 rounded-full">
+                     <Compass className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />
                      </div>
-                     <span className="text-xl mt-2 font-bold tracking-tight text-gray-600">
-              Smart<span className="text-blue-500">Travel</span>
+                     <span className="text-xl mt-2 font-bold tracking-tight text-gray-600 dark:text-gray-300">
+              Smart<span className="text-blue-500 dark:text-blue-400">Travel</span>
             </span>
         </div>
 <Sidebar />
 </div>
 {/* rightside*/}
-<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50">
-  <div className="flex flex-row items-center border border-gray-200 shadow-md rounded-lg justify-between w-full p-6">
+<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800">
+  <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 shadow-md rounded-lg justify-between w-full p-6 dark:bg-slate-800">
    <div className="flex flex-col gap-1 mx-3 mt-4 ">
-      <h1 className="font-bold text-gray-700 text-2xl ">{trip.destination}</h1>
-      <h3 className="text-gray-400 text-sm">{new Date(trip.startDate).toLocaleDateString('en-IN',{day:'numeric', month:'short',year:'numeric'})}-{new Date(trip.endDate).toLocaleDateString('en-IN',{day:'numeric', month:'short', year:'numeric'})}</h3>
-     <h3 className="text-gray-400 text-sm">{trip.peopleCount} Members</h3>
+      <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl ">{trip.destination}</h1>
+      <h3 className="text-gray-400 dark:text-gray-500 text-sm">{new Date(trip.startDate).toLocaleDateString('en-IN',{day:'numeric', month:'short',year:'numeric'})}-{new Date(trip.endDate).toLocaleDateString('en-IN',{day:'numeric', month:'short', year:'numeric'})}</h3>
+     <h3 className="text-gray-400 dark:text-gray-500 text-sm">{trip.peopleCount} Members</h3>
     </div>
     <div className="flex flex-col gap-1">
       {isEditable && (
       <div onClick={goback}
        className="flex flex-row gap-1 p-2 hover:cursor-pointer">
-        <ChevronsLeft className="text-gray-700" />
-        <h3 className="text-gray-700 ">Back</h3>
+        <ChevronsLeft className="text-gray-700 dark:text-gray-300" />
+        <h3 className="text-gray-700 dark:text-gray-300 ">Back</h3>
       </div>
       )}
      <div className="flex mt-2 mr-4 px-1 gap-2">
-          <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-full bg-blue-600 dark:bg-blue-500 text-white flex items-center justify-center font-bold">
         {user?.name[0]}
           </div>
-          <p className="text-gray-700 mt-1 font-medium">{user?.name}</p>
+          <p className="text-gray-700 dark:text-gray-200 mt-1 font-medium">{user?.name}</p>
       </div>
       </div>
  </div>
@@ -273,25 +273,25 @@ const totalbudget = useMemo(() => {
 <div className="flex flex-col mt-4 gap-3">
   
   <div className="flex flex-row mt-3 mx-4 items-center gap-2">
-       <Sparkles className="ml-2 text-blue-500" />
-    <h1 className="text-blue-500 items-center font-semibold mx-3 text-2xl">
+       <Sparkles className="ml-2 text-blue-500 dark:text-blue-400" />
+    <h1 className="text-blue-500 dark:text-blue-400 items-center font-semibold mx-3 text-2xl">
       Estimated Budget
     </h1>
-     <p className="text-gray-400 mt-1 font-medium">
+     <p className="text-gray-400 dark:text-gray-500 mt-1 font-medium">
           Total Budget: ₹{totalbudget.toLocaleString()}
         </p>
 
   </div>
-  <div className="lg:w-3/4 mx-4 mr-4 h-3 bg-slate-200 rounded-full overflow-hidden mt-5">
+  <div className="lg:w-3/4 mx-4 mr-4 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mt-5">
           <div
             style={{ width: `${progress}%` }}
-            className="h-full bg-blue-600 rounded-full transition-all duration-500"
+            className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-500"
           />
         </div>
 
         <div className="flex justify-between lg:w-3/4 mt-2 text-sm font-medium px-1">
-            <p className="text-gray-600">Spent: ₹{totalspending.toLocaleString()}</p>
-            <p className={remaining >= 0 ? "text-gray-600" : "text-red-500 font-bold"}>
+            <p className="text-gray-600 dark:text-gray-400">Spent: ₹{totalspending.toLocaleString()}</p>
+            <p className={remaining >= 0 ? "text-gray-600 dark:text-gray-400" : "text-red-500 font-bold"}>
               {remaining >= 0 ? `Remaining: ₹${remaining.toLocaleString()}` : `Overdraft: ₹${Math.abs(remaining).toLocaleString()}`}
             </p>
           </div>
@@ -316,13 +316,13 @@ const totalbudget = useMemo(() => {
              {/* Info */}
             <div className="flex-1">
                <div className="flex  justify-between items-center mb-2">
-                  <h3 className="font-semibold mx-3 text-gray-700">
+                  <h3 className="font-semibold mx-3 text-gray-700 dark:text-gray-200">
                     {item.category}
                   </h3>
-                  <p className="text-sm text-gray-500 font-medium">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                      ₹{(item.spent || 0).toLocaleString('en-IN')} / ₹{(item.limit || 0).toLocaleString('en-IN')}
                     </p>
- <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+  <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                     <div
                       style={{ width: `${percentage}%` }}
                       className="h-full bg-teal-400 rounded-full"

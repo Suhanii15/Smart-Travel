@@ -29,7 +29,7 @@ const containerVariants = {
         <Landnavabr />
     
 
-    <section className="flex flex-col lg:flex-row items-center justify-between min-h-[80vh] px-6 lg:px-20 py-12 ">
+    <section className="flex flex-col lg:flex-row items-center justify-between min-h-[80vh] px-6 lg:px-20 py-12 dark:bg-slate-900">
   
   <motion.div 
           variants={containerVariants}
@@ -39,7 +39,7 @@ const containerVariants = {
           className="w-full lg:w-1/2 space-y-1"
         >
     <motion.h1 variants={itemVariants} className="text-4xl font-bold text-gray-500">AI POWERED</motion.h1>
-    <motion.h1 variants={itemVariants} className="text-3xl font-bold text-blue-500">Travel Planning</motion.h1>
+    <motion.h1 variants={itemVariants} className="text-3xl font-bold text-blue-500 dark:text-blue-400">Travel Planning</motion.h1>
     <motion.h1 variants={itemVariants} className="text-4xl font-bold text-gray-500">made easy</motion.h1>
 
     <motion.h2 variants={itemVariants} className="text-lg text-gray-400 mt-4">
@@ -50,8 +50,8 @@ const containerVariants = {
   <motion.div variants={containerVariants} initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, delay: 0.4 }}
-   className="w-full lg:w-1/2 relative mt-12 lg:mt-0">
-   <img src={photo} className="w-full h-auto"/>
+   className="w-full lg:w-1/2 relative mt-12 lg:mt-0 dark:bg-slate-800 dark:rounded-2xl dark:p-4">
+   <img src={photo} className="w-full h-auto dark:mix-blend-screen"/>
   </motion.div>
 
   
@@ -61,7 +61,7 @@ const containerVariants = {
           transition={{ duration: 0.9, delay: 0.4 }}
 className="flex justify-center items-center top-0 bottom-3">
 <button onClick={()=>Navigate('/login')}
-className=" mt-8 bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-600 cursor-pointer transition-colors duration-300">
+className=" mt-8 bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 cursor-pointer transition-colors duration-300">
 Plan Your Trip Now
   </button>
 
