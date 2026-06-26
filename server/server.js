@@ -20,6 +20,8 @@ app.use(
   })
 );
 
+app.set("trust proxy", 1);
+
 connectDB();
 
 const userRouter=require("./routes/userRoutes");
