@@ -233,18 +233,7 @@ const totalbudget = useMemo(() => {
 
   return (
     <div className="flex flex-row min-h-screen">
-        {/* leftside*/}
-        <div className="flex flex-col gap-3 bg-slate-100 dark:bg-slate-800 min-h-screen w-72">
-        <div className="flex gap-2 my-2 gap-5">
-                    <div className="p-2 ml-2 h-10 bg-blue-500/10 dark:bg-blue-400/20 top-2 rounded-full">
-                     <Compass className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />
-                     </div>
-                     <span className="text-xl mt-2 font-bold tracking-tight text-gray-600 dark:text-gray-300">
-              Smart<span className="text-blue-500 dark:text-blue-400">Travel</span>
-            </span>
-        </div>
-<Sidebar />
-</div>
+        <Sidebar />
 {/* rightside*/}
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800">
   <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 shadow-md rounded-lg justify-between w-full p-6 dark:bg-slate-800">
@@ -272,9 +261,9 @@ const totalbudget = useMemo(() => {
 
 <div className="flex flex-col mt-4 gap-3">
   
-  <div className="flex flex-row mt-3 mx-4 items-center gap-2">
-       <Sparkles className="ml-2 text-blue-500 dark:text-blue-400" />
-    <h1 className="text-blue-500 dark:text-blue-400 items-center font-semibold mx-3 text-2xl">
+  <div className="flex flex-col lg:flex-row mt-3 mx-4 items-start lg:items-center gap-2">
+       <Sparkles className="ml-2 text-blue-500 dark:text-blue-400 flex-shrink-0" />
+    <h1 className="text-blue-500 dark:text-blue-400 font-semibold mx-3 text-xl lg:text-2xl">
       Estimated Budget
     </h1>
      <p className="text-gray-400 dark:text-gray-500 mt-1 font-medium">
@@ -282,14 +271,14 @@ const totalbudget = useMemo(() => {
         </p>
 
   </div>
-  <div className="lg:w-3/4 mx-4 mr-4 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mt-5">
+  <div className="w-full lg:w-3/4 mx-4 mr-4 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mt-5">
           <div
             style={{ width: `${progress}%` }}
             className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-500"
           />
         </div>
 
-        <div className="flex justify-between lg:w-3/4 mt-2 text-sm font-medium px-1">
+        <div className="flex justify-between w-full lg:w-3/4 mt-2 text-sm font-medium px-4 lg:px-1">
             <p className="text-gray-600 dark:text-gray-400">Spent: ₹{totalspending.toLocaleString()}</p>
             <p className={remaining >= 0 ? "text-gray-600 dark:text-gray-400" : "text-red-500 font-bold"}>
               {remaining >= 0 ? `Remaining: ₹${remaining.toLocaleString()}` : `Overdraft: ₹${Math.abs(remaining).toLocaleString()}`}
@@ -307,19 +296,19 @@ const totalbudget = useMemo(() => {
 
         return(
           <div key={index} onClick={() => handleUpdate(item.category)}
-           className="flex mx-4 justify-between items-center gap-4">
+           className="flex mx-4 justify-between items-center gap-3 lg:gap-4">
             {/* Icon */}
             <div className={`w-11 h-11 rounded-xl ${item.color} flex items-center
-            justify-center text-white`}>
+            justify-center text-white flex-shrink-0`}>
               <Icon size={24} />
             </div >
              {/* Info */}
-            <div className="flex-1">
-               <div className="flex  justify-between items-center mb-2">
-                  <h3 className="font-semibold mx-3 text-gray-700 dark:text-gray-200">
+            <div className="flex-1 min-w-0">
+               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-2 gap-1">
+                  <h3 className="font-semibold mx-3 text-gray-700 dark:text-gray-200 text-sm lg:text-base">
                     {item.category}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
                      ₹{(item.spent || 0).toLocaleString('en-IN')} / ₹{(item.limit || 0).toLocaleString('en-IN')}
                     </p>
   <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">

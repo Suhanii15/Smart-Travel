@@ -106,25 +106,14 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
 
   return (
     <div className="flex flex-row min-h-screen justify-between w-full ">
-        {/* left*/}
-        <div className="flex flex-col gap-3 bg-slate-100 dark:bg-slate-800 min-h-screen w-72">
-        <div className="flex gap-2 my-2 gap-5">
-                    <div className="p-2 ml-2 h-10 bg-blue-500/10 top-2 rounded-full dark:bg-blue-400/20">
-                     <Compass className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />
-                     </div>
-                     <span className="text-xl mt-2 font-bold tracking-tight text-gray-600 dark:text-gray-300">
-              Smart<span className="text-blue-500 dark:text-blue-400">Travel</span>
-            </span>
-        </div>
-<Sidebar />
-</div>
+        <Sidebar />
 {/* righside*/}
 
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
   {/*header section*/}
   <div className="flex flex-row justify-between w-full ">
     {/*headingg*/}
-    <div className="flex flex-col gap-1 mx-3 mt-4 ">
+    <div className="flex flex-col gap-1 mx-3 mt-4 px-4 lg:px-0">
       <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl ">Plan Your New Trip</h1>
       <h3 className="text-gray-400 dark:text-gray-500 text-sm">Tell us your Preferences and get your Itenary in a few seconds</h3>
     </div>
@@ -132,7 +121,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
     
   </div>
 {/* left part of right */}
-  <div className="flex flex-col  gap-4 p-6 max-w-2xl">
+  <div className="flex flex-col gap-4 p-4 lg:p-6 w-full lg:max-w-2xl">
     {error && (
             <div className="bg-red-50 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 p-3 mx-4 rounded-xl text-sm font-medium">
                {error}
@@ -165,7 +154,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 max-w-2xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-0 lg:p-6 w-full lg:max-w-2xl">
       
      
 
@@ -262,7 +251,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
 <button 
             onClick={handleClick} 
             disabled={loading}
-            className={`bg-blue-600 lg:w-1/2 text-white font-semibold px-6 ml-6 rounded-[2rem] py-2 shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed dark:bg-blue-500`}
+             className={`bg-blue-600 w-full lg:w-1/2 text-white font-semibold px-6 ml-4 lg:ml-6 rounded-[2rem] py-2 shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed dark:bg-blue-500`}
           >
             {loading ? "Generating your plan... " : "Generate Itinerary"}
           </button>

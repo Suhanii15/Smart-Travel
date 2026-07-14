@@ -51,7 +51,7 @@ const containerVariants = {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, delay: 0.4 }}
    className="w-full lg:w-1/2 relative mt-12 lg:mt-0 dark:bg-slate-800 dark:rounded-2xl dark:p-4">
-   <img src={photo} className="w-full h-auto dark:mix-blend-screen"/>
+   <img src={photo} className="w-full h-auto dark:mix-blend-screen dark:opacity-90"/>
   </motion.div>
 
   

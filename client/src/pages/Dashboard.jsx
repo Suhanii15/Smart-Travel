@@ -101,20 +101,8 @@ useEffect(() => {
   if (allTrips.length > 0) fetchImages();
 }, [allTrips]);
   return (
-    <div className="flex flex-row min-h-screen ">
-        {/* leftside*/}
-        <div className="flex flex-col gap-3 bg-slate-100 dark:bg-slate-800 min-h-screen w-72">
-        <div className="flex gap-2 my-2 gap-5">
-                    <div className="p-2 ml-2 h-10 bg-blue-500/10 top-2 rounded-full dark:bg-blue-400/20">
-                     <Compass className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />
-                     </div>
-                     <span className="text-xl mt-2 font-bold tracking-tight text-gray-600">
-              Smart<span className="text-blue-500 dark:text-blue-400">Travel</span>
-            </span>
-        </div>
+    <div className="flex flex-row min-h-screen">
 <Sidebar />
-
-</div>
 {/* rightside*/}
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
  <div className="flex justify-between w-full bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
@@ -122,7 +110,7 @@ useEffect(() => {
     initial="hidden" 
     animate="visible" 
     variants={containerVariants} 
-    className="text-3xl font-bold text-gray-700 dark:text-gray-100 mt-7 mx-6"
+    className="text-2xl md:text-3xl font-bold text-gray-700 dark:text-gray-100 mt-7 mx-4 md:mx-6"
   >
     Welcome, {user?.name}
     <motion.h3 
@@ -145,13 +133,13 @@ useEffect(() => {
   
  </div>
 
- <div className="flex flex-row  rounded-lg bg-slate-50 dark:bg-slate-800 justify-between mt-5 mx-17 px-5 py-2 pt-3 ">
+ <div className="flex flex-col lg:flex-row rounded-lg bg-slate-50 dark:bg-slate-800 justify-between mt-5 mx-4 lg:mx-17 px-5 py-2 pt-3 gap-3 lg:gap-0">
   <div className="flex flex-rows gap-1 border border-gray-300 dark:border-gray-600 items-center rounded-lg px-3 py-1 hover:shadow-md hover:border-blue-700 transition duration-300">
     <Search 
      className="text-gray-500 " strokeWidth={3.5} />
 <input value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-type="text" placeholder="Search for trips.." className="px-4 py-2 w-160 rounded-md outline-none dark:bg-slate-800 dark:text-gray-200"  />
+type="text" placeholder="Search for trips.." className="px-4 py-2 w-full lg:w-160 rounded-md outline-none dark:bg-slate-800 dark:text-gray-200"  />
   </div>
 
   <div onClick={()=>navigate('/planner')}
@@ -161,9 +149,9 @@ type="text" placeholder="Search for trips.." className="px-4 py-2 w-160 rounded-
   </div>
 
  </div>
- <div className="flex flex-col gap-6 mt-6 px-8">
+ <div className="flex flex-col gap-6 mt-6 px-4 md:px-8">
   <div className="flex flex-row justify-between items-center">
-   <h1 className="text-3xl font-semibold text-gray-600 dark:text-gray-300">Upcoming Trips</h1>
+   <h1 className="text-2xl md:text-3xl font-semibold text-gray-600 dark:text-gray-300">Upcoming Trips</h1>
     {upcomingTrips.length > 3 && (
       <span className="bg-blue-100 text-blue-600 text-xs font-bold px-2 py-1 rounded-full dark:bg-blue-900/40 dark:text-blue-400">
         +{upcomingTrips.length - 3} more
@@ -190,7 +178,7 @@ type="text" placeholder="Search for trips.." className="px-4 py-2 w-160 rounded-
              
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:p-6">
               {filteredUpcoming.map(trip => (
                 <UpcomingCard
                   key={trip._id}

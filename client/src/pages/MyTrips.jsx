@@ -126,41 +126,31 @@ useEffect(() => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin dark:border-blue-500"></div>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900">
+        <div className="w-12 h-12 border-4 border-blue-600 dark:border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
   return (
-     <div className="flex flex-row min-h-screen">
-        {/* leftside*/}
-        <div className="flex flex-col gap-3 bg-slate-100 dark:bg-slate-800 min-h-screen w-72">
-        <div className="flex gap-2 my-2 gap-5">
-                    <div className="p-2 ml-2 h-10 bg-blue-500/10 top-2 rounded-full dark:bg-blue-400/20">
-                     <Compass className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />
-                     </div>
-                     <span className="text-xl font-bold mt-2 tracking-tight text-gray-600 dark:text-gray-300">
-              Smart<span className="text-blue-500 dark:text-blue-400">Travel</span>
-            </span>
-        </div>
+     <div className="flex flex-row min-h-screen overflow-x-hidden">
 <Sidebar />
-</div>
 {/* rightside*/}
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
-  <div className="flex justify-between w-full p-6"> 
+  <div className="flex flex-col lg:flex-row justify-between w-full p-4 lg:p-6 gap-4 lg:gap-0"> 
     <div className="flex flex-col gap-3">
       <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl">My Trips</h1>
       <h4 className="text-gray-400 dark:text-gray-500 ">All your trips in one place!</h4>
     </div>
 
-    <div className="flex flex-row gap-2 px-2 py-1 items-center">
+    <div className="flex flex-col lg:flex-row gap-3 lg:gap-2 px-0 lg:px-2 py-1 items-stretch lg:items-center w-full">
       {/* Search Bar */}
-      <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1">
-       <Search className="text-gray-500 " strokeWidth={3.5} />
+      <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 w-full lg:w-auto">
+       <Search className="text-gray-500 flex-shrink-0" strokeWidth={3.5} />
       <input value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)}
-       type="text" placeholder="Search Trips..." className="px-4 py-2 rounded-lg focus:outline-none dark:bg-slate-800 dark:text-gray-200 dark:placeholder-gray-500" />
+       type="text" placeholder="Search Trips..." className="px-4 py-2 rounded-lg focus:outline-none dark:bg-slate-800 dark:text-gray-200 dark:placeholder-gray-500 w-full lg:w-auto" />
      </div>
-{/* filter section */}
+{/* filter section — horizontal scroll on mobile */}
+    <div className="flex flex-row gap-2 overflow-x-auto scrollbar-hide">
     {[
   { label: "Upcoming", value: "UpcomingTrip" },
   { label: "Drafts",   value: "Drafts" },
@@ -169,7 +159,7 @@ useEffect(() => {
   <button
     key={value}
     onClick={() => setActiveTab(value)}
-    className={`px-10 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+    className={`flex-shrink-0 px-6 lg:px-10 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
       activeTab === value
         ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-800 dark:text-blue-400'
         : 'text-gray-500 hover:bg-gray-100 cursor-pointer dark:text-gray-400 dark:hover:bg-slate-700'
@@ -178,13 +168,13 @@ useEffect(() => {
     {label}
   </button>
 ))}
-     
+     </div>
 
     </div>
 
   </div>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4 lg:p-6">
     {
       activeTab === 'UpcomingTrip' && segregatedTrips.UpcomingTrip.map(trip => (
         <TripCard key={trip._id} id={trip._id}   image={tripImages[trip._id]}

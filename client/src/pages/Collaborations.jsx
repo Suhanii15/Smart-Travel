@@ -372,23 +372,12 @@ if(error || !trip){
   );
 }
   return (
-    <div className="flex flex-row min-h-screen">
-        {/* leftside*/}
-        <div className="flex flex-col gap-3 bg-slate-100 dark:bg-slate-800 min-h-screen w-72">
-        <div className="flex gap-5 my-2">
-                    <div className="p-2 ml-2 h-10 bg-blue-500/10 dark:bg-blue-400/20 top-2 rounded-full">
-                     <Compass className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />
-                     </div>
-                     <span className="text-xl mt-2 font-bold tracking-tight text-gray-600 dark:text-gray-300">
-              Smart<span className="text-blue-500 dark:text-blue-400">Travel</span>
-            </span>
-        </div>
-<Sidebar />
-</div>
+    <div className="flex flex-row min-h-screen overflow-x-hidden">
+        <Sidebar />
 {/* rightside*/}
-<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800">
-  <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 shadow-md rounded-lg justify-between w-full p-6 dark:bg-slate-800">
-   <div className="flex flex-col gap-1 mx-3 mt-4 ">
+<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800 min-w-0">
+  <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 shadow-md rounded-lg justify-between w-full p-4 lg:p-6 dark:bg-slate-800">
+   <div className="flex flex-col gap-1">
       <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl ">{trip.destination}</h1>
       <h3 className="text-gray-400 dark:text-gray-500 text-sm">{trip.startDate} - {trip.endDate}</h3>
       <h3 className="text-gray-400 dark:text-gray-500 text-sm">{trip.members} Members</h3>
@@ -413,7 +402,7 @@ if(error || !trip){
   
  </div>
 
-<div className="flex items-center gap-2 mb-10 border border-gray-300 dark:border-gray-600 mt-2 rounded-[2rem] shadow-md px-4 py-2 dark:bg-slate-800">
+<div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2 mb-6 lg:mb-10 border border-gray-300 dark:border-gray-600 mt-4 rounded-[2rem] shadow-md px-4 py-2 dark:bg-slate-800">
   
   {/* Scrollable tabs — takes remaining space */}
   <div className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0 scrollbar-hide pb-1">
@@ -446,7 +435,7 @@ if(error || !trip){
   </div>
 
   {/* Action buttons — never shrink, always visible */}
-  <div className="flex items-center gap-2 flex-shrink-0 border-l border-gray-200 dark:border-gray-700 pl-3">
+  <div className="flex items-center gap-2 flex-shrink-0 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 pt-3 lg:pt-0 lg:pl-3">
     {isEditable && (
       <button
         onClick={add_trip}
@@ -472,7 +461,7 @@ if(error || !trip){
 </div>
 
 
-<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mx-4">
           {/* Timeline Columns (Morning, Afternoon, Evening) */}
           <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
             {['Morning', 'Afternoon', 'Evening'].map((period) => (
@@ -583,7 +572,7 @@ if(error || !trip){
 {isAdmin && showSearch && (
   <div className="fixed inset-0 bg-black/20 dark:bg-black/50 flex items-center justify-center z-50">
 
-    <div className="bg-white dark:bg-slate-800 w-[400px] rounded-[2rem] p-6 shadow-2xl border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-slate-800 w-[90vw] max-w-[400px] rounded-[2rem] p-6 shadow-2xl border border-gray-200 dark:border-gray-700">
 
       {/* Top */}
 
@@ -648,7 +637,7 @@ if(error || !trip){
       </div>
             </div>
             {isAdmin && (
-            <div className="flex flex-row w-full mr-3 justify-between">
+            <div className="flex flex-col lg:flex-row w-full mr-3 justify-between gap-3 lg:gap-0">
               {isEditable && (
               <button 
               onClick={saveDraft}
