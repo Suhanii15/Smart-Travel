@@ -145,31 +145,6 @@ Automatic budget breakdown:
 
 ---
 
-# 📂 Project Structure
-
-```
-SmartTravel/
-│
-├── client/
-│   ├── components/
-│   ├── pages/
-│   ├── context/
-│   ├── utils/
-│   └── App.jsx
-│
-├── server/
-│   ├── controllers/
-│   ├── routes/
-│   ├── models/
-│   ├── middleware/
-│   ├── services/
-│   └── server.js
-│
-└── README.md
-```
-
----
-
 # 🔄 User Workflow
 
 ## 1️⃣ Register / Login
@@ -317,19 +292,6 @@ npm run dev
 
 ---
 
-# 🔑 Environment Variables
-
-| Variable | Description |
-|-----------|------------|
-| MONGO_URI | MongoDB Connection String |
-| JWT_SECRET | JWT Secret Key |
-| GEMINI_API_KEY | Gemini API Key |
-| GOOGLE_CLIENT_ID | Google OAuth Client ID |
-| GOOGLE_CLIENT_SECRET | Google OAuth Secret |
-| GOOGLE_CALLBACK_URL | OAuth Callback URL |
-
----
-
 # Future Improvements
 
 - Twilio SMS Trip Reminders
@@ -342,37 +304,3 @@ npm run dev
 - Weather Forecast Integration
 
 ---
-
-# Resume Highlights
-
-✔ MERN Stack Development
-
-✔ REST API Development
-
-✔ JWT Authentication
-
-✔ Google OAuth Integration
-
-✔ Gemini AI Integration
-
-✔ MongoDB Database Design
-
-✔ Full Stack Architecture
-
-✔ Responsive UI Design
-
-✔ Collaborative Application Development
-
----
-
-# Author
-
-### Suhani Kabra
-
-LinkedIn: [https://www.linkedin.com/in/suhani-kabra-aab411315/]
-
-GitHub: https://github.com/Suhanii15
-
----
-
-⭐ If you found this project interesting, consider giving it a star!
