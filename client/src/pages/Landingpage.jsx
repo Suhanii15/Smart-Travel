@@ -38,9 +38,9 @@ const containerVariants = {
           viewport={{ once: true }}
           className="w-full lg:w-1/2 space-y-1"
         >
-    <motion.h1 variants={itemVariants} className="text-4xl font-bold text-gray-500">AI POWERED</motion.h1>
+    
     <motion.h1 variants={itemVariants} className="text-3xl font-bold text-blue-500 dark:text-blue-400">Travel Planning</motion.h1>
-    <motion.h1 variants={itemVariants} className="text-4xl font-bold text-gray-500">made easy</motion.h1>
+    <motion.h1 variants={itemVariants} className="text-4xl font-bold text-gray-500">Made Easy</motion.h1>
 
     <motion.h2 variants={itemVariants} className="text-lg text-gray-400 mt-4">
         Plan smarter, travel better, get personalized itineraries, budget tracking and real-time collaboration-all in one place.
