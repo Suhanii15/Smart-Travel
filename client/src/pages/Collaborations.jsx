@@ -200,7 +200,7 @@ const Collaborations = () => {
         });
     
         alert("Draft synced");
-        navigate('/mytrips');
+        navigate('/mytrips', { state: { initialTab: "Drafts" } });
     
     
       } catch(err){
@@ -450,7 +450,7 @@ if(error || !trip){
       Track Budget
     </div>
     <div
-      onClick={() => navigate(`/collaborations/${id}`)}
+      onClick={() => setShowSearch(true)}
       className="bg-yellow-400 flex items-center px-3 py-2 cursor-pointer rounded-[2rem] text-white font-semibold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
     >
       Collaborators

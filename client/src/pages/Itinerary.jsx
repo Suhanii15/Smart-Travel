@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus, Share2, MoreHorizontal, Compass, MapPin, Clock } from 'lucide-react';
+import { Plus, Share2, MoreHorizontal, Compass, MapPin, Clock, Users } from 'lucide-react';
 import Sidebar from '../components/Sidebar'
 import {useState }from 'react';
 import { ChevronsLeft } from 'lucide-react';
@@ -42,6 +42,10 @@ const [error,setError]=useState("");
 const [showMap, setShowMap] = useState(false);
   const [mapMarkers, setMapMarkers] = useState([]);
   const [mapLoading, setMapLoading] = useState(false);
+
+const [showCollab, setShowCollab] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [search, setSearch] = useState("");
 
 useEffect(()=>{
 const fetchTripData= async()=>{
@@ -232,6 +236,14 @@ try {
 const [isEditable, setIsEditable] = useState(true);
 const {user, logoutuser}=useContext(AuthContext);
 
+const isAdmin = trip?.collaborators?.some(
+  (c) => {
+    const collaboratorId = c.user?._id?.toString();
+    const currentUserId = (user?._id || user?.id)?.toString();
+    return collaboratorId === currentUserId && c.role === "admin";
+  }
+);
+
 const saveDraft = async() =>{
   try{
     const token=localStorage.getItem("token");
@@ -242,7 +254,7 @@ const saveDraft = async() =>{
     });
 
     alert("Draft synced");
-    navigate('/mytrips');
+    navigate('/mytrips', { state: { initialTab: "Drafts" } });
 
 
   } catch(err){
@@ -276,6 +288,62 @@ const handleFinaliseTrip = async () => {
     } catch (err) {
       console.error("Finalization Pipeline Crash:", err);
       alert(err.response?.data?.message || "Error running trip lock finalization sequence.");
+    }
+  };
+
+  useEffect(() => {
+    const delaySearchDebounce = setTimeout(async () => {
+      if (!search.trim()) {
+        setSearchResults([]);
+        return;
+      }
+      try {
+        const token = localStorage.getItem("token");
+        const config = { headers: { token: token } };
+        const response = await axios.get(`https://smart-travel-hvla.onrender.com/api/trips/search?username=${search}`, config);
+        if (response.data?.success) {
+          setSearchResults(response.data.users);
+        }
+      } catch (err) {
+        console.error("User Search network error:", err);
+      }
+    }, 400);
+
+    return () => clearTimeout(delaySearchDebounce);
+  }, [search]);
+
+  const addMember = async (targetUser) => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = { headers: { token: token } };
+      const response = await axios.post(
+        `https://smart-travel-hvla.onrender.com/api/trips/${id}/collaborators`,
+        { userToInvite: targetUser._id },
+        config
+      );
+      if (response.data?.success) {
+        setTrip(response.data.trip);
+        setSearch("");
+        setSearchResults([]);
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Could not assign member to itinerary.");
+    }
+  };
+
+  const removeMember = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = { headers: { token: token } };
+      const response = await axios.delete(
+        `https://smart-travel-hvla.onrender.com/api/trips/${id}/collaborators/${userId}`,
+        config
+      );
+      if (response.data?.success) {
+        setTrip(response.data.trip);
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to execute deletion procedure.");
     }
   };
 
@@ -450,18 +518,119 @@ if(error || !trip){
       Track Budget
     </div>
     <div
-      onClick={() => navigate(`/collaborations/${id}`)}
+      onClick={() => setShowCollab(true)}
       className="bg-yellow-400 flex items-center px-3 py-2 cursor-pointer rounded-[2rem] text-white font-semibold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
     >
-       Collaborators
+      Collaborators
     </div>
   </div>
 
 </div>
 
 
+{showCollab && (
+  <div className="fixed inset-0 bg-black/20 dark:bg-black/50 flex items-center justify-center z-50">
+
+    <div className="bg-white dark:bg-slate-800 w-[90vw] max-w-[420px] max-h-[85vh] overflow-y-auto rounded-[2rem] p-6 shadow-2xl border border-gray-200 dark:border-gray-700">
+
+      {/* Top */}
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2">
+          <Users className="text-blue-500 dark:text-blue-400" size={20} />
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+            Collaborators
+          </h2>
+        </div>
+        <X
+          size={20}
+          onClick={() => setShowCollab(false)}
+          className="cursor-pointer text-gray-400 dark:text-gray-500 hover:text-red-500"
+        />
+      </div>
+
+      {/* Current members list */}
+      <div className="mb-5 flex flex-col gap-2 max-h-[260px] overflow-y-auto">
+        {(trip?.collaborators || []).map((member) => (
+          <div key={member.id || member.user?._id} className="flex items-center justify-between rounded-2xl px-4 py-3 border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                member.role === "admin"
+                  ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400"
+                  : "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
+              }`}>
+                {member.user?.name?.[0]}
+              </div>
+              <div>
+                <p className="font-medium text-gray-700 dark:text-gray-200">{member.user?.name}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 capitalize">
+                  {member.role === "admin" ? "Admin" : "Member"}
+                </p>
+              </div>
+            </div>
+            {isAdmin && member.role !== "admin" && (
+              <X
+                size={16}
+                onClick={() => removeMember(member.user._id)}
+                className="text-gray-400 dark:text-gray-500 hover:text-red-500 cursor-pointer"
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Search Input */}
+      {isAdmin && (
+      <>
+        <input
+          type="text"
+          placeholder="Search users to add..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full border border-gray-200 dark:border-gray-600 rounded-2xl p-4 outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition dark:bg-slate-700 dark:text-gray-200"
+        />
+
+        {/* User List */}
+        <div className="mt-5 flex flex-col gap-3 max-h-[260px] overflow-y-auto">
+          {searchResults
+            .filter((user) =>
+              !(trip?.collaborators || []).some((m) => m.user._id === user._id)
+            )
+            .map((user) => (
+              <div key={user._id} className="flex items-center justify-between border border-gray-100 dark:border-gray-700 rounded-2xl px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                    {user.name[0]}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-700 dark:text-gray-200">{user.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">SmartTravel User</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => addMember(user)}
+                  className="bg-blue-600 dark:bg-blue-500 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition"
+                >
+                  Add
+                </button>
+              </div>
+            ))}
+          {search.trim() && searchResults.filter((user) =>
+            !(trip?.collaborators || []).some((m) => m.user._id === user._id)
+          ).length === 0 && (
+            <p className="text-center text-gray-400 dark:text-gray-500 text-sm py-4">No users found</p>
+          )}
+        </div>
+      </>
+      )}
+      {!isAdmin && (
+        <p className="text-center text-gray-400 dark:text-gray-500 text-sm">Only admins can add members.</p>
+      )}
+    </div>
+
+  </div>
+)}
+
 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mx-4">
-          {/* Timeline Columns (Morning, Afternoon, Evening) */}
           <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
             {['Morning', 'Afternoon', 'Evening'].map((period) => (
               <div key={period} className="space-y-4">

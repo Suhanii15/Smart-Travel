@@ -6,13 +6,15 @@ import { Funnel } from 'lucide-react';
 import { SlidersHorizontal } from 'lucide-react';
 import { TripCard, DraftCard, CompletedCard } from "../components/CardComponent";
 import {useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios'
 import { useEffect } from 'react';
 import { getDestinationImage } from '../utils/getDestinationImage';
 
 
 const MyTrips = () => {
-  const [activeTab, setActiveTab]=useState("UpcomingTrip");
+  const location = useLocation();
+  const [activeTab, setActiveTab]=useState(location.state?.initialTab || "UpcomingTrip");
   /*const trips ={
     UpcomingTrip: [
       { id: 1, title: "Manali Getaway", days: 5, price: "25,000", date: "10 May - 15 May", image: "..." },
