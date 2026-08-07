@@ -17,7 +17,7 @@ const GoogleAuthSuccess = () => {
 
   if (token) {
     loginUser({ name, _id: id }, token);
-    setTimeout(() => navigate("/dashboard"), 500);
+    setTimeout(() => navigate("/mytrips"), 500);
   } else {
     navigate("/login");
   }

@@ -64,10 +64,15 @@ const loginUser = (userData, token) => {
 
   };
 
+  const updateUser = (userData) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+  };
+
   
-      
+       
     return(
-    <AuthContext.Provider value={{ user, token, loginUser, logoutUser }}>
+    <AuthContext.Provider value={{ user, token, loginUser, logoutUser, updateUser }}>
       {children}
     </AuthContext.Provider>
 

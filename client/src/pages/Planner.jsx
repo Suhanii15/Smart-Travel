@@ -1,6 +1,6 @@
 import React from 'react'
 import {Compass} from 'lucide-react'
-import Sidebar from '../components/Sidebar'
+import Header from '../components/Header'
 import { Sparkles, Users } from 'lucide-react';
 import { MapPin } from 'lucide-react';
 import { CalendarFold } from 'lucide-react';
@@ -107,10 +107,8 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
   }
 
   return (
-    <div className="flex flex-row min-h-screen justify-between w-full ">
-        <Sidebar />
-{/* righside*/}
-
+    <div className="flex flex-col min-h-screen justify-between w-full ">
+        <Header />
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
   {/*header section*/}
   <div className="flex flex-row justify-between w-full ">
@@ -123,7 +121,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
     
   </div>
 {/* left part of right */}
-  <div className="flex flex-col ml-70 gap-1 p-2  w-full lg:max-w-2xl">
+  <div className="flex flex-col mx-auto gap-1 p-2 w-full lg:max-w-2xl">
     {error && (
             <div className="bg-red-50 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 p-3 mx-4 rounded-xl text-sm font-medium">
                {error}

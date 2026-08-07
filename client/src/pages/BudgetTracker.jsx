@@ -1,6 +1,6 @@
 import React,{useMemo} from 'react'
 import {Compass, FileVideo} from 'lucide-react'
-import Sidebar from '../components/Sidebar'
+import Header from '../components/Header'
 import {useState} from 'react'
 import { ChevronsLeft } from 'lucide-react'
 import { useNavigate, useParams } from "react-router-dom";
@@ -231,9 +231,8 @@ const totalbudget = useMemo(() => {
   }
 
   return (
-    <div className="flex flex-row min-h-screen">
-        <Sidebar />
-{/* rightside*/}
+    <div className="flex flex-col min-h-screen">
+        <Header />
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800">
   <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 shadow-md rounded-lg justify-between w-full p-6 dark:bg-slate-800">
    <div className="flex flex-col gap-1 mx-3 mt-4 ">

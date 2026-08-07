@@ -1,6 +1,6 @@
 import React from 'react'
 import { Plus, Share2, MoreHorizontal, Compass, MapPin, Clock, Users } from 'lucide-react';
-import Sidebar from '../components/Sidebar'
+import Header from '../components/Header'
 import {useState }from 'react';
 import { ChevronsLeft } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
@@ -377,7 +377,7 @@ if(error || !trip){
     : [20.5937, 78.9629]; 
 
   return (
-   <div className="flex flex-row min-h-screen overflow-x-hidden">
+   <div className="flex flex-col min-h-screen overflow-x-hidden">
 {showMap && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden w-full max-w-4xl h-[80vh] flex flex-col">
@@ -440,8 +440,7 @@ if(error || !trip){
       )}
 
 
-        <Sidebar />
-{/* rightside*/}
+        <Header />
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800 min-w-0">
   <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 shadow-md rounded-lg justify-between w-full p-4 lg:p-6 dark:bg-slate-800">
    <div className="flex flex-col gap-1">

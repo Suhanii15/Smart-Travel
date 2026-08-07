@@ -30,7 +30,7 @@ const[currState, setcurrState]=useState("Sign Up")
 
       if (data.success) {
         loginUser(data.userData, data.token);
-        Navigate("/dashboard"); // redirect after login/signup
+        Navigate("/mytrips"); // redirect after login/signup
       } else {
         alert(data.message);
 }

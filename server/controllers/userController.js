@@ -134,5 +134,51 @@ return res.json({
     }
 };
 
-module.exports={SignUp,login,getUser};
+const updateProfile = async(req,res)=>{
+    try{
+      const {name,email}=req.body;
+      if(!name && !email){
+        return res.status(400).json({
+          success:false,
+          message:"Nothing to update"
+        });
+      }
+      const updates={};
+      if(email){
+        const normalizedEmail=email.trim().toLowerCase();
+        const existing=await User.findOne({
+          email:new RegExp("^"+normalizedEmail.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"$","i"),
+          _id:{$ne:req.user._id}
+        });
+        if(existing){
+          return res.status(409).json({
+            success:false,
+            message:"Email already in use"
+          });
+        }
+        updates.email=normalizedEmail;
+      }
+      if(name){
+        updates.name=name.trim();
+      }
+      const updated=await User.findByIdAndUpdate(req.user._id,updates,{new:true}).select("-password");
+      return res.json({
+        success:true,
+        user:{
+          id:updated._id,
+          name:updated.name,
+          email:updated.email
+        }
+      });
+    }
+    catch(err){
+      console.log(err);
+      return res.json({
+        success:false,
+        message:"Failed to update profile"
+      });
+    }
+};
+
+module.exports={SignUp,login,getUser,updateProfile};
 

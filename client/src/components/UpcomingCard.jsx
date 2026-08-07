@@ -28,7 +28,7 @@ const UpcomingCard = ({id,image, date,days,title}) => {
     animate="visible"
     viewport={{ once: true }}
     variants={containerVariants}
-    className="group relative overflow-hiden rounded-[2rem] shadow-lg bg-white dark:bg-slate-800 flex flex-col gap-3 p-3 h-60 w-70 shadow-gray-300 dark:shadow-slate-800 hover:shadow-md transition-all-group duration-500 cursor-pointer z-3">
+    className="group relative overflow-hiden rounded-[2rem] shadow-lg bg-white dark:bg-slate-800 flex flex-col gap-3 p-3 h-60 w-full shadow-gray-300 dark:shadow-slate-800 hover:shadow-md transition-all-group duration-500 cursor-pointer z-3">
     <div className="relative h-56 overflow-hidden rounded-[1.5rem] aspect-video">
         <motion.img src={image} 
         alt={title}

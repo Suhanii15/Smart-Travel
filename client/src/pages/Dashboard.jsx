@@ -1,6 +1,6 @@
   import React from 'react'
   import {Compass} from 'lucide-react'
-  import Sidebar from '../components/Sidebar'
+  import Header from '../components/Header'
   import UpcomingCard from '../components/UpcomingCard'
   import { Search } from 'lucide-react';
   import { Plus } from 'lucide-react';
@@ -101,10 +101,9 @@
     if (allTrips.length > 0) fetchImages();
   }, [allTrips]);
     return (
-      <div className="flex flex-row min-h-screen">
-  <Sidebar />
-  {/* rightside*/}
-  <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 ml-10">
+      <div className="flex flex-col min-h-screen">
+  <Header />
+  <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
   <div className="flex justify-between w-full from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
     <motion.h1 
       initial="hidden" 
@@ -178,7 +177,7 @@
               
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  p-4 md:p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:p-6">
                 {filteredUpcoming.map(trip => (
                   <UpcomingCard
                     key={trip._id}
