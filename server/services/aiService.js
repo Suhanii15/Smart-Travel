@@ -61,6 +61,17 @@ const generateItinerary = async ({
     afternoon, evening.
   - Travel days should describe the journey as the activity.
   - Return ONLY the JSON object. No explanation.
+
+    IMPORTANT FOR ROUTING:
+  - If no direct flight exists from ${origin} to ${destination}, 
+    plan via the most logical connecting hub
+  - Show each connection as a separate morning/afternoon/evening 
+    slot on Day 1
+  - If journey crosses midnight, use Day 1 evening for departure 
+    and Day 2 morning for arrival
+  - Always mention the specific transport mode and approximate 
+    duration for each leg in the task description
+
   `;
 
   // Build explicit day keys instead of additionalProperties
