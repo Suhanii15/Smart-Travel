@@ -7,33 +7,13 @@ Built using the MERN stack with Gemini AI integration, Google OAuth authenticati
 ---
 
 ## 🚀 Live Demo
-Demo Video:[https://drive.google.com/file/d/1nVt32vSMrLjKgxR-L_cg1NVwft59moiG/view?usp=sharing]
 
 Live:[https://smart-travel-alpha.vercel.app/]
 
 ---
 
-## 📸 Screenshots
-
-### Dashboard
-<img width="1600" height="900" alt="Dashboard" src="https://github.com/user-attachments/assets/bbaa33a4-b780-4ec8-9e4d-2d63dc7a754f" />
 
 
-### Generated Itinerary
-<img width="1600" height="900" alt="Itinerary" src="https://github.com/user-attachments/assets/87759daf-be56-4a7b-9493-3279215bf6d2" />
-
-
-### Collaborations
-<img width="1600" height="900" alt="Collaborator" src="https://github.com/user-attachments/assets/edc0a459-8c55-4cb1-a7b1-05223d681bd8" />
-
-
-### Budget Tracker
-<img width="1600" height="900" alt="Budget" src="https://github.com/user-attachments/assets/29de5aae-1896-4b9e-bb48-2d1f5078d24d" />
-
-### Notifications
-<img width="1600" height="900" alt="Notifications" src="https://github.com/user-attachments/assets/3afb1af7-9278-413c-86ff-bd2b86822c93" />
-
----
 
 # ✨ Features
 
