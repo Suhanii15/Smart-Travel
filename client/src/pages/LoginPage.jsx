@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import loginp from '../assets/login.jpeg'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'  
+import { useNavigate, useLocation } from 'react-router-dom'  
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
 

@@ -143,7 +143,6 @@ useEffect(() => {
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
   <div className="flex flex-col lg:flex-row justify-between items-center w-full p-4 lg:p-6 gap-4">
     <div className="flex flex-col gap-2">
-      <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl">Welcome, {user?.name}</h1>
       <h3 className="text-gray-400 dark:text-gray-500 text-base font-semibold">Ready for your next adventure?</h3>
       {/* Search Bar */}
       <div className="relative w-full lg:w-80 mt-2">
