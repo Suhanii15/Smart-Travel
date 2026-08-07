@@ -37,7 +37,7 @@ const NotificationBell = () => {
     <div className="relative">
       <button onClick={() => setOpen(!open)}
         className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition">
-        <Bell size={22} className="text-gray-600 dark:text-gray-400" />
+        <Bell size={22} className="text-gray-600 dark:text-gray-400 hover:cursor-pointer" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
             {unreadCount}

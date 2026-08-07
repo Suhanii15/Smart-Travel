@@ -9,6 +9,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
 import { useEffect } from 'react';
 import axios from "axios"
+import { motion } from 'framer-motion';
 const Collaborations = () => {
     
     const navigate=useNavigate();
@@ -424,9 +425,6 @@ if(error || !trip){
               <X className="h-3 w-3" />
             </button>
           )}
-          {activeDay === day && (
-            <div className="absolute bottom-[-8px] left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-500 rounded-full" />
-          )}
         </button>
       );
     })}
@@ -463,12 +461,17 @@ if(error || !trip){
           {/* Timeline Columns (Morning, Afternoon, Evening) */}
           <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
             {['Morning', 'Afternoon', 'Evening'].map((period) => (
-              <div key={period} className="space-y-4">
+              <div key={`${period}-${activeDay}`} className="space-y-4">
                 <h3 className="text-gray-400 dark:text-gray-500 font-bold flex items-center gap-2 text-sm uppercase tracking-widest">
                   <span className="text-blue-500 dark:text-blue-400 text-xl">✦</span> {period}
                 </h3>
                 {trip.itinerary[activeDay]?.[period.toLowerCase()]?.map((item, idx) => (
-                  <div key={idx} className=" relative bg-white dark:bg-slate-800 p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group hover:cursor-pointer">
+                  <motion.div
+                    key={item._id || idx}
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: idx * 0.08, ease: "easeOut" }}
+                    className=" relative bg-white dark:bg-slate-800 p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group hover:cursor-pointer">
                     {isEditable && (
                     <button
     onClick={() => deleteActivity(item._id || idx, period.toLowerCase(), idx)}
@@ -493,7 +496,7 @@ if(error || !trip){
                       </div>
                       
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
 {isEditable && (
                 <button onClick={() => addActivity(activeDay, period.toLowerCase())}

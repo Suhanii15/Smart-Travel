@@ -115,13 +115,13 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
     {/*headingg*/}
     <div className="flex flex-col gap-1 mx-3 mt-4 px-4 lg:px-0">
       <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl ">Plan Your New Trip</h1>
-      <h3 className="text-gray-400 dark:text-gray-500 text-sm">Tell us your Preferences and get your Itenary in a few seconds</h3>
+      <h3 className="text-gray-400 dark:text-gray-500 text-sm">Tell us your Preferences and get your Itinerary in a few seconds</h3>
     </div>
 
     
   </div>
 {/* left part of right */}
-  <div className="flex flex-col mx-auto gap-1 p-2 w-full lg:max-w-2xl">
+  <div className="flex flex-col mx-auto gap-1 p-4 md:p-6 w-full lg:max-w-2xl border-2 border-gray-300 dark:border-gray-600 rounded-2xl shadow-md bg-white/60 dark:bg-slate-900/40">
     {error && (
             <div className="bg-red-50 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 p-3 mx-4 rounded-xl text-sm font-medium">
                {error}
@@ -259,23 +259,17 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
 
     </div>
 
-
-   
-
+    <div className="flex justify-center pt-2 pb-4">
+      <button
+        onClick={handleClick}
+        disabled={loading}
+        className={`bg-blue-600 dark:bg-blue-500 text-white font-semibold px-10 rounded-[2rem] py-3 shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed`}
+      >
+        {loading ? "Getting your plan..." : "Generate Itinerary"}
+      </button>
     </div>
 
-<button 
-            onClick={handleClick} 
-            disabled={loading}
-             className={`ml-130 sticky bottom-0 bg-blue-600  text-white font-semibold px-6   rounded-[2rem] py-2 shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed dark:bg-blue-500`}
-          >
-            {loading ? "Getting your plan " : "Generate Itinerary"}
-          </button>
-        
-
-
-
-
+    </div>
   </div>
 
   {/* <div className="hidden lg:flex lg:w-1/2 p-10 items-center justify-center">

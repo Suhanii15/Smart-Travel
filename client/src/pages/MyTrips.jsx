@@ -142,25 +142,16 @@ useEffect(() => {
 <Header />
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
   <div className="flex flex-col lg:flex-row justify-between items-center w-full p-4 lg:p-6 gap-4">
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl">Welcome, {user?.name}</h1>
       <h3 className="text-gray-400 dark:text-gray-500 text-base font-semibold">Ready for your next adventure?</h3>
-    </div>
-    
-  </div>
-
-  <div className="flex flex-col lg:flex-row justify-between items-center w-full px-4 lg:px-6 pb-4 lg:pb-6 gap-4"> 
-    
-
-    <div className="flex flex-col lg:flex-row gap-3 lg:gap-2 py-1 lg:items-center lg:justify-end w-full">
       {/* Search Bar */}
-      <div className="relative w-full lg:w-80">
+      <div className="relative w-full lg:w-80 mt-2">
        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} strokeWidth={2.5} />
       <input value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)}
        type="text" placeholder="Search Trips" className="w-full bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 pl-10 pr-4 py-2.5 rounded-full text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all shadow-sm" />
      </div>
-
-      {/* filter section — horizontal scroll on mobile */}
+    </div>
     <div className="flex flex-row gap-2 overflow-x-auto scrollbar-hide">
     {[
   { label: "Upcoming", value: "UpcomingTrip" },
@@ -190,11 +181,9 @@ useEffect(() => {
   );
 })}
      </div>
-
-    </div>
-
   </div>
 
+  
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-4 lg:p-6">
     {
       activeTab === 'UpcomingTrip' && segregatedTrips.UpcomingTrip.map(trip => (

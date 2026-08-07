@@ -3,6 +3,7 @@ import {Compass, FileVideo} from 'lucide-react'
 import Header from '../components/Header'
 import {useState} from 'react'
 import { ChevronsLeft } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useNavigate, useParams } from "react-router-dom";
 import { Sparkles } from 'lucide-react';
 import {
@@ -69,6 +70,8 @@ const [actualSpent, setActualSpent]=useState({
   Miscellaneous:0
 
 })
+const [editingCategory, setEditingCategory] = useState(null)
+const [draftAmount, setDraftAmount] = useState("")
 
 useEffect(()=>{
   const fetchDetails = async ()=>{
@@ -163,35 +166,40 @@ return [
 
 });
 
-const handleUpdate = async (category) => {
-  const userInput = window.prompt(
-    `Enter actual amount spent on ${category}:`,
-    actualSpent[category] || ""
-  );
-  if (userInput === null) return;
+const handleRowClick = (category) => {
+  setEditingCategory(category)
+  setDraftAmount(String(actualSpent[category] ?? ""))
+}
 
-  const parsedAmount = Number(userInput);
-  if (isNaN(parsedAmount) || parsedAmount < 0) {
-    alert("Please enter a positive number");
-    return;
+const handleAmountChange = (value) => {
+  setDraftAmount(value)
+}
+
+const handleUpdate = async (category) => {
+  const parsedAmount = Number(draftAmount)
+
+  if (draftAmount === "" || isNaN(parsedAmount) || parsedAmount < 0) {
+    alert("Please enter a valid non-negative amount")
+    return
   }
 
-  // Update local state immediately for responsive UI
-  setActualSpent(prev => ({ ...prev, [category]: parsedAmount }));
+  const normalizedAmount = Number(parsedAmount.toFixed(2))
 
-  // Persist to DB
+  setActualSpent(prev => ({ ...prev, [category]: normalizedAmount }))
+  setEditingCategory(null)
+
   try {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")
     await axios.patch(
       `https://smart-travel-hvla.onrender.com/api/trips/${id}/actualspent`,
-      { category, amount: parsedAmount },
+      { category, amount: normalizedAmount },
       { headers: { token } }
-    );
+    )
   } catch (err) {
-    console.error("Failed to save spent amount:", err);
-    alert("Could not save to database. Your change may be lost on refresh.");
+    console.error("Failed to save spent amount:", err)
+    alert("Could not save to database. Your change may be lost on refresh.")
   }
-};
+}
 
 
 const totalbudget = useMemo(() => {
@@ -233,13 +241,8 @@ const totalbudget = useMemo(() => {
   return (
     <div className="flex flex-col min-h-screen">
         <Header />
-<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800">
-  <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 shadow-md rounded-lg justify-between w-full p-6 dark:bg-slate-800">
-   <div className="flex flex-col gap-1 mx-3 mt-4 ">
-      <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl ">{trip.destination}</h1>
-      <h3 className="text-gray-400 dark:text-gray-500 text-sm">{new Date(trip.startDate).toLocaleDateString('en-IN',{day:'numeric', month:'short',year:'numeric'})}-{new Date(trip.endDate).toLocaleDateString('en-IN',{day:'numeric', month:'short', year:'numeric'})}</h3>
-     <h3 className="text-gray-400 dark:text-gray-500 text-sm">{trip.peopleCount} Members</h3>
-    </div>
+<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800 ml-4">
+   
     <div className="flex flex-col gap-1">
       {isEditable && (
       <div onClick={goback}
@@ -248,13 +251,8 @@ const totalbudget = useMemo(() => {
         <h3 className="text-gray-700 dark:text-gray-300 ">Back</h3>
       </div>
       )}
-     <div className="flex mt-2 mr-4 px-1 gap-2">
-          <div className="w-8 h-8 rounded-full bg-blue-600 dark:bg-blue-500 text-white flex items-center justify-center font-bold">
-        {user?.name[0]}
-          </div>
-          <p className="text-gray-700 dark:text-gray-200 mt-1 font-medium">{user?.name}</p>
-      </div>
-      </div>
+     
+      
  </div>
 
 <div className="flex flex-col mt-4 gap-3">
@@ -282,8 +280,8 @@ const totalbudget = useMemo(() => {
                                border-b border-blue-100 dark:border-blue-800 
                                last:border-0">
         <div>
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-            {leg.from} → {leg.to}
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center gap-1.5">
+            {leg.from} <ArrowRight size={14} className="text-blue-400" /> {leg.to}
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             {leg.mode} · {leg.duration}
@@ -309,7 +307,7 @@ const totalbudget = useMemo(() => {
 )}
   */}
 
-  <div className="w-full lg:w-3/4 mx-4 mr-4 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mt-5">
+  <div className="w-full lg:w-3/4 mx-4 mr-4 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mt-5 ">
           <div
             style={{ width: `${progress}%` }}
             className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-500"
@@ -325,38 +323,66 @@ const totalbudget = useMemo(() => {
 <div>
 </div>
  
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <div className="lg:col-span-2 space-y-5">
+ <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <div className="lg:col-span-2 space-y-2">
     {
       expenses.map((item,index)=>{
         const Icon=item.icon;
         const percentage = item.limit > 0 ? Math.min((item.spent / item.limit) * 100, 100) : 0;
 
         return(
-          <div key={index} onClick={() => handleUpdate(item.category)}
-           className="flex mx-4 justify-between items-center gap-3 lg:gap-4">
-            {/* Icon */}
-            <div className={`w-11 h-11 rounded-xl ${item.color} flex items-center
-            justify-center text-white flex-shrink-0`}>
-              <Icon size={24} />
-            </div >
-             {/* Info */}
-            <div className="flex-1 min-w-0">
-               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-2 gap-1">
+          <div key={index} className="mx-4 py-2">
+            <div
+              onClick={() => handleRowClick(item.category)}
+              className="flex cursor-pointer items-center justify-between gap-3 lg:gap-4"
+            >
+              {/* Icon */}
+              <div className={`w-11 h-11 rounded-xl ${item.color} flex items-center justify-center text-white flex-shrink-0`}>
+                <Icon size={24} />
+              </div>
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-2 gap-1">
                   <h3 className="font-semibold mx-3 text-gray-700 dark:text-gray-200 text-sm lg:text-base">
                     {item.category}
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-                     ₹{(item.spent || 0).toLocaleString('en-IN')} / ₹{(item.limit || 0).toLocaleString('en-IN')}
-                    </p>
-  <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                    <div
-                      style={{ width: `${percentage}%` }}
-                      className="h-full bg-teal-400 rounded-full"
-                    />
-                    </div>
-               </div>
+                    ₹{(item.spent || 0).toLocaleString('en-IN')} / ₹{(item.limit || 0).toLocaleString('en-IN')}
+                  </p>
+                </div>
+                <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                  <div
+                    style={{ width: `${percentage}%` }}
+                    className="h-full bg-teal-400 rounded-full"
+                  />
+                </div>
+              </div>
             </div>
+
+            {editingCategory === item.category && (
+              <div className="mt-2 flex max-w-sm flex-col gap-2 sm:flex-row" onClick={(e) => e.stopPropagation()}>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={draftAmount}
+                  onChange={(e) => handleAmountChange(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleUpdate(item.category)}
+                  placeholder={`Amount`}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 sm:w-36"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleUpdate(item.category)
+                  }}
+                  className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+                >
+                  Save
+                </button>
+              </div>
+            )}
           </div>
 
         )

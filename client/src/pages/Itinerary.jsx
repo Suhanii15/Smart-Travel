@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus, Share2, MoreHorizontal, Compass, MapPin, Clock, Users } from 'lucide-react';
+import { Plus, Share2, MoreHorizontal, Compass, MapPin, Clock, Users, Sunrise, Sun, Moon } from 'lucide-react';
 import Header from '../components/Header'
 import {useState }from 'react';
 import { ChevronsLeft } from 'lucide-react';
@@ -10,9 +10,11 @@ import { useContext } from 'react';
 import axios from 'axios'
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { getDestinationImage } from '../utils/getDestinationImage';
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
+import { motion } from 'framer-motion';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -46,6 +48,7 @@ const [showMap, setShowMap] = useState(false);
 const [showCollab, setShowCollab] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [search, setSearch] = useState("");
+  const [tripImage, setTripImage] = useState("");
 
 useEffect(()=>{
 const fetchTripData= async()=>{
@@ -84,6 +87,16 @@ finally{
   fetchTripData();
 },[id]);
 
+useEffect(() => {
+  if (!trip?.destination) return;
+
+  const fetchImage = async () => {
+    const imageUrl = await getDestinationImage(trip.destination);
+    setTripImage(imageUrl);
+  };
+
+  fetchImage();
+}, [trip?.destination]);
 
  const handleViewMap = async () => {
     setShowMap(true);
@@ -282,7 +295,7 @@ const handleFinaliseTrip = async () => {
 
       if (response.data.success) {
         setIsEditable(false);
-        alert("Trip structural tracking finalized successfully! Shifting to Upcoming timeline. ✈️");
+        alert("Trip structural tracking finalized successfully! Shifting to Upcoming timeline.");
         navigate('/mytrips');
       }
     } catch (err) {
@@ -378,7 +391,7 @@ if(error || !trip){
 
   return (
    <div className="flex flex-col min-h-screen overflow-x-hidden">
-{showMap && (
+    {showMap && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden w-full max-w-4xl h-[80vh] flex flex-col">
             
@@ -404,7 +417,7 @@ if(error || !trip){
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center space-y-3">
                     <div className="w-10 h-10 border-4 border-blue-600 dark:border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">Locating activity spots...</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Finding Activity Spots</p>
                   </div>
                 </div>
               ) : mapMarkers.length === 0 ? (
@@ -426,8 +439,8 @@ if(error || !trip){
                       <Popup>
                         <div className="text-sm">
                            <p className="font-bold text-gray-800 dark:text-gray-100">{marker.task}</p>
-                          {marker.time && <p className="text-blue-500 dark:text-blue-400">🕐 {marker.time}</p>}
-                           <p className="text-gray-500 dark:text-gray-400">📍 {marker.location}</p>
+                          {marker.time && <p className="text-blue-500 dark:text-blue-400 flex items-center gap-1"><Clock size={13} /> {marker.time}</p>}
+                           <p className="text-gray-500 dark:text-gray-400 flex items-center gap-1"><MapPin size={13} /> {marker.location}</p>
                         </div>
                       </Popup>
                     </Marker>
@@ -441,91 +454,85 @@ if(error || !trip){
 
 
         <Header />
-<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900/30 dark:to-slate-800 min-w-0">
-  <div className="flex flex-row items-center border border-gray-200 dark:border-gray-700 shadow-md rounded-lg justify-between w-full p-4 lg:p-6 dark:bg-slate-800">
-   <div className="flex flex-col gap-1">
-      <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl ">{trip.destination}</h1>
-      <h3 className="text-gray-400 dark:text-gray-500 text-sm">{new Date(trip.startDate).toLocaleDateString('en-IN',{day:'numeric', month:'short',year:'numeric'})}-{new Date(trip.endDate).toLocaleDateString('en-IN',{day:'numeric', month:'short', year:'numeric'})}</h3>
-      <h3 className="text-gray-400 dark:text-gray-500 text-sm">{trip.peopleCount || trip.members || 1} Members</h3>
-    </div>
-    <div className="flex flex-col gap-1">
-      {isEditable && (
-      <div onClick={goback}
-       className="flex flex-row gap-1 p-2 hover:cursor-pointer">
-        <ChevronsLeft className="text-gray-700 dark:text-gray-300" />
-        <h3 className="text-gray-700 dark:text-gray-300 ">Back</h3>
+<div className=" min-w-0 px-4 lg:px-6">
+  <div
+    className="relative mb-15 overflow-hidden rounded-[2rem] border border-white/40 p-4 lg:p-6 shadow-md"
+    style={tripImage ? {
+      backgroundImage: `linear-gradient(to right, rgba(15,23,42,0.72), rgba(15,23,42,0.35)), url('${tripImage}')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    } : undefined}
+  >
+    <div className="relative z-10 flex flex-col gap-2">
+      <div className="flex flex-row items-start justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="font-bold text-white text-2xl drop-shadow-sm">{trip.destination}</h1>
+          <h3 className="text-slate-100/90 text-sm">{new Date(trip.startDate).toLocaleDateString('en-IN',{day:'numeric', month:'short',year:'numeric'})}-{new Date(trip.endDate).toLocaleDateString('en-IN',{day:'numeric', month:'short', year:'numeric'})}</h3>
+          <h3 className="text-slate-100/90 text-sm">{trip.peopleCount || trip.members || 1} Members</h3>
+        </div>
+        <div className="flex flex-col gap-1">
+          {isEditable && (
+            <div onClick={goback} className="flex flex-row gap-1 p-2 hover:cursor-pointer text-white">
+              <ChevronsLeft className="text-white" />
+              <h3 className="text-white">Back</h3>
+            </div>
+          )}
+        </div>
       </div>
-      )}
-     <div className="flex mt-2 mr-4 px-1 gap-2">
-          <div className="w-8 h-8 rounded-full bg-blue-600 dark:bg-blue-500 text-white flex items-center justify-center font-bold">
-        {user?.name[0]}
-          </div>
-          <p className="text-gray-700 dark:text-gray-200 mt-1 font-medium">{user?.name}</p>
-      </div>
-     
 
-      </div>
-  
- </div>
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-1">
+        <div className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0 scrollbar-hide pb-1">
+          {Object.keys(trip.itinerary || {}).sort((a, b) => Number(a) - Number(b)).map((dayKey) => {
+            const day = Number(dayKey);
+            return (
+              <button
+                key={day}
+                onClick={() => setActiveDay(day)}
+                className={`relative cursor-pointer px-5 py-2 flex-shrink-0 rounded-xl transition-all ${
+                  activeDay === day ? 'bg-white/20 text-white' : 'text-slate-100/80 hover:bg-white/10'
+                }`}
+              >
+                <span className="text-xs uppercase block text-center">Day</span>
+                <span className="text-xl font-bold block leading-none">{day}</span>
+                {isEditable && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteday(day); }}
+                    className="absolute -top-1 -right-1 p-1 hover:cursor-pointer"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-<div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2 mb-6 lg:mb-6 border border-gray-300 dark:border-gray-600 mt-4 rounded-[2rem] shadow-md px-4 py-2 dark:bg-slate-800">
-  
-  {/* Scrollable tabs — takes remaining space */}
-  <div className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0 scrollbar-hide pb-1">
-    {Object.keys(trip.itinerary || {}).sort((a, b) => Number(a) - Number(b)).map((dayKey) => {
-      const day = Number(dayKey);
-      return (
-        <button
-          key={day}
-          onClick={() => setActiveDay(day)}
-          className={`relative cursor-pointer px-5 py-2 flex-shrink-0 transition-all ${
-            activeDay === day ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
-          }`}
-        >
-          <span className="text-xs uppercase block text-center">Day</span>
-          <span className="text-xl font-bold block leading-none">{day}</span>
+        <div className="flex items-center gap-2 flex-shrink-0 border-t lg:border-t-0 lg:border-l border-white/25 pt-3 lg:pt-0 lg:pl-3">
           {isEditable && (
             <button
-              onClick={(e) => { e.stopPropagation(); deleteday(day); }}
-              className="absolute -top-1 -right-1 p-1 hover:cursor-pointer"
+              onClick={add_trip}
+              className="flex items-center border border-white/40 bg-white/90 cursor-pointer px-3 py-2 rounded-[2rem] gap-1 text-blue-700 font-bold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
             >
-              <X className="h-3 w-3" />
+              <Plus size={16} /> Add Day
             </button>
           )}
-          {activeDay === day && (
-            <div className="absolute bottom-[-8px] left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-500 rounded-full" />
-          )}
-        </button>
-      );
-    })}
-  </div>
-
-  {/* Action buttons — never shrink, always visible */}
-  <div className="flex items-center gap-2 flex-shrink-0 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 pt-3 lg:pt-0 lg:pl-3">
-    {isEditable && (
-      <button
-        onClick={add_trip}
-        className="flex items-center border border-gray-300 dark:border-gray-600 cursor-pointer px-3 py-2 rounded-[2rem] gap-1 text-blue-600 dark:text-blue-400 font-bold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
-      >
-        <Plus size={16} /> Add Day
-      </button>
-    )}
-    <div
-      onClick={() => navigate(`/budgettracker/${id}`)}
-      className="bg-green-400 flex items-center px-3 py-2 cursor-pointer rounded-[2rem] text-white font-semibold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
-    >
-      Track Budget
-    </div>
-    <div
-      onClick={() => setShowCollab(true)}
-      className="bg-yellow-400 flex items-center px-3 py-2 cursor-pointer rounded-[2rem] text-white font-semibold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
-    >
-      Collaborators
+          <div
+            onClick={() => navigate(`/budgettracker/${id}`)}
+            className="bg-green-600/90 flex items-center px-3 py-2 cursor-pointer rounded-[2rem] text-white font-semibold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
+          >
+            Track Budget
+          </div>
+          <div
+            onClick={() => setShowCollab(true)}
+            className="bg-yellow-500/90 flex items-center px-3 py-2 cursor-pointer rounded-[2rem] text-white font-semibold hover:-translate-y-1 shadow-md transition duration-200 whitespace-nowrap"
+          >
+            Collaborators
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
 </div>
-
 
 {showCollab && (
   <div className="fixed inset-0 bg-black/20 dark:bg-black/50 flex items-center justify-center z-50">
@@ -629,104 +636,128 @@ if(error || !trip){
   </div>
 )}
 
-<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mx-4">
-          <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {['Morning', 'Afternoon', 'Evening'].map((period) => (
-              <div key={period} className="space-y-4">
-                <h3 className="text-gray-400 dark:text-gray-500 font-bold flex items-center gap-2 text-sm uppercase tracking-widest">
-                  <span className="text-blue-500 dark:text-blue-400 text-xl">✦</span> {period}
-                </h3>
-                {trip.itinerary[activeDay]?.[period.toLowerCase()]?.map((item, idx) => (
-                  <div key={idx} className=" relative bg-white dark:bg-slate-800 p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group hover:cursor-pointer">
-                    {isEditable && (
-                    <button
-    onClick={() => deleteActivity(item._id || idx, period.toLowerCase(), idx)}
-    className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all hover:text-red-500 cursor-pointer"
-  >
-    <X className="w-4 h-4" />
-  </button>
-                )}
-
-                    <div className="flex items-center gap-4 mb-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        period === 'Morning' ? 'bg-purple-100 text-purple-600' : 
-                        period === 'Afternoon' ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600'
-                      }`}>
-                        <MapPin size={18} />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-gray-800 dark:text-gray-100 leading-tight">{item.task}</h4>
-                        <div className="flex items-center gap-1 text-blue-500 dark:text-blue-400 font-bold text-sm mt-1">
-                          <Clock size={14} /> {item.time}
-                        </div>
-                      </div>
-                      
-                    </div>
-                  </div>
-                ))}
-{isEditable && (
-                <button onClick={() => addActivity(activeDay, period.toLowerCase())}
-                 className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-slate-600 rounded-[2rem] text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center
-                 gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors hover:-translate-y-1 cursor-pointer ">
-                  <Plus size={18} /> Add Activity
-                </button>
-)}
-              </div>
-            ))}
-          </div>
-
-
-
-<div className="flex flex-col justify-between mx-4 space-y-4">
-            <div className="bg-white dark:bg-slate-800 w-full p-6 rounded-[2rem] mr-3 shadow-md shadow-gray-400 dark:shadow-slate-700 ">
-              <div className="flex flex-row gap-2 ">
-              <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-4">
-                <Compass size={20} />
-              </div>
-              <h4 className="font-bold mt-1  text-gray-900 dark:text-gray-100 mb-2">Day {activeDay} Map</h4>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
-                View all your Day {activeDay} activity locations on an interactive map.
-              </p>
-              <button onClick={handleViewMap}
-               className="w-full py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-xl font-bold shadow-lg shadow-blue-200 dark:shadow-blue-900/30 hover:cursor-pointer">
-                View on Map
+<div className="grid grid-cols-1 lg:grid-cols-4 gap-3 px-4 lg:px-6 -mt-4">
+  <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+    {['Morning', 'Afternoon', 'Evening'].map((period) => (
+      <div key={`${period}-${activeDay}`} className="space-y-2">
+        <h3 className="text-gray-400 dark:text-gray-500 font-bold flex items-center gap-2 text-sm uppercase tracking-widest">
+          <span className="text-blue-500 dark:text-blue-400 text-xl">✦</span> {period}
+        </h3>
+        {trip.itinerary[activeDay]?.[period.toLowerCase()]?.map((item, idx) => (
+          <motion.div
+            key={item._id || idx}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: idx * 0.08, ease: "easeOut" }}
+            className="relative bg-white dark:bg-slate-800 p-5 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group hover:cursor-pointer"
+          >
+            {isEditable && (
+              <button
+                onClick={() => deleteActivity(item._id || idx, period.toLowerCase(), idx)}
+                className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all hover:text-red-500 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
               </button>
+            )}
+
+            <div className="flex items-center gap-4 mb-3">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                period === 'Morning' ? 'bg-purple-100 text-purple-600' : 
+                period === 'Afternoon' ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600'
+              }`}>
+                <MapPin size={18} />
+              </div>
+              <div>
+                <h4 className="font-bold text-gray-800 dark:text-gray-100 leading-tight">{item.task}</h4>
+                <div className="flex items-center gap-1 text-blue-500 dark:text-blue-400 font-bold text-sm mt-1">
+                  <Clock size={14} /> {item.time}
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col lg:flex-row w-full mr-3 justify-between gap-3 lg:gap-0">
-              {isEditable && (
-                
-              <button 
-              onClick={saveDraft}
-               className="border border-blue-600 dark:border-blue-500 text-gray-700 dark:text-gray-200 font-semibold text-sm px-3 border-2 py-3 rounded-[2rem] bg-white dark:bg-slate-800 shadow-md shadow-gray-400 dark:shadow-slate-700 hover:-translate-y-1 transition duration-300 cursor-pointer">
-                Save as Draft
-              </button>
-              )}
-              
-              <button disabled={!isEditable}
-              onClick={handleFinaliseTrip}
-              className={`font-semibold text-sm px-3 py-3 border-2 rounded-[2rem] shadow-md transition duration-300 ${
-                isEditable ? "bg-blue-600 dark:bg-blue-500 text-white hover:-translate-y-2 cursor-pointer" : "bg-gray-200 dark:bg-slate-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-              }`}
-             >
-              {isEditable ? "Finalise Trip" : "Trip Locked"}
-              </button>
-              
-            </div>
-          </div>
-        </div>
+          </motion.div>
+        ))}
+        {isEditable && (
+          <button
+            onClick={() => addActivity(activeDay, period.toLowerCase())}
+            className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-slate-600 rounded-[2rem] text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors hover:-translate-y-1 cursor-pointer"
+          >
+            <Plus size={18} /> Add Activity
+          </button>
+        )}
+      </div>
+    ))}
+  </div>
+
+ <div className="flex flex-col gap-3">
+
+  {/* Map Card */}
+  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 
+                  dark:border-gray-700 overflow-hidden shadow-sm">
+    
+    
+    <div className="p-4">
+      <h4 className="font-semibold text-gray-800 dark:text-gray-100 text-sm mb-1">
+        Day {activeDay} map
+      </h4>
+      <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed mb-3">
+        See all activity locations plotted on an interactive map for this day.
+      </p>
+      <button onClick={handleViewMap}
+        className="w-full py-2.5 bg-blue-600 dark:bg-blue-500 hover:bg-blue-500 
+                   text-white text-sm font-semibold rounded-xl flex items-center 
+                   justify-center gap-2 transition-all hover:-translate-y-0.5 cursor-pointer">
+        <MapPin size={15} /> View on map
+      </button>
+    </div>
+  </div>
+
+  {/* Trip Actions Card */}
+  <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 
+                  dark:border-gray-700 p-4 shadow-sm">
+    <div className="flex items-center justify-between mb-3">
+      <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 
+                    uppercase tracking-wider">
+        Trip actions
+      </p>
+      
     </div>
 
+    <div className="h-px bg-gray-100 dark:bg-gray-700 mb-3" />
+
+    <div className="flex flex-col gap-2">
+      {isEditable && (
+        <button onClick={saveDraft}
+          className="w-full py-2.5 bg-transparent border border-gray-200 
+                     dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-slate-700 
+                     text-gray-700 dark:text-gray-200 text-sm font-semibold rounded-xl 
+                     flex items-center justify-center gap-2 transition-all cursor-pointer">
+          Save as draft
+        </button>
+      )}
+
+      <button onClick={isEditable ? handleFinaliseTrip : undefined}
+        disabled={!isEditable}
+        className={`w-full py-2.5 text-sm font-semibold rounded-xl flex items-center 
+                    justify-center gap-2 transition-all ${
+          isEditable
+            ? 'bg-blue-600 dark:bg-blue-500 hover:bg-blue-500 text-white hover:-translate-y-0.5 cursor-pointer'
+            : 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+        }`}>
+        {isEditable ? (
+          <><span>Finalise trip</span></>
+        ) : (
+          <><span>Trip locked</span></>
+        )}
+      </button>
+
+      
+    </div>
+  </div>
+
+</div>
 </div>
 
-
-
-
-
-
-
-
-
+  </div>
 
   )
 }

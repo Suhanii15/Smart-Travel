@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, Users, MapPin, MoreVertical, Heart, CheckCircle2 } from 'lucide-react';
+import { Calendar, Users, MapPin, MoreVertical, Heart, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -61,7 +61,7 @@ export const TripCard = ({id, image, title, location, date, travelers, price, da
         </div>
       </div>
       <p className="text-slate-400 dark:text-gray-400 text-[10px] mb-3">Last edited {date}</p>
-      <button className="w-full py-2 text-md font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer">Continue →</button>
+      <button className="w-full py-2 text-md font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer flex items-center justify-center gap-1">Continue <ChevronRight size={16} /></button>
     </div>
   
 );
@@ -112,8 +112,8 @@ export const CompletedCard = ({id, image, title, date, travelers ,days}) => {
           <span>{travelers} Travelers</span>
         </div>
 
-        <button className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
-          View Trip →
+        <button className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-0.5">
+          View Trip <ChevronRight size={14} />
         </button>
 
       </div>

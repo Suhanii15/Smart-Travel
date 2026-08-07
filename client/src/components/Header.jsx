@@ -65,7 +65,7 @@ const Header = () => {
   };
 
   return (
-    <div className="flex items-center justify-between w-full px-4 lg:px-6 py-3 bg-slate-100 dark:bg-slate-800 border-b border-gray-200 dark:border-gray-700">
+    <div className="flex items-center justify-between w-full px-4 lg:px-6 py-3 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
       <NavLink to="/mytrips" className="flex items-center gap-2">
         <div className="p-2 h-10 bg-blue-500/10 dark:bg-blue-400/20 rounded-full">
           <Compass className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />
@@ -125,7 +125,7 @@ const Header = () => {
                 <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition cursor-pointer"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer"
                 >
                   <LogOut size={16} />
                   Logout
