@@ -271,6 +271,46 @@ const totalbudget = useMemo(() => {
         </p>
 
   </div>
+  {/* Transport legs — add between heading and progress bar 
+{trip.estimatedBudget?.transportLegs?.length > 0 && (
+  <div className="mx-4 lg:w-3/4 bg-blue-50 dark:bg-blue-900/20 border 
+                  border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-2">
+    <h3 className="font-semibold text-blue-700 dark:text-blue-300 
+                   text-sm mb-3">
+      Getting There
+    </h3>
+    {trip.estimatedBudget.transportLegs.map((leg, i) => (
+      <div key={i} className="flex justify-between items-center py-2 
+                               border-b border-blue-100 dark:border-blue-800 
+                               last:border-0">
+        <div>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+            {leg.from} → {leg.to}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {leg.mode} · {leg.duration}
+          </p>
+        </div>
+        <span className="text-sm font-semibold text-blue-600 
+                         dark:text-blue-400">
+          ₹{leg.estimatedCost?.toLocaleString('en-IN')}
+        </span>
+      </div>
+    ))}
+    {trip.estimatedBudget.transportNote && (
+      <p className="text-xs text-blue-600 dark:text-blue-400 mt-2 italic">
+        {trip.estimatedBudget.transportNote}
+      </p>
+    )}
+    {trip.estimatedBudget.alternativeMode && (
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        Alternative: {trip.estimatedBudget.alternativeMode}
+      </p>
+    )}
+  </div>
+)}
+  */}
+
   <div className="w-full lg:w-3/4 mx-4 mr-4 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mt-5">
           <div
             style={{ width: `${progress}%` }}

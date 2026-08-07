@@ -17,10 +17,11 @@ const Planner = () => {
 
   const navigate = useNavigate();
 
- 
+const [origin, setOrigin] = useState("");
 
   const [startDate, setStartDate] =useState(null);
   const [endDate,setEndDate]=useState(null);
+
 
   const onChange =(dates)=>{
     const [start,end] =dates;
@@ -72,6 +73,7 @@ const Planner = () => {
       };
 
       const payload={
+        origin,
         destination,
         startDate:startDate.toISOString(),
         endDate:endDate.toISOString(),
@@ -121,12 +123,28 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
     
   </div>
 {/* left part of right */}
-  <div className="flex flex-col gap-4 p-4 lg:p-6 w-full lg:max-w-2xl">
+  <div className="flex flex-col gap-2 p-4 lg:p-6 w-full lg:max-w-2xl">
     {error && (
             <div className="bg-red-50 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 p-3 mx-4 rounded-xl text-sm font-medium">
                {error}
             </div>
           )}
+
+      {/* Origin - add this BEFORE destination */}
+<div className="flex flex-col gap-3 p-4 lg:w-full">
+  <label className="text-gray-700 dark:text-gray-200 text-md font-semibold">
+    Travelling From
+  </label>
+  <div className="flex items-center justify-between w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2">
+    <input
+      placeholder="Delhi"
+      value={origin}
+      onChange={(e) => setOrigin(e.target.value)}
+      className="text-gray-700 dark:text-gray-200 w-full outline-none"
+    />
+    <MapPin className="text-gray-700  dark:text-gray-200 dark:bg-slate-800" strokeWidth={1.5} />
+  </div>
+</div>    
     {/* Destination */}
 
      <div className="flex flex-col gap-3 p-4 lg:w-full">
@@ -140,7 +158,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
           onChange={(e) => setDestination(e.target.value)}
           className="text-gray-700 dark:text-gray-200 w-full outline-none"
         />
-        <MapPin className="text-gray-700 bg-white dark:text-gray-200 dark:bg-slate-800" strokeWidth={1.5} />
+        <MapPin className="text-gray-700  dark:text-gray-200 dark:bg-slate-800" strokeWidth={1.5} />
       </div>
       </div>
       {/* Dates */}
@@ -150,7 +168,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
       </label>
       <div className="flex items-center justify-between w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2">
       <DatePicker startDate={startDate} endDate={endDate} onChange={onChange} selectsRange dateFormat="dd/MM/yyyy" className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 outline-none border-none dark:text-gray-200 dark:placeholder-gray-400" placeholderText="Select your travel dates" />
-        <CalendarFold className="text-gray-700 bg-white outline-none border-none dark:text-gray-200 dark:bg-slate-800" strokeWidth={1.5} />
+        <CalendarFold className="text-gray-700 outline-none border-none dark:text-gray-200 dark:bg-slate-800" strokeWidth={1.5} />
         </div>
       </div>
 

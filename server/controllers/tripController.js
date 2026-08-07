@@ -6,25 +6,22 @@ const mongoose=require("mongoose");
 
 const CreateTrip = async(req,res)=>{
  try{
-  const {destination,startDate,endDate,travelStyle,peopleCount,companions,preferences,interests}=req.body;
+  const {origin,destination,startDate,endDate,travelStyle,peopleCount,companions,preferences,interests}=req.body;
   if (!destination || !startDate || !endDate) {
       return res.status(400).json({
         success: false,
         message: "Destination, Start Date, and End Date are mandatory to generate an itinerary."
       });
     }
-   /* let itineraryData = {};
-    try {
-      
-      itineraryData = await generateItinerary(destination, startDate, endDate);
-    } catch (aiError) {
-      console.error(" Gemini API is down/busy. Creating fallback empty itinerary instead.");}*/
+   
+console.log("Request body:", req.body);
     const start = new Date(startDate);
     const end = new Date(endDate);
     const timeDifference = end.getTime() - start.getTime();
     const totalDays = Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) + 1;
 
 const aiPayload = await generateItinerary({
+  origin,
       destination,
       totalDays,
       travelStyle,
@@ -48,6 +45,7 @@ const formattedItinerary = {};
     };
   }
   const newTrip=await Trip.create({
+    origin,
     destination,
     startDate,
     endDate,
@@ -65,6 +63,7 @@ const formattedItinerary = {};
       ],
 
   });
+  console.log("SAVING TRIP WITH ORIGIN:", origin);
 console.log(
   "ITINERARY KEYS:",
   Object.keys(aiPayload.itinerary || {})

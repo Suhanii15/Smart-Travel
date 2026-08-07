@@ -29,10 +29,15 @@ const collaboratorSchema=new mongoose.Schema({
 });
 const TripSchema=new mongoose.Schema(
     {
+    origin: {           
+    type: String,
+    required: false,
+},
         destination:{
             type:String,
             required:true,
         },
+   
         startDate:Date,
         endDate:Date,
         peopleCount:Number,
@@ -41,7 +46,7 @@ const TripSchema=new mongoose.Schema(
             enum:["draft","finalized","completed"],
             default:"draft",
         },
-        preferences:[String],
+        preferences: String,
 
         collaborators:[collaboratorSchema],
 
@@ -62,7 +67,17 @@ const TripSchema=new mongoose.Schema(
     activitiesTotal: { type: Number, default: 0 },
     miscellaneousTotal: { type: Number, default: 0 },
     grandTotal: { type: Number, default: 0 },
-    currency: { type: String, default: "INR" }
+    currency: { type: String, default: "INR" },
+    
+    transportLegs: [{
+        from:          { type: String },
+        to:            { type: String },
+        mode:          { type: String },
+        duration:      { type: String },
+        estimatedCost: { type: Number }
+    }],
+    transportNote:   { type: String },
+    alternativeMode: { type: String }
   },
 actualSpent: {
   Accomodation:  { type: Number, default: 0 },

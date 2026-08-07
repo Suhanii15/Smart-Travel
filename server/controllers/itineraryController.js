@@ -117,7 +117,7 @@ const addActivity = async(req,res) =>{
 
 const ptrip = await Trip.findById(tripId).populate("collaborators.user", "_id name email googleId");
 
-// Debugging: log collaborators and requesting user id to diagnose Google-account mismatch
+// log collaborators and requesting user id to diagnose Google-account mismatch
 console.log("addActivity: req.user._id=", req.user?._id?.toString());
 console.log("addActivity: ptrip.collaborators=", ptrip.collaborators.map(c => ({ user: c.user, role: c.role })));
 
