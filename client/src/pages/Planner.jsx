@@ -123,7 +123,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
     
   </div>
 {/* left part of right */}
-  <div className="flex flex-col gap-2 p-4 lg:p-6 w-full lg:max-w-2xl">
+  <div className="flex flex-col ml-70 gap-1 p-2  w-full lg:max-w-2xl">
     {error && (
             <div className="bg-red-50 text-red-600 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 p-3 mx-4 rounded-xl text-sm font-medium">
                {error}
@@ -142,7 +142,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
       onChange={(e) => setOrigin(e.target.value)}
       className="text-gray-700 dark:text-gray-200 w-full outline-none"
     />
-    <MapPin className="text-gray-700  dark:text-gray-200 dark:bg-slate-800" strokeWidth={1.5} />
+    <MapPin className="text-gray-700  dark:text-gray-200 " strokeWidth={1.5} />
   </div>
 </div>    
     {/* Destination */}
@@ -158,7 +158,7 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
           onChange={(e) => setDestination(e.target.value)}
           className="text-gray-700 dark:text-gray-200 w-full outline-none"
         />
-        <MapPin className="text-gray-700  dark:text-gray-200 dark:bg-slate-800" strokeWidth={1.5} />
+        <MapPin className="text-gray-700  dark:text-gray-200 " strokeWidth={1.5} />
       </div>
       </div>
       {/* Dates */}
@@ -269,9 +269,9 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
 <button 
             onClick={handleClick} 
             disabled={loading}
-             className={`bg-blue-600 w-full lg:w-1/2 text-white font-semibold px-6 ml-4 lg:ml-6 rounded-[2rem] py-2 shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed dark:bg-blue-500`}
+             className={`ml-130 sticky bottom-0 bg-blue-600  text-white font-semibold px-6   rounded-[2rem] py-2 shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed dark:bg-blue-500`}
           >
-            {loading ? "Generating your plan... " : "Generate Itinerary"}
+            {loading ? "Getting your plan " : "Generate Itinerary"}
           </button>
         
 
@@ -280,31 +280,28 @@ setError(err.response?.data?.message || "Something went wrong while AI was compi
 
   </div>
 
-  <div className="hidden lg:flex lg:w-1/2 p-10 items-center justify-center">
+  {/* <div className="hidden lg:flex lg:w-1/2 p-10 items-center justify-center">
     <div className="bg-white dark:bg-slate-800 rounded-2xl p-10 shadow-lg border border-gray-100 dark:border-gray-700 max-w-md w-full space-y-10">
       <div className="text-center">
         <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/40 rounded-2xl flex items-center justify-center mx-auto mb-5">
           <Sparkles className="text-blue-600 dark:text-blue-400" size={32} />
         </div>
         <h3 className="font-bold text-gray-800 dark:text-gray-100 text-xl">AI-Powered Planning</h3>
-        <p className="text-base text-gray-500 dark:text-gray-400 mt-1">Personalized itineraries crafted by AI in seconds</p>
       </div>
       <div className="text-center">
         <div className="w-16 h-16 bg-green-100 dark:bg-green-900/40 rounded-2xl flex items-center justify-center mx-auto mb-5">
           <CalendarFold className="text-green-600 dark:text-green-400" size={32} />
         </div>
         <h3 className="font-bold text-gray-800 dark:text-gray-100 text-xl">Smart Budget Tracking</h3>
-        <p className="text-base text-gray-500 dark:text-gray-400 mt-1">Stay on top of your trip expenses effortlessly</p>
       </div>
       <div className="text-center">
-        <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/40 rounded-2xl flex items-center justify-center mx-auto mb-5">
+        <div className="w-16 h-16  rounded-2xl flex items-center justify-center mx-auto mb-5">
           <Users className="text-purple-600 dark:text-purple-400" size={32} />
         </div>
         <h3 className="font-bold text-gray-800 dark:text-gray-100 text-xl">Real-time Collaboration</h3>
-        <p className="text-base text-gray-500 dark:text-gray-400 mt-1">Plan trips together with friends and family</p>
       </div>
     </div>
-  </div>
+  </div> */}
 </div>
 
     

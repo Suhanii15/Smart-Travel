@@ -52,9 +52,9 @@ const { user, logoutUser } = useContext(AuthContext);
       )}
 
       <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-100 dark:bg-slate-800 transform transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} xl:translate-x-0 xl:static xl:flex flex-col min-h-screen overflow-y-auto flex-shrink-0`}>
-        <div className="flex gap-5 my-2 flex-shrink-0">
-          <div className="p-2 ml-2 h-10 bg-blue-500/10 dark:bg-blue-400/20 top-2 rounded-full">
-            <Compass className="text-blue-500 dark:text-blue-400" strokeWidth={2.5} />
+        <div className="flex gap-4 mt-4 my-2 flex-shrink-0">
+          <div className="p-2 ml-4  h-10 bg-blue-500/10 dark:bg-blue-400/20 top-2 rounded-full">
+            <Compass className="text-blue-500 dark:text-blue-400 " strokeWidth={2.5} />
           </div>
           <span className="text-xl mt-2 font-bold tracking-tight text-gray-600 dark:text-gray-300">
             Smart<span className="text-blue-500 dark:text-blue-400">Travel</span>

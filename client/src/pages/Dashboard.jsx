@@ -1,199 +1,199 @@
-import React from 'react'
-import {Compass} from 'lucide-react'
-import Sidebar from '../components/Sidebar'
-import UpcomingCard from '../components/UpcomingCard'
-import { Search } from 'lucide-react';
-import { Plus } from 'lucide-react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { AuthContext } from '../context/AuthContext';
-import { useContext } from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { getDestinationImage } from '../utils/getDestinationImage';
-import axios from "axios"
-import NotificationBell from '../components/NotificationBell'
+  import React from 'react'
+  import {Compass} from 'lucide-react'
+  import Sidebar from '../components/Sidebar'
+  import UpcomingCard from '../components/UpcomingCard'
+  import { Search } from 'lucide-react';
+  import { Plus } from 'lucide-react';
+  import { NavLink, useNavigate } from 'react-router-dom';
+  import { ChevronRight } from 'lucide-react';
+  import { motion } from 'framer-motion';
+  import { AuthContext } from '../context/AuthContext';
+  import { useContext } from 'react';
+  import { useState } from 'react';
+  import { useEffect } from 'react';
+  import { getDestinationImage } from '../utils/getDestinationImage';
+  import axios from "axios"
+  import NotificationBell from '../components/NotificationBell'
 
 
-const Dashboard = () => {
-  const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const Dashboard = () => {
+    const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
 
-  const [allTrips, setAllTrips] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+    const [allTrips, setAllTrips] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
 
-  const [tripImages, setTripImages] = useState({});
+    const [tripImages, setTripImages] = useState({});
 
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2, 
+    const containerVariants = {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: {
+          staggerChildren: 0.2, 
+        },
       },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 2.6, ease: "easeOut" },
-    },
-  };
-
-   useEffect(() => {
-    const fetchTrips = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get("https://smart-travel-hvla.onrender.com/api/trips/alltrips", {
-          headers: { token }
-        });
-        if (response.data?.success) {
-          setAllTrips(response.data.trips || []);
-        }
-      } catch (err) {
-        console.error("Failed to fetch trips:", err);
-      } finally {
-        setLoading(false);
-      }
     };
-    fetchTrips();
-  }, []);
 
-  const upcomingTrips = allTrips.filter(t => 
-  t.status !== "draft" && t.status !== "completed"
-);
+    const itemVariants = {
+      hidden: { y: 20, opacity: 0 },
+      visible: {
+        y: 0,
+        opacity: 1,
+        transition: { duration: 2.6, ease: "easeOut" },
+      },
+    };
 
-const filteredUpcoming = upcomingTrips
-  .filter(t => t.destination?.toLowerCase().includes(searchQuery.toLowerCase()))
-  .slice(0, 3);
+    useEffect(() => {
+      const fetchTrips = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get("https://smart-travel-hvla.onrender.com/api/trips/alltrips", {
+            headers: { token }
+          });
+          if (response.data?.success) {
+            setAllTrips(response.data.trips || []);
+          }
+        } catch (err) {
+          console.error("Failed to fetch trips:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchTrips();
+    }, []);
 
- 
-  const formatDate = (start, end) => {
-    if (!start) return "Flexible Dates";
-    const sOpt = { day: 'numeric', month: 'short' };
-    const eOpt = { day: 'numeric', month: 'short', year: 'numeric' };
-    return `${new Date(start).toLocaleDateString('en-IN', sOpt)} - ${new Date(end).toLocaleDateString('en-IN', eOpt)}`;
-  };
+    const upcomingTrips = allTrips.filter(t => 
+    t.status !== "draft" && t.status !== "completed"
+  );
 
-  const calcDays = (start, end) => {
-    if (!start || !end) return 1;
-    return Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
-  };
+  const filteredUpcoming = upcomingTrips
+    .filter(t => t.destination?.toLowerCase().includes(searchQuery.toLowerCase()))
+    .slice(0, 3);
 
-useEffect(() => {
-  const fetchImages = async () => {
-    const imageMap = {};
-    await Promise.all(
-      allTrips.map(async (trip) => {
-        const url = await getDestinationImage(trip.destination);
-        imageMap[trip._id] = url;
-      })
-    );
-    setTripImages(imageMap);
-  };
+  
+    const formatDate = (start, end) => {
+      if (!start) return "Flexible Dates";
+      const sOpt = { day: 'numeric', month: 'short' };
+      const eOpt = { day: 'numeric', month: 'short', year: 'numeric' };
+      return `${new Date(start).toLocaleDateString('en-IN', sOpt)} - ${new Date(end).toLocaleDateString('en-IN', eOpt)}`;
+    };
 
-  if (allTrips.length > 0) fetchImages();
-}, [allTrips]);
-  return (
-    <div className="flex flex-row min-h-screen">
-<Sidebar />
-{/* rightside*/}
-<div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
- <div className="flex justify-between w-full bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
-  <motion.h1 
-    initial="hidden" 
-    animate="visible" 
-    variants={containerVariants} 
-    className="text-2xl md:text-3xl font-bold text-gray-700 dark:text-gray-100 mt-7 mx-4 md:mx-6"
-  >
-    Welcome, {user?.name}
-    <motion.h3 
+    const calcDays = (start, end) => {
+      if (!start || !end) return 1;
+      return Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
+    };
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const imageMap = {};
+      await Promise.all(
+        allTrips.map(async (trip) => {
+          const url = await getDestinationImage(trip.destination);
+          imageMap[trip._id] = url;
+        })
+      );
+      setTripImages(imageMap);
+    };
+
+    if (allTrips.length > 0) fetchImages();
+  }, [allTrips]);
+    return (
+      <div className="flex flex-row min-h-screen">
+  <Sidebar />
+  {/* rightside*/}
+  <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 ml-10">
+  <div className="flex justify-between w-full from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
+    <motion.h1 
       initial="hidden" 
       animate="visible" 
-      variants={itemVariants} 
-      className="text-xl font-semibold text-gray-400 dark:text-gray-500"
+      variants={containerVariants} 
+      className="text-2xl md:text-3xl font-bold text-gray-700 dark:text-gray-100 mt-7 mx-4 md:mx-6"
     >
-      Ready for your next adventure?
-    </motion.h3>
-  </motion.h1>
-  
-  <div className="flex mt-12 mr-4 px-1 gap-2">
-    <NotificationBell />
-          <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold dark:bg-blue-500">
-        {user?.name[0]}
-          </div>
-          <p className="text-gray-700 dark:text-gray-200 font-medium">{user?.name}</p>
-        </div>
-  
- </div>
-
- <div className="flex flex-col lg:flex-row rounded-lg bg-slate-50 dark:bg-slate-800 justify-between mt-5 mx-4 lg:mx-17 px-5 py-2 pt-3 gap-3 lg:gap-0">
-  <div className="flex flex-rows gap-1 border border-gray-300 dark:border-gray-600 items-center rounded-lg px-3 py-1 hover:shadow-md hover:border-blue-700 transition duration-300">
-    <Search 
-     className="text-gray-500 " strokeWidth={3.5} />
-<input value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-type="text" placeholder="Search for trips.." className="px-4 py-2 w-full lg:w-160 rounded-md outline-none dark:bg-slate-800 dark:text-gray-200"  />
-  </div>
-
-  <div onClick={()=>navigate('/planner')}
-  className=" flex flex-row gap-2 px-2 py-2 bg-blue-600 h-10 text-white rounded-md shadow-md hover:bg-blue-500 cursor-pointer dark:bg-blue-500 dark:hover:bg-blue-400">
-    <Plus className="text-white" strokeWidth={2.5} />
-    Plan New Trip
-  </div>
-
- </div>
- <div className="flex flex-col gap-6 mt-6 px-4 md:px-8">
-  <div className="flex flex-row justify-between items-center">
-   <h1 className="text-2xl md:text-3xl font-semibold text-gray-600 dark:text-gray-300">Upcoming Trips</h1>
-    {upcomingTrips.length > 3 && (
-      <span className="bg-blue-100 text-blue-600 text-xs font-bold px-2 py-1 rounded-full dark:bg-blue-900/40 dark:text-blue-400">
-        +{upcomingTrips.length - 3} more
-      </span>
-    )}
-  </div>
-  <NavLink
-    to="/mytrips"
-    className="group flex items-center gap-1 text-blue-600 font-semibold text-sm hover:text-blue-700 transition-colors dark:text-blue-400 dark:hover:text-blue-300"
-  >
-    <span>View all</span>
-    <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" strokeWidth={3} />
-  </NavLink>
-</div>
-   {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin dark:border-blue-500" />
-            </div>
-          ) : filteredUpcoming.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-gray-400 dark:text-gray-500 text-lg font-medium">
-                {searchQuery ? `No upcoming trips matching "${searchQuery}"` : "No upcoming trips yet"}
-              </p>
-             
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:p-6">
-              {filteredUpcoming.map(trip => (
-                <UpcomingCard
-                  key={trip._id}
-                  image={tripImages[trip._id]} 
-                  title={trip.destination}
-                  date={formatDate(trip.startDate, trip.endDate)}
-                  days={calcDays(trip.startDate, trip.endDate)}
-                  id={trip._id}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+      Welcome, {user?.name}
+      <motion.h3 
+        initial="hidden" 
+        animate="visible" 
+        variants={itemVariants} 
+        className="text-xl font-semibold text-gray-400 dark:text-gray-500"
+      >
+        Ready for your next adventure?
+      </motion.h3>
+    </motion.h1>
     
-  );
-}
-export default Dashboard
+    <div className="flex mt-12 mr-4 px-1 gap-2">
+      <NotificationBell />
+            <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold dark:bg-blue-500">
+          {user?.name[0]}
+            </div>
+            <p className="text-gray-700 dark:text-gray-200 font-medium">{user?.name}</p>
+          </div>
+    
+  </div>
+
+  {/*<div className="flex flex-col lg:flex-row rounded-lg bg-slate-50 dark:bg-slate-800 justify-between mt-5 mx-4 lg:mx-17 px-5 py-2 pt-3 gap-3 lg:gap-0">
+    <div className="flex flex-rows gap-1 border border-gray-300 dark:border-gray-600 items-center rounded-lg px-3 py-1 hover:shadow-md hover:border-blue-700 transition duration-300">
+      <Search 
+      className="text-gray-500 " strokeWidth={3.5} />
+  <input value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+  type="text" placeholder="Search for trips.." className="px-4 py-2 w-full lg:w-160 rounded-md outline-none dark:bg-slate-800 dark:text-gray-200"  />
+    </div>
+
+    <div onClick={()=>navigate('/planner')}
+    className=" flex flex-row gap-2 px-2 py-2 bg-blue-600 h-10 text-white rounded-md shadow-md hover:bg-blue-500 cursor-pointer dark:bg-blue-500 dark:hover:bg-blue-400">
+      <Plus className="text-white" strokeWidth={2.5} />
+      Plan New Trip
+    </div>
+
+  </div> */}
+
+  <div className="flex flex-col gap-6 mt-6 px-4 md:px-8">
+    <div className="flex flex-row justify-between items-center">
+      {upcomingTrips.length > 3 && (
+        <span className="bg-blue-100 text-blue-600 text-xs font-bold px-2 py-1 rounded-full dark:bg-blue-900/40 dark:text-blue-400">
+          +{upcomingTrips.length - 3} more
+        </span>
+      )}
+    </div>
+    <NavLink
+      to="/mytrips"
+      className="group flex items-center gap-1 text-blue-600 font-semibold text-sm hover:text-blue-700 transition-colors dark:text-blue-400 dark:hover:text-blue-300"
+    >
+      <span>View all</span>
+      <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" strokeWidth={3} />
+    </NavLink>
+  </div>
+    {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin dark:border-blue-500" />
+              </div>
+            ) : filteredUpcoming.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <p className="text-gray-400 dark:text-gray-500 text-lg font-medium">
+                  {searchQuery ? `No upcoming trips matching "${searchQuery}"` : "No upcoming trips yet"}
+                </p>
+              
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  p-4 md:p-6">
+                {filteredUpcoming.map(trip => (
+                  <UpcomingCard
+                    key={trip._id}
+                    image={tripImages[trip._id]} 
+                    title={trip.destination}
+                    date={formatDate(trip.startDate, trip.endDate)}
+                    days={calcDays(trip.startDate, trip.endDate)}
+                    id={trip._id}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      
+    );
+  }
+  export default Dashboard

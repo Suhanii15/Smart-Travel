@@ -57,18 +57,13 @@ export const TripCard = ({id, image, title, location, date, travelers, price, da
     <div className="px-2 pb-2">
       <div className="flex justify-between items-center mb-1">
         <h4 className="font-bold text-slate-800 dark:text-gray-100 text-lg truncate">{title}</h4>
-        {/* Simple Progress Circle */}
-        <div className="relative w-8 h-8 flex items-center justify-center">
-          <svg className="w-full h-full transform -rotate-90">
-            <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-slate-100 dark:text-gray-700" />
-          </svg>
-        
+      
         </div>
       </div>
       <p className="text-slate-400 dark:text-gray-400 text-[10px] mb-3">Last edited {date}</p>
       <button className="w-full py-2 text-md font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer">Continue →</button>
     </div>
-  </div>
+  
 );
  }
 export const CompletedCard = ({id, image, title, date, travelers ,days}) => {

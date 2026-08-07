@@ -138,24 +138,26 @@ useEffect(() => {
 <div className="flex-1 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
   <div className="flex flex-col lg:flex-row justify-between w-full p-4 lg:p-6 gap-4 lg:gap-0"> 
     <div className="flex flex-col gap-3">
-      <h1 className="font-bold text-gray-700 dark:text-gray-100 text-2xl">My Trips</h1>
-      <h4 className="text-gray-400 dark:text-gray-500 ">All your trips in one place!</h4>
+      <h1 className="font-bold text-gray-600 dark:text-gray-100 text-2xl">My Trips</h1>
     </div>
 
-    <div className="flex flex-col lg:flex-row gap-3 lg:gap-2 px-0 lg:px-2 py-1 items-stretch lg:items-center w-full">
+    <div className="flex flex-col lg:flex-row gap-3 lg:gap-2 py-1 lg:items-center lg:justify-end w-full">
       {/* Search Bar */}
-      <div className="flex items-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 w-full lg:w-auto">
-       <Search className="text-gray-500 flex-shrink-0" strokeWidth={3.5} />
+      <div className="relative w-full lg:w-80">
+       <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} strokeWidth={2.5} />
       <input value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)}
-       type="text" placeholder="Search Trips..." className="px-4 py-2 rounded-lg focus:outline-none dark:bg-slate-800 dark:text-gray-200 dark:placeholder-gray-500 w-full lg:w-auto" />
+       type="text" placeholder="Search Trips" className="w-full bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 pl-10 pr-4 py-2.5 rounded-full text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all shadow-sm" />
      </div>
+     
 {/* filter section — horizontal scroll on mobile */}
     <div className="flex flex-row gap-2 overflow-x-auto scrollbar-hide">
     {[
   { label: "Upcoming", value: "UpcomingTrip" },
   { label: "Drafts",   value: "Drafts" },
   { label: "Completed",value: "Completed" }
-].map(({ label, value }) => (
+].map(({ label, value }) => {
+  const count = segregatedTrips[value]?.length || 0;
+  return (
   <button
     key={value}
     onClick={() => setActiveTab(value)}
@@ -166,8 +168,16 @@ useEffect(() => {
     }`}
   >
     {label}
+    <span className={`ml-2 rounded-full px-2 py-0.5 text-xs ${
+      activeTab === value
+        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+        : 'bg-gray-200 text-gray-600 dark:bg-slate-700 dark:text-gray-300'
+    }`}>
+      {count}
+    </span>
   </button>
-))}
+  );
+})}
      </div>
 
     </div>
