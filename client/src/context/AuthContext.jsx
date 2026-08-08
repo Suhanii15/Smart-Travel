@@ -27,7 +27,7 @@ const AuthProvider=({children})=>{
     if (!token) return;
     const fetchMe = async () => {
       try {
-        const res = await fetch("https://smart-travel-hvla.onrender.com/api/user/getuser", {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/getuser`, {
          headers:{
   token: token
 }

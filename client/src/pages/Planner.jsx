@@ -86,7 +86,7 @@ const [origin, setOrigin] = useState("");
 
       }
       const response=await axios.post(
-        "https://smart-travel-hvla.onrender.com/api/trips/create",
+        `${import.meta.env.VITE_BACKEND_URL}/api/trips/create`,
         payload,
         config
       );

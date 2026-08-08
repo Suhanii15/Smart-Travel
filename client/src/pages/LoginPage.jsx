@@ -16,7 +16,7 @@ const[currState, setcurrState]=useState("Sign Up")
 
   const handleAuth = async () =>{
     setLoading(true);
-    const url=currState === "Sign Up" ? "https://smart-travel-hvla.onrender.com/api/user/signup" : "https://smart-travel-hvla.onrender.com/api/user/login";
+    const url=currState === "Sign Up" ? `${import.meta.env.VITE_BACKEND_URL}/api/user/signup`: `${import.meta.env.VITE_BACKEND_URL}/api/user/login`;
     const body=currState === "Sign Up" ? {name,email,password} : {email,password};
 
     try{
@@ -90,7 +90,7 @@ const[currState, setcurrState]=useState("Sign Up")
 
           <button
             type="button"
-            onClick={() => window.location.href = "https://smart-travel-hvla.onrender.com/api/auth/google"}
+            onClick={() => window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/google`}
             className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-md py-2.5 font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer transition dark:border-gray-600 dark:text-gray-200 dark:hover:bg-slate-700"
           >
             <img

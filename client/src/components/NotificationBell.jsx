@@ -13,7 +13,7 @@ const NotificationBell = () => {
   useEffect(() => {
     const fetch = async () => {
       const token = localStorage.getItem("token");
-      const res = await axios.get("https://smart-travel-hvla.onrender.com/api/notification", {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/notification`, {
         headers: { token }
       });
       if (res.data?.success) setNotifications(res.data.notifications);
@@ -26,7 +26,7 @@ const NotificationBell = () => {
 
   const markAllRead = async () => {
     const token = localStorage.getItem("token");
-    await axios.patch("https://smart-travel-hvla.onrender.com/api/notification/read-all", {}, {
+    await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/notification/read-all`, {}, {
       headers: { token }
     });
     setNotifications([]);

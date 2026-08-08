@@ -37,7 +37,7 @@ const Header = () => {
     try {
       const token = localStorage.getItem("token");
       const payload = editField === "name" ? { name: editValue.trim() } : { email: editValue.trim() };
-      const res = await fetch("https://smart-travel-hvla.onrender.com/api/user/update", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", token },
         body: JSON.stringify(payload),

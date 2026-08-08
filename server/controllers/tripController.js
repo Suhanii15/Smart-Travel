@@ -267,21 +267,49 @@ const updateActualSpent = async (req, res) => {
     const { tripId } = req.params;
     const { category, amount } = req.body;
 
-    const validCategories = ["Accomodation", "Transport", "Food", "Activities", "Miscellaneous"];
-    if (!validCategories.includes(category)) {
-      return res.status(400).json({ success: false, message: "Invalid category" });
+    console.log('updateActualSpent req', { tripId, category, amount, userId: req.user?._id });
+
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      return res.status(400).json({ success: false, message: 'Invalid trip ID' });
     }
 
-    const trip = await Trip.findById(tripId);
-    if (!trip) return res.status(404).json({ success: false, message: "Trip not found" });
+    const allowedCategories = [
+      'Accomodation',
+      'Accommodation',
+      'Transport',
+      'Food',
+      'Activities',
+      'Miscellaneous',
+    ];
 
-    trip.actualSpent[category] = amount;
-    trip.markModified('actualSpent');
-    await trip.save();
+    if (!category || !allowedCategories.includes(category)) {
+      return res.status(400).json({ success: false, message: 'Invalid category' });
+    }
+
+    const normalizedCategory = category === 'Accommodation' ? 'Accomodation' : category;
+    const numericAmount = Number(amount);
+    if (Number.isNaN(numericAmount) || numericAmount < 0) {
+      return res.status(400).json({ success: false, message: 'Invalid amount' });
+    }
+
+    const updatePath = `actualSpent.${normalizedCategory}`;
+    const trip = await Trip.findOneAndUpdate(
+      { _id: tripId, 'collaborators.user': req.user._id },
+      { $set: { [updatePath]: numericAmount } },
+      { new: true, runValidators: true }
+    );
+
+    if (!trip) {
+      const existingTrip = await Trip.findById(tripId);
+      if (!existingTrip) {
+        return res.status(404).json({ success: false, message: 'Trip not found' });
+      }
+      return res.status(403).json({ success: false, message: 'Access denied' });
+    }
 
     return res.status(200).json({ success: true, trip });
   } catch (err) {
-    console.log(err);
+    console.error('updateActualSpent error', err);
     return res.status(500).json({ success: false, message: err.message });
   }
 };

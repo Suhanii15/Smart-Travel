@@ -82,7 +82,7 @@ useEffect(()=>{
     }
     try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`https://smart-travel-hvla.onrender.com/api/trips/single/${id}`, {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/trips/single/${id}`, {
           headers: { token:token }
         });
 
@@ -191,7 +191,7 @@ const handleUpdate = async (category) => {
   try {
     const token = localStorage.getItem("token")
     await axios.patch(
-      `https://smart-travel-hvla.onrender.com/api/trips/${id}/actualspent`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/trips/${id}/actualspent`,
       { category, amount: normalizedAmount },
       { headers: { token } }
     )
