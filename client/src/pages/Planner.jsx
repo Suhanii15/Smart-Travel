@@ -90,7 +90,11 @@ const [origin, setOrigin] = useState("");
         payload,
         config
       );
-     
+      if (!response.data.success) {
+        setError(response.data.message || "Unable to generate your itinerary.");
+        return;
+      }
+
       if(response.data.success){
         console.log("Trip ID:", response.data.trip._id);
         navigate(`/itinerary/${response.data.trip._id}`);

@@ -76,9 +76,9 @@ console.log(
 
 catch(err){
     console.log(err);
-    return res.json({
+  return res.status(500).json({
         success:false,
-        message:"Trip was not created"
+    message:"Trip generation failed. Please try again or check the server logs."
     })  
 
 }
