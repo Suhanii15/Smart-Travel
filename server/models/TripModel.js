@@ -46,7 +46,14 @@ const TripSchema=new mongoose.Schema(
             enum:["draft","finalized","completed"],
             default:"draft",
         },
-        preferences: String,
+        reminderSentAt: {
+  type: Date,
+  default: null,
+},
+        preferences: {
+  type: [String],
+  default: [],
+},
 
         collaborators:[collaboratorSchema],
 

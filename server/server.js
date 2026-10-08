@@ -1,15 +1,21 @@
-require('dotenv').config(); 
-const express=require('express');
-const cors=require('cors');
-require("dotenv/config");
-const http =require('http');
-const connectDB= require('./lib/db.js');
-const app=express();
-const server=http.createServer(app);
+
+require("dotenv").config();
+
+const express = require("express");
+const cors = require("cors");
+const http = require("http");
 const cron = require("node-cron");
 
+const connectDB = require("./lib/db.js");
+const Trip = require("./models/TripModel");
+const User = require("./models/UserModel");
+const { sendTripReminder } = require("./services/emailService");
 
-app.use(express.json({limit:"4mb"}));
+const app = express();
+const server = http.createServer(app);
+
+app.use(express.json({ limit: "4mb" }));
+
 app.use(
   cors({
     origin: [
@@ -22,64 +28,197 @@ app.use(
 
 app.set("trust proxy", 1);
 
-connectDB();
-
-const userRouter=require("./routes/userRoutes");
-const tripRouter=require("./routes/tripRoutes.js");
+const userRouter = require("./routes/userRoutes");
+const tripRouter = require("./routes/tripRoutes.js");
 const passport = require("./config/passport");
+const authRouter = require("./routes/authRoutes.js");
+const notificationRouter = require("./routes/notificationRotes.js");
 
 app.use(passport.initialize());
-const authRouter=require("./routes/authRoutes.js")
-const notificationRouter=require("./routes/notificationRotes.js")
 
-app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => res.json({}));
+app.get("/.well-known/appspecific/com.chrome.devtools.json", (req, res) =>
+  res.json({})
+);
 
-app.use("/api/status", (req,res)=>res.send("server is live"));
+app.use("/api/status", (req, res) => res.send("server is live"));
 app.use("/api/user", userRouter);
-app.use("/api/trips",tripRouter);
-app.use("/api/auth",   authRouter);
-app.use("/api/notification", notificationRouter)
+app.use("/api/trips", tripRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/notification", notificationRouter);
 
+// Returns tomorrow's date range in Indian Standard Time.
+function getTomorrowInIndia() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
 
-cron.schedule("0 9 * * *", async () => { // runs every day at 9 AM
-  try {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+  const values = Object.fromEntries(
+    parts.map(({ type, value }) => [type, value])
+  );
 
-    const dayAfter = new Date(tomorrow);
-    dayAfter.setDate(dayAfter.getDate() + 1);
+  const todayUtc = new Date(
+    Date.UTC(
+      Number(values.year),
+      Number(values.month) - 1,
+      Number(values.day)
+    )
+  );
 
-    const tripsStartingTomorrow = await Trip.find({
-      startDate: { $gte: tomorrow, $lt: dayAfter },
-      status: "finalized"
-    });
+  todayUtc.setUTCDate(todayUtc.getUTCDate() + 1);
 
-    for (const trip of tripsStartingTomorrow) {
-      const collaboratorIds = trip.collaborators.map(c => c.user);
-      await User.updateMany(
-        { _id: { $in: collaboratorIds } },
-        {
-          $push: {
-            notifications: {
-              message: `Your trip to ${trip.destination} starts tomorrow! 🎒`,
-              type:    "trip_reminder",
-              tripId:  trip._id,
-              read:    false,
+  const date = todayUtc.toISOString().slice(0, 10);
+  const start = new Date(`${date}T00:00:00+05:30`);
+
+  return {
+    start,
+    end: new Date(start.getTime() + 24 * 60 * 60 * 1000),
+  };
+}
+
+// Runs every day at 9 AM Indian time.
+cron.schedule(
+  "0 9 * * *",
+  async () => {
+    try {
+      const { start, end } = getTomorrowInIndia();
+
+      console.log("Checking trips starting tomorrow (IST)");
+      console.log("Range start:", start.toISOString());
+      console.log("Range end:", end.toISOString());
+
+      const trips = await Trip.find({
+        startDate: {
+          $gte: start,
+          $lt: end,
+        },
+        status: "finalized",
+        reminderSentAt: null,
+      });
+
+      console.log("Eligible trips found:", trips.length);
+
+      for (const trip of trips) {
+        try {
+          // Get all collaborators for this trip.
+          const collaboratorIds = [
+            ...new Set(
+              (trip.collaborators || [])
+                .map((collaborator) => {
+                  const user = collaborator.user;
+                  return user?._id
+                    ? String(user._id)
+                    : user
+                      ? String(user)
+                      : null;
+                })
+                .filter(Boolean)
+            ),
+          ];
+
+          const users = await User.find({
+            _id: { $in: collaboratorIds },
+          });
+
+          if (users.length === 0) {
+            console.log(
+              `No collaborators found for trip ${trip._id}`
+            );
+          }
+
+          let allRecipientsProcessed = true;
+
+          for (const user of users) {
+            if (!user.email) {
+              console.log(
+                `Skipping user ${user._id}: no email address`
+              );
+              allRecipientsProcessed = false;
+              continue;
+            }
+
+            try {
+              console.log(
+                `Attempting reminder for ${user.email}`
+              );
+
+              // Recipient is read from the user's database record.
+              await sendTripReminder(user, trip);
+
+              console.log(
+                `SendGrid accepted reminder for ${user.email}`
+              );
+
+              // Add the in-app notification.
+              await User.updateOne(
+                { _id: user._id },
+                {
+                  $push: {
+                    notifications: {
+                      message: `Your trip to ${trip.destination} starts tomorrow! 🎒`,
+                      type: "trip_reminder",
+                      tripId: trip._id,
+                      read: false,
+                    },
+                  },
+                }
+              );
+            } catch (err) {
+              allRecipientsProcessed = false;
+
+              console.error(
+                `Reminder failed for ${user.email}:`,
+                err.response?.body || err.message
+              );
             }
           }
+
+          // Mark the trip only if all recipients were processed.
+          if (users.length > 0 && allRecipientsProcessed) {
+            trip.reminderSentAt = new Date();
+            await trip.save();
+
+            console.log(
+              `Trip reminder processed: ${trip._id}`
+            );
+          } else {
+            console.log(
+              `Trip ${trip._id} remains unprocessed; check recipients`
+            );
+          }
+        } catch (err) {
+          console.error(
+            `Failed to process trip ${trip._id}:`,
+            err.response?.body || err.message
+          );
         }
-      );
+      }
+
+      console.log("Daily trip reminder job finished");
+    } catch (err) {
+      console.error("Cron job failed:", err);
     }
-    console.log("Trip reminder notifications sent");
-  } catch (err) {
-    console.error("Cron job failed:", err);
+  },
+  {
+    timezone: "Asia/Kolkata",
   }
-});
+);
 
+const PORT = process.env.PORT || 5000;
 
+async function startServer() {
+  try {
+    await connectDB();
 
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("Failed to connect to database:", err);
+    process.exit(1);
+  }
+}
 
-const PORT=process.env.PORT || 5000;
-server.listen(PORT,()=>
-    console.log("server running on" + PORT));
+startServer();
