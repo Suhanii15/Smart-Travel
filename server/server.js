@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 
 const express = require("express");
@@ -78,147 +77,150 @@ function getTomorrowInIndia() {
   };
 }
 
-console.log("Registering trip reminder cron job...");
+// Prevents two runs (in-process cron + external trigger) from overlapping.
+let reminderJobRunning = false;
 
-cron.schedule(
-  "15 15 * * *",
-  async () => {
-    console.log("Trip reminder job started at:", new Date().toISOString());
-    try {
-      const { start, end } = getTomorrowInIndia();
+async function runTripReminders() {
+  if (reminderJobRunning) {
+    console.log("Trip reminder job already running; skipping this trigger");
+    return;
+  }
 
-      console.log("Checking trips starting tomorrow (IST)");
-      console.log("Range start:", start.toISOString());
-      console.log("Range end:", end.toISOString());
-      const allTrips = await Trip.find({});
+  reminderJobRunning = true;
+  console.log("Trip reminder job started at:", new Date().toISOString());
 
-console.log(
-  "All trip dates:",
-  allTrips.map((t) => ({
-    id: t._id,
-    destination: t.destination,
-    startDate: t.startDate,
-    status: t.status,
-    reminderSentAt: t.reminderSentAt,
-  }))
-);
+  try {
+    const { start, end } = getTomorrowInIndia();
 
-      const trips = await Trip.find({
-        startDate: {
-          $gte: start,
-          $lt: end,
-        },
-        status: "finalized",
-        reminderSentAt: null,
-      });
+    console.log("Checking trips starting tomorrow (IST)");
+    console.log("Range start:", start.toISOString());
+    console.log("Range end:", end.toISOString());
 
-      console.log("Eligible trips found:", trips.length);
+    const trips = await Trip.find({
+      startDate: {
+        $gte: start,
+        $lt: end,
+      },
+      status: "finalized",
+      reminderSentAt: null,
+    });
 
-      for (const trip of trips) {
-        try {
-          // Get all collaborators for this trip.
-          const collaboratorIds = [
-            ...new Set(
-              (trip.collaborators || [])
-                .map((collaborator) => {
-                  const user = collaborator.user;
-                  return user?._id
-                    ? String(user._id)
-                    : user
-                      ? String(user)
-                      : null;
-                })
-                .filter(Boolean)
-            ),
-          ];
+    console.log("Eligible trips found:", trips.length);
 
-          const users = await User.find({
-            _id: { $in: collaboratorIds },
-          });
+    for (const trip of trips) {
+      try {
+        // Get all collaborators for this trip.
+        const collaboratorIds = [
+          ...new Set(
+            (trip.collaborators || [])
+              .map((collaborator) => {
+                const user = collaborator.user;
+                return user?._id
+                  ? String(user._id)
+                  : user
+                    ? String(user)
+                    : null;
+              })
+              .filter(Boolean)
+          ),
+        ];
 
-          if (users.length === 0) {
-            console.log(
-              `No collaborators found for trip ${trip._id}`
-            );
+        const users = await User.find({
+          _id: { $in: collaboratorIds },
+        });
+
+        if (users.length === 0) {
+          console.log(`No collaborators found for trip ${trip._id}`);
+        }
+
+        let allRecipientsProcessed = true;
+
+        for (const user of users) {
+          if (!user.email) {
+            console.log(`Skipping user ${user._id}: no email address`);
+            allRecipientsProcessed = false;
+            continue;
           }
 
-          let allRecipientsProcessed = true;
+          try {
+            console.log(`Attempting reminder for ${user.email}`);
 
-          for (const user of users) {
-            if (!user.email) {
-              console.log(
-                `Skipping user ${user._id}: no email address`
-              );
-              allRecipientsProcessed = false;
-              continue;
-            }
+            // Recipient is read from the user's database record.
+            await sendTripReminder(user, trip);
 
-            try {
-              console.log(
-                `Attempting reminder for ${user.email}`
-              );
+            console.log(`SendGrid accepted reminder for ${user.email}`);
 
-              // Recipient is read from the user's database record.
-              await sendTripReminder(user, trip);
-
-              console.log(
-                `SendGrid accepted reminder for ${user.email}`
-              );
-
-              // Add the in-app notification.
-              await User.updateOne(
-                { _id: user._id },
-                {
-                  $push: {
-                    notifications: {
-                      message: `Your trip to ${trip.destination} starts tomorrow! 🎒`,
-                      type: "trip_reminder",
-                      tripId: trip._id,
-                      read: false,
-                    },
+            // Add the in-app notification.
+            await User.updateOne(
+              { _id: user._id },
+              {
+                $push: {
+                  notifications: {
+                    message: `Your trip to ${trip.destination} starts tomorrow! 🎒`,
+                    type: "trip_reminder",
+                    tripId: trip._id,
+                    read: false,
                   },
-                }
-              );
-            } catch (err) {
-              allRecipientsProcessed = false;
-
-              console.error(
-                `Reminder failed for ${user.email}:`,
-                err.response?.body || err.message
-              );
-            }
-          }
-
-          // Mark the trip only if all recipients were processed.
-          if (users.length > 0 && allRecipientsProcessed) {
-            trip.reminderSentAt = new Date();
-            await trip.save();
-
-            console.log(
-              `Trip reminder processed: ${trip._id}`
+                },
+              }
             );
-          } else {
-            console.log(
-              `Trip ${trip._id} remains unprocessed; check recipients`
+          } catch (err) {
+            allRecipientsProcessed = false;
+
+            console.error(
+              `Reminder failed for ${user.email}:`,
+              err.response?.body || err.message
             );
           }
-        } catch (err) {
-          console.error(
-            `Failed to process trip ${trip._id}:`,
-            err.response?.body || err.message
+        }
+
+        // Mark the trip only if all recipients were processed.
+        if (users.length > 0 && allRecipientsProcessed) {
+          trip.reminderSentAt = new Date();
+          await trip.save();
+
+          console.log(`Trip reminder processed: ${trip._id}`);
+        } else {
+          console.log(
+            `Trip ${trip._id} remains unprocessed; check recipients`
           );
         }
+      } catch (err) {
+        console.error(
+          `Failed to process trip ${trip._id}:`,
+          err.response?.body || err.message
+        );
       }
-
-      console.log("Daily trip reminder job finished");
-    } catch (err) {
-      console.error("Cron job failed:", err);
     }
-  },
-  {
-    timezone: "Asia/Kolkata",
+
+    console.log("Daily trip reminder job finished");
+  } catch (err) {
+    console.error("Cron job failed:", err);
+  } finally {
+    reminderJobRunning = false;
   }
-);
+}
+
+// In-process schedule: only fires if the server is awake at 3:15 PM IST.
+console.log("Registering trip reminder cron job...");
+cron.schedule("31 15 * * *", runTripReminders, {
+  timezone: "Asia/Kolkata",
+});
+
+// External trigger: call this from cron-job.org, GitHub Actions, or your
+// host's scheduler so reminders still go out if the server was asleep.
+// Send header:  x-cron-secret: <CRON_SECRET>
+app.post("/api/cron/trip-reminders", (req, res) => {
+  if (
+    !process.env.CRON_SECRET ||
+    req.get("x-cron-secret") !== process.env.CRON_SECRET
+  ) {
+    return res.sendStatus(401);
+  }
+
+  res.json({ started: true });
+  runTripReminders();
+});
 
 const PORT = process.env.PORT || 5000;
 
