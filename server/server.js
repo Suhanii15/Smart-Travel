@@ -78,16 +78,30 @@ function getTomorrowInIndia() {
   };
 }
 
-// Runs every day at 9 AM Indian time.
+console.log("Registering trip reminder cron job...");
+
 cron.schedule(
-  "15 13 * * *",
+  "15 15 * * *",
   async () => {
+    console.log("Trip reminder job started at:", new Date().toISOString());
     try {
       const { start, end } = getTomorrowInIndia();
 
       console.log("Checking trips starting tomorrow (IST)");
       console.log("Range start:", start.toISOString());
       console.log("Range end:", end.toISOString());
+      const allTrips = await Trip.find({});
+
+console.log(
+  "All trip dates:",
+  allTrips.map((t) => ({
+    id: t._id,
+    destination: t.destination,
+    startDate: t.startDate,
+    status: t.status,
+    reminderSentAt: t.reminderSentAt,
+  }))
+);
 
       const trips = await Trip.find({
         startDate: {
