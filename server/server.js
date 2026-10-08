@@ -80,7 +80,7 @@ function getTomorrowInIndia() {
 
 // Runs every day at 9 AM Indian time.
 cron.schedule(
-  "0 9 * * *",
+  "15 13 * * *",
   async () => {
     try {
       const { start, end } = getTomorrowInIndia();
