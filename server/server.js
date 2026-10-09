@@ -96,6 +96,21 @@ async function runTripReminders() {
     console.log("Range start:", start.toISOString());
     console.log("Range end:", end.toISOString());
 
+    const dateOnly = { startDate: { $gte: start, $lt: end } };
+console.log("matches date:", await Trip.countDocuments(dateOnly));
+console.log(
+  "matches date + finalized:",
+  await Trip.countDocuments({ ...dateOnly, status: "finalized" })
+);
+
+const nearby = await Trip.find({
+  startDate: {
+    $gte: new Date(start.getTime() - 3 * 86400000),
+    $lt: new Date(end.getTime() + 3 * 86400000),
+  },
+}).select("destination startDate status reminderSentAt collaborators");
+console.log("nearby trips:", JSON.stringify(nearby, null, 2));
+
     const trips = await Trip.find({
       startDate: {
         $gte: start,
@@ -156,7 +171,7 @@ async function runTripReminders() {
               {
                 $push: {
                   notifications: {
-                    message: `Your trip to ${trip.destination} starts tomorrow! 🎒`,
+                    message: `Your trip to ${trip.destination} starts tomorrow! `,
                     type: "trip_reminder",
                     tripId: trip._id,
                     read: false,
@@ -201,9 +216,8 @@ async function runTripReminders() {
   }
 }
 
-// In-process schedule: only fires if the server is awake at 3:15 PM IST.
 console.log("Registering trip reminder cron job...");
-cron.schedule("31 15 * * *", runTripReminders, {
+cron.schedule("30 12 * * *", runTripReminders, {
   timezone: "Asia/Kolkata",
 });
 
