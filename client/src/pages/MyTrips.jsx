@@ -37,6 +37,24 @@ const MyTrips = () => {
    const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const deleteCompletedTrip = async (tripId) => {
+    if (!window.confirm("Delete this completed trip? This cannot be undone.")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/trips/${tripId}`,
+        { headers: { token } }
+      );
+      if (response.data?.success) {
+        setAllTrips((trips) => trips.filter((trip) => trip._id !== tripId));
+      } else {
+        window.alert(response.data?.message || "Could not delete this trip.");
+      }
+    } catch (err) {
+      window.alert(err.response?.data?.message || "Could not delete this trip.");
+    }
+  };
 const calcDays = (start, end) => {
   if (!start || !end) return 1;
   return Math.ceil(
@@ -199,8 +217,11 @@ useEffect(() => {
 
     {
       activeTab === 'Completed' && segregatedTrips.Completed.map(trip=>(
-        <CompletedCard key={trip._id} id={trip._id}   image={tripImages[trip._id] }
- title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} travelers={trip.peopleCount}  days={calcDays(trip.startDate, trip.endDate)}/>
+        <CompletedCard key={trip._id} id={trip._id} image={tripImages[trip._id]}
+ title={trip.destination} date={formatTripDate(trip.startDate,trip.endDate)} travelers={trip.peopleCount}
+ canDelete={trip.collaborators?.some((collaborator) =>
+   String(collaborator.user?._id || collaborator.user) === String(user?._id || user?.id) && collaborator.role === "admin"
+ )} onDelete={deleteCompletedTrip}/>
       )
       )
 

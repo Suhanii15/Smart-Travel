@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, Users, MapPin, MoreVertical, Heart, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -66,8 +66,9 @@ export const TripCard = ({id, image, title, location, date, travelers, price, da
   
 );
  }
-export const CompletedCard = ({id, image, title, date, travelers ,days}) => {
+export const CompletedCard = ({id, image, title, date, travelers, onDelete, canDelete}) => {
   const navigate=useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return(
   <div onClick={() => navigate(`/itinerary/${id}`)}
@@ -100,9 +101,26 @@ export const CompletedCard = ({id, image, title, date, travelers ,days}) => {
           <p className="text-slate-400 dark:text-gray-400 text-xs">{date}</p>
         </div>
 
-        <button className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+        {canDelete && <div className="relative" onClick={(event) => event.stopPropagation()}>
+        <button
+          type="button"
+          aria-label={`Trip options for ${title}`}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+          className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+        >
           <MoreVertical size={16} className="text-slate-400 dark:text-gray-500" />
         </button>
+        {menuOpen && <div className="absolute right-0 top-full z-10 mt-1 min-w-36 rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+          <button
+            type="button"
+            onClick={() => onDelete(id)}
+            className="w-full rounded-md px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+          >
+            Delete trip
+          </button>
+        </div>}
+        </div>}
       </div>
 
       <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-gray-700">
@@ -112,7 +130,7 @@ export const CompletedCard = ({id, image, title, date, travelers ,days}) => {
           <span>{travelers} Travelers</span>
         </div>
 
-        <button className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-0.5">
+        <button onClick={(event) => { event.stopPropagation(); navigate(`/itinerary/${id}`); }} className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-0.5">
           View Trip <ChevronRight size={14} />
         </button>
 
