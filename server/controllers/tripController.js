@@ -314,4 +314,34 @@ const updateActualSpent = async (req, res) => {
   }
 };
 
-module.exports = { CreateTrip, getAllTrips, getTrip, checkStatus, updateActualSpent };
+const deleteCompletedTrip = async (req, res) => {
+  try {
+    const { tripId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      return res.status(400).json({ success: false, message: "Invalid trip ID" });
+    }
+
+    const trip = await Trip.findById(tripId);
+    if (!trip) {
+      return res.status(404).json({ success: false, message: "Trip not found" });
+    }
+
+    const collaborator = trip.collaborators.find(
+      (member) => member.user.toString() === req.user._id.toString()
+    );
+    if (!collaborator || collaborator.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Only trip admins can delete trips" });
+    }
+    if (trip.status !== "completed") {
+      return res.status(400).json({ success: false, message: "Only completed trips can be deleted" });
+    }
+
+    await Trip.findByIdAndDelete(tripId);
+    return res.status(200).json({ success: true, message: "Completed trip deleted" });
+  } catch (err) {
+    console.error("deleteCompletedTrip error", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports = { CreateTrip, getAllTrips, getTrip, checkStatus, updateActualSpent, deleteCompletedTrip };

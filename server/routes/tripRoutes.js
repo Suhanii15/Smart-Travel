@@ -2,7 +2,7 @@ const express=require("express");
 const router=express.Router();
 const protectedRoute=require("../middlewares/auth");
 const {searchUsers,addCollaboartor,removeCollaborator}=require("../controllers/collaborationController");
-const {CreateTrip, getAllTrips, getTrip,checkStatus,updateActualSpent}=require("../controllers/tripController");
+const {CreateTrip, getAllTrips, getTrip,checkStatus,updateActualSpent,deleteCompletedTrip}=require("../controllers/tripController");
 const {addDay,deleteDay,addActivity,deleteActivity}=require("../controllers/itineraryController");
 
 
@@ -10,6 +10,7 @@ const {addDay,deleteDay,addActivity,deleteActivity}=require("../controllers/itin
 router.post("/create",protectedRoute,CreateTrip);
 router.patch("/:tripId/status",protectedRoute,checkStatus);
 router.get("/alltrips",protectedRoute,getAllTrips);
+router.delete("/:tripId",protectedRoute,deleteCompletedTrip);
 
 
 router.get("/search",protectedRoute,searchUsers);
