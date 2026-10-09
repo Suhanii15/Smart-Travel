@@ -217,7 +217,7 @@ console.log("nearby trips:", JSON.stringify(nearby, null, 2));
 }
 
 console.log("Registering trip reminder cron job...");
-cron.schedule("00 13 * * *", runTripReminders, {
+cron.schedule("00 00 * * *", runTripReminders, {
   timezone: "Asia/Kolkata",
 });
 
