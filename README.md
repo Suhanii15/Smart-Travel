@@ -55,6 +55,7 @@ Users receive notifications when:
 - New activities are added
 - Trip updates occur
 - Invitations are accepted
+- User Receives Email notification one day before the trip.
 
 ---
 
@@ -274,8 +275,7 @@ npm run dev
 
 # Future Improvements
 
-- Twilio SMS Trip Reminders
-- Email Invitations
+
 - Real-Time Collaboration using Socket.IO
 - Expense Splitting
 - Hotel Recommendations
