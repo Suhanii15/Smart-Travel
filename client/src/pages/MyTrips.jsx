@@ -206,7 +206,7 @@ useEffect(() => {
       activeTab === 'UpcomingTrip' && segregatedTrips.UpcomingTrip.map(trip => (
         <TripCard key={trip._id} id={trip._id}   image={tripImages[trip._id]}
  title={trip.destination}  location={trip.destination}  date={formatTripDate(trip.startDate,trip.endDate)}
-         travelers={trip.peopleCount} price={trip.estimatedBudget?.grandTotal?.toLocaleString('en-IN') || "0"} days={trip.totalDays || 1}  days={calcDays(trip.startDate, trip.endDate)}/>
+         travelers={trip.peopleCount} price={trip.estimatedBudget?.grandTotal?.toLocaleString('en-IN') || "0"} days={calcDays(trip.startDate, trip.endDate)}/>
       ))
     }
 
